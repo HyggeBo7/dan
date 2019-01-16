@@ -1,0 +1,48 @@
+package com.dan.web.common.springmvc;
+
+import com.dan.utils.JsonUtil;
+import org.apache.commons.lang3.ArrayUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.servlet.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+/**
+ * Created by dan
+ */
+public class RequestContextFilter implements Filter {
+
+    private static final Logger logger = LoggerFactory.getLogger(cn.xtits.xtf.web.springmvc.RequestContextFilter.class);
+
+    @Override
+    public void init(FilterConfig filterConfig) throws ServletException {
+        logger.info("request context filter init");
+    }
+
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+
+        long start = System.currentTimeMillis();
+        RequestContext.init((HttpServletRequest) request, (HttpServletResponse) response, null);
+
+        logger.info("request start| seq:{}, uri:{}, param:{}, cookie:{} ",
+                ArrayUtils.toArray(RequestContext.getSeq(), ((HttpServletRequest) request).getRequestURI(),
+                        ((HttpServletRequest) request).getQueryString(),
+                        JsonUtil.toJson(((HttpServletRequest) request).getCookies())));
+        chain.doFilter(request, response);
+
+        logger.info("request end| seq:{}, spend time:{}, response:{}",
+                ArrayUtils.toArray(RequestContext.getSeq(), (System.currentTimeMillis() - start), response.getContentType()));
+
+        RequestContext.clear();
+
+    }
+
+    @Override
+    public void destroy() {
+        logger.info("request context filter destroy");
+    }
+}
