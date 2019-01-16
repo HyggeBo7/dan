@@ -1,4 +1,4 @@
-【git-config】
+【git-config->https://www.cnblogs.com/tinywan/p/8241077.html】
 [core]
 	repositoryformatversion = 0
 	filemode = false
