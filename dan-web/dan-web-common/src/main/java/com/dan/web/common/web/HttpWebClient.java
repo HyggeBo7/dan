@@ -27,10 +27,16 @@ import java.util.Map;
  */
 public class HttpWebClient {
 
-    public static final Logger logger = LoggerFactory.getLogger(cn.xtits.xtf.common.web.HttpWebClient.class);
+    public static final Logger logger = LoggerFactory.getLogger(HttpWebClient.class);
 
-    public static final int DEFAULT_MAX_PER_ROUTE = 50;                                          // 每个路由的默认最大连接数
-    public static final int DEFAULT_MAX_TOTAL = 100;                                         // 连接池里的最大连接数
+    /**
+     * 每个路由的默认最大连接数
+     */
+    public static final int DEFAULT_MAX_PER_ROUTE = 50;
+    /**
+     * 连接池里的最大连接数
+     */
+    public static final int DEFAULT_MAX_TOTAL = 100;
 
     public static final String DEFAULT_ENCODING = "UTF-8";
 

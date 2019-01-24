@@ -1,12 +1,13 @@
 package com.dan.common.util.test;
 
-import cn.hutool.core.date.DateTime;
 import com.alibaba.fastjson.JSONObject;
 import com.dan.common.util.excel.ExcelWriteUtils;
 import com.dan.utils.DateUtil;
 import com.dan.utils.JsonUtil;
 import com.dan.utils.file.FileUtil;
+import com.dan.utils.network.HttpUtils;
 import com.dan.utils.xt.MapperUtil;
+import org.joda.time.DateTime;
 import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
@@ -23,6 +24,20 @@ import java.util.*;
  * @description:
  */
 public class DomeTest {
+
+    @Test
+    public void testHttp() {
+        String url = "http://www.wubo777.top/web-socket/dan/testJson";
+        //String url = "https://mpapi.xtits.cn/ihaj-api/housing/listHousing";
+        //String url = "https://api.weixin.qq.com/sns/jscode2session";
+        String data = "{\"grant_type\":\"authorization_code\",\"appid\":\"wxc6f17db215ae62a0\",\"secret\":\"25dd7249f0675bfbf18ee06ff797c087\",\"js_code\":\"061TqdSc1rzeKx0eJYVc1j2YRc1TqdSI\"}";
+        Map<String, Object> dataMap = JsonUtil.fromJson(data, LinkedHashMap.class);
+        String header = "{\"content-type\":\"application/json\"}";
+        Map<String, String> headerMap = JsonUtil.fromJson(header, LinkedHashMap.class);
+
+        HttpUtils.ResultResponse resultResponse = HttpUtils.createRequest().doGet(url, dataMap, headerMap);
+        System.out.println("value:" + resultResponse.toString());
+    }
 
     @Test
     public void testJsons() {
