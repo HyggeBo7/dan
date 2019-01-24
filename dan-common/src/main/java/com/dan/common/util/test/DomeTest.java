@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.*;
 
 /**
@@ -79,7 +80,7 @@ public class DomeTest {
     @Test
     public void importExcel() throws IOException {
         //导入
-        ExcelWriteUtils excelWriteUtils = ExcelWriteUtils.importExcel("A:/模具处理后1.xlsx", "Sheet1");
+        ExcelWriteUtils excelWriteUtils = ExcelWriteUtils.importExcel("A:/ax1201-31.xlsx", 1,1);
         //一行数据为null，或者""，不添加
         excelWriteUtils.setEmptyRowFlag(false);
         //显示读取行号
@@ -228,5 +229,22 @@ public class DomeTest {
         System.out.println("toJson:" + toJson);*/
         System.out.println("success");
 
+    }
+
+    @Test
+    public void testDecimalFormat() {
+        double num = 0.3141598653512314;
+        double num1 = 0.314159445354;
+        double num2 = 0.653;
+        double num3 = 0.425;
+        DecimalFormat format = new DecimalFormat("#.###");
+        //最多保留几位
+        format.setMaximumFractionDigits(10);
+        //最少保留几位, 可以是0 就是 取整数
+        format.setMinimumFractionDigits(0);
+        System.out.println("format:" + format.format(num));
+        System.out.println("format:" + format.format(num1));
+        System.out.println("format:" + format.format(num2));
+        System.out.println("format:" + format.format(num3));
     }
 }

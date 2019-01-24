@@ -937,7 +937,7 @@ public class ExcelWriteUtils {
                 return rawValue;
             }
             if (evaluate.getCellType() == Cell.CELL_TYPE_NUMERIC) {
-                return dealFormulaWithNum(evaluate, scienceFlag);
+                return dealFormulaWithNum(evaluate.getNumberValue(), scienceFlag);
             } else if (evaluate.getCellType() == Cell.CELL_TYPE_STRING) {
                 return String.valueOf(evaluate.getStringValue());
             }
@@ -947,7 +947,7 @@ public class ExcelWriteUtils {
             if (HSSFDateUtil.isCellDateFormatted(cell)) {
                 return dealFormulaDate(cell);
             } else {
-                return dealWithNum(cell, scienceFlag);
+                return dealFormulaWithNum(cell.getNumericCellValue(), scienceFlag);
             }
         } else if (cell.getCellType() == Cell.CELL_TYPE_ERROR) {
             //错误格式 cell.toString()
@@ -994,47 +994,31 @@ public class ExcelWriteUtils {
     /**
      * 处理公式+科学计数法
      *
-     * @param cell
-     * @param scienceFlag
-     * @return
+     * @param doubleValue 值
+     * @param scienceFlag 是否保留科学计数法 false:不保留
      */
-    private String dealFormulaWithNum(CellValue cell, boolean scienceFlag) {
+    private String dealFormulaWithNum(double doubleValue, boolean scienceFlag) {
         DecimalFormat df = new DecimalFormat("0");
-        if (("" + cell.getNumberValue()).indexOf("E") != -1 || ("" + cell.getNumberValue()).indexOf("e") != -1 || ("" + cell.getNumberValue()).indexOf("+") != -1) {
+        String value = String.valueOf(doubleValue);
+        if (value.contains("E") || value.contains("e") || value.contains("+")) {
             if (scienceFlag) {
-                return new BigDecimal(cell.getNumberValue()).toString();
+                return new BigDecimal(value).toString();
             } else {
-                return df.format(cell.getNumberValue());
+                DecimalFormat decimalFormat = new DecimalFormat("#.###");
+                //最多保留几位(10)
+                decimalFormat.setMaximumFractionDigits(10);
+                //最少保留几位(最小保留,不够补0显示), 可以是0 就是 取整数->  0.653==>0.653
+                decimalFormat.setMinimumFractionDigits(0);
+                return decimalFormat.format(doubleValue);
             }
         }
-        return String.valueOf(cell.getNumberValue());
-    }
-
-    /**
-     * 处理科学计数法
-     *
-     * @param cell
-     * @param scienceFlag
-     * @return
-     */
-    private String dealWithNum(Cell cell, boolean scienceFlag) {
-        DecimalFormat df = new DecimalFormat("0");
-        if (("" + cell.getNumericCellValue()).indexOf("E") != -1 || ("" + cell.getNumericCellValue()).indexOf("e") != -1
-                || ("" + cell.getNumericCellValue()).indexOf("+") != -1) {
-            if (scienceFlag) {
-                return new BigDecimal("" + cell.getNumericCellValue()).toString();
-            } else {
-                return df.format(cell.getNumericCellValue());
-            }
-        }
-        return String.valueOf(cell.getNumericCellValue());
+        return value;
     }
 
     /**
      * 判断当前行是否全都为Null或者""
      *
      * @param row
-     * @return
      */
     private static boolean judgmentEmptyRowFlag(Row row) {
         if (Objects.isNull(row)) {
