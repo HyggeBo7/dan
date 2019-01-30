@@ -137,7 +137,7 @@ public class DomeTest {
         //设置内容样式-默认false
         excelWriteUtils.setDefaultColumnStyleFlag(true);
 
-        Integer[] titleSize = {50, 50, 50, 50, 50, 50};
+        Integer[] titleSize = {50, 20, 10, 50, 50, 50, 50, 50, 50, 50};
 
         //输出到本地文件url
         String excelFileUrl = FileUtil.createMkdirMulti("P:/", true, "file/excel/");

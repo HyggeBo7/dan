@@ -742,7 +742,7 @@ public class ExcelWriteUtils {
             }
         }
         //设置自动宽度
-        if (thisTitleSize == null) {
+        if (writeCriteria.getTitleSize() == null) {
             for (int i = 0; i < columnIndexWidth.length; i++) {
                 //如果当前宽度小于了，最小单元格宽度,设置默认最小值宽度
                 int thisWidth = columnIndexWidth[i] < rowMinStandardWidth ? rowMinStandardWidth : columnIndexWidth[i];
