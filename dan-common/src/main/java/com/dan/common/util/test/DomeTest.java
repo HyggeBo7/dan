@@ -80,7 +80,7 @@ public class DomeTest {
     @Test
     public void importExcel() throws IOException {
         //导入
-        ExcelWriteUtils excelWriteUtils = ExcelWriteUtils.importExcel("A:/ax1201-31.xlsx", 1,1);
+        ExcelWriteUtils excelWriteUtils = ExcelWriteUtils.importExcel("A:/ax1201-31.xlsx", 1, 1);
         //一行数据为null，或者""，不添加
         excelWriteUtils.setEmptyRowFlag(false);
         //显示读取行号
@@ -246,5 +246,44 @@ public class DomeTest {
         System.out.println("format:" + format.format(num1));
         System.out.println("format:" + format.format(num2));
         System.out.println("format:" + format.format(num3));
+    }
+
+    @Test
+    public void testReadFileName() {
+        String PATH = "P:/file";
+        int autoClearDay = 20;
+        List<String> stringList = FileUtil.readFileAndPath(PATH, true);
+        //List<String> stringList = FileUtil.readFileAndPathReg("P:/file", FileUtil.YEAR_REXP);
+        for (String s : stringList) {
+            System.out.println("s->" + s);
+            clearLog(s, autoClearDay);
+        }
+    }
+
+    /**
+     * 文件删除
+     *
+     * @param autoClearDay 文件保存天数
+     */
+    public void clearLog(String PATH, int autoClearDay) {
+        File dirFile = new File(PATH);
+        if (dirFile.exists()) {
+            autoClearDay = autoClearDay < 0 ? 0 : autoClearDay;
+            long thisTime = DateUtil.getTime();
+            List<String> fileUrlList = FileUtil.readFileAndPath(PATH, true, null);
+            if (fileUrlList != null && fileUrlList.size() > 0) {
+                File thisFile = null;
+                for (String fileUrl : fileUrlList) {
+                    thisFile = new File(fileUrl);
+                    long lastModified = thisFile.lastModified();
+                    //相差天数
+                    long day = (thisTime - lastModified) / DateUtil.DAY_MILLI;
+                    if (day > autoClearDay) {
+                        System.out.println("remove:" + thisFile.getAbsolutePath() + ",day:" + day);
+                        //FileUtil.removeFile(thisFile);
+                    }
+                }
+            }
+        }
     }
 }

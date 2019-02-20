@@ -41,17 +41,17 @@ public class DateUtil {
     /**
      * 毫秒转天
      */
-    private static final long DAY_MILLI = 24 * 60 * 60 * 1000;
+    public static final long DAY_MILLI = 24 * 60 * 60 * 1000;
 
     /**
      * 毫秒转小时
      */
-    private static final long HOUR_MILLI = 60 * 60 * 1000;
+    public static final long HOUR_MILLI = 60 * 60 * 1000;
 
     /**
      * 毫秒转分钟
      */
-    private static final long MINUTE_MILLI = 60 * 1000;
+    public static final long MINUTE_MILLI = 60 * 1000;
 
     /**
      * 精确到毫秒的完整时间 如：yyyy-MM-dd HH:mm:ss.S
@@ -82,11 +82,15 @@ public class DateUtil {
 
     public static String FORMAT_MM = "MM";
 
-    public static Date getTime() {
+    public static Date getDate() {
         long millis = System.currentTimeMillis();
         SimpleDateFormat format = new SimpleDateFormat(FORMAT_LONG);
         String format1 = format.format(millis);
         return parseToDate(format1, FORMAT_LONG);
+    }
+
+    public static long getTime() {
+        return System.currentTimeMillis();
     }
 
     public static String getTimeToString(String parse) {
@@ -387,7 +391,7 @@ public class DateUtil {
      *
      * @param startDate 开始时间
      * @param endDate   结束时间
-     * @return 时间查
+     * @return 时间差
      */
     public static Long getMistiming(Date startDate, Date endDate) {
 

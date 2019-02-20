@@ -13,6 +13,12 @@ public class FileUtil {
 
     private static final Logger logger = LoggerFactory.getLogger(FileUtil.class);
 
+    /**
+     * 判断日期格式和范围-正则 格式:2019-01-03
+     */
+    public static final String YEAR_REXP = "^((\\d{2}(([02468][048])|([13579][26]))[\\-\\/\\s]?((((0?[13578])|(1[02]))[\\-\\/\\s]?((0?[1-9])|([1-2][0-9])|(3[01])))|(((0?[469])|(11))[\\-\\/\\s]?((0?[1-9])|([1-2][0-9])|(30)))|(0?2[\\-\\/\\s]?((0?[1-9])|([1-2][0-9])))))|(\\d{2}(([02468][1235679])|([13579][01345789]))[\\-\\/\\s]?((((0?[13578])|(1[02]))[\\-\\/\\s]?((0?[1-9])|([1-2][0-9])|(3[01])))|(((0?[469])|(11))[\\-\\/\\s]?((0?[1-9])|([1-2][0-9])|(30)))|(0?2[\\-\\/\\s]?((0?[1-9])|(1[0-9])|(2[0-8]))))))";
+
+
     private String serverUrl;
 
     public String getServerUrl() {
@@ -34,6 +40,20 @@ public class FileUtil {
      * @param filePathFlag ["true:获取相对路径","false:获取所有文件名称","null:获取相对路径"]
      */
     public static List<String> readFileAndPath(String filePath, Boolean filePathFlag) {
+        return readFileAndPath(filePath, filePathFlag, null);
+    }
+
+    /**
+     * 读取某个文件夹下的所有文件名称,可以根据正则匹配(reg==null:获取所有)
+     */
+    public static List<String> readFileAndPathReg(String filePath, String reg) {
+        return readFileAndPath(filePath, false, reg);
+    }
+
+    /**
+     * 读取某个文件夹下的所有文件,或根据正则匹配
+     */
+    public static List<String> readFileAndPath(String filePath, Boolean filePathFlag, String reg) {
         List<String> returnFileList = new ArrayList<>();
         //如果路径为null
         if (StringUtils.isBlank(filePath)) {
@@ -48,18 +68,24 @@ public class FileUtil {
             //如果是文件
             if (!file.isDirectory()) {
                 //设置值
-                returnFileList.add(getFilePathType(file, filePathFlag));
+                String value = getFilePathType(file, filePathFlag, reg);
+                if (value != null) {
+                    returnFileList.add(value);
+                }
             } else if (file.isDirectory()) {
                 //文件夹
                 String[] fileList = file.list();
                 if (null != fileList && fileList.length > 0) {
                     for (String path : fileList) {
-                        File readFile = new File(filePath + "\\" + path);
+                        File readFile = new File(filePath + "/" + path);
                         if (!readFile.isDirectory()) {
-                            returnFileList.add(getFilePathType(readFile, filePathFlag));
+                            String value = getFilePathType(readFile, filePathFlag, reg);
+                            if (value != null) {
+                                returnFileList.add(value);
+                            }
                         } else if (readFile.isDirectory()) {
                             //添加子目录获取到的名称
-                            returnFileList.addAll(readFileAndPath(filePath + "\\" + path, filePathFlag));
+                            returnFileList.addAll(readFileAndPath(filePath + "/" + path, filePathFlag, reg));
                         }
                     }
                 }
@@ -70,16 +96,22 @@ public class FileUtil {
         return returnFileList;
     }
 
-    private static String getFilePathType(File file, Boolean filePathFlag) {
+    private static String getFilePathType(File file, Boolean filePathFlag, String reg) {
+        String returnValue = null;
         if (null == filePathFlag) {
             //相对路径
-            return file.getPath();
+            returnValue = file.getPath();
         } else if (filePathFlag) {
             //绝对路径
-            return file.getAbsolutePath();
+            returnValue = file.getAbsolutePath();
+        } else {
+            //文件名称
+            returnValue = file.getName();
         }
-        //文件名称
-        return file.getName();
+        if (StringUtils.isNotBlank(reg)) {
+            return returnValue.matches(reg) ? returnValue : null;
+        }
+        return returnValue;
     }
 
     /**
@@ -393,13 +425,15 @@ public class FileUtil {
         if (StringUtils.isBlank(path)) {
             return false;
         }
-        File file = new File(path);
-        if (file.exists() && file.isFile()) {
+        return removeFile(new File(path));
+    }
+
+    public static boolean removeFile(File file) {
+        if (file != null && file.exists() && file.isFile()) {
 
             return file.delete();
         }
         return false;
-
     }
 
     /**
