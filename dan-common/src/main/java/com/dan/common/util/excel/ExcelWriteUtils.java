@@ -161,12 +161,17 @@ public class ExcelWriteUtils {
     /**
      * 设置头部大小
      */
-    private Integer[] writeTitleSize;
+    private Integer[] defaultWriteTitleSize;
 
     /**
      * 设置导出标题
      */
     private String defaultWriteTitle;
+
+    /**
+     * 是否导出表头
+     */
+    private boolean defaultTitleHeaderFlag = true;
 
     //导入(读取)-import
 
@@ -219,6 +224,12 @@ public class ExcelWriteUtils {
 
     //导出方法
 
+    /**
+     * 设置是否导出表头
+     */
+    public void setDefaultTitleHeaderFlag(boolean defaultTitleHeaderFlag) {
+        this.defaultTitleHeaderFlag = defaultTitleHeaderFlag;
+    }
 
     /**
      * 创建一个样式
@@ -243,8 +254,8 @@ public class ExcelWriteUtils {
         this.defaultWriteTitle = defaultWriteTitle;
     }
 
-    public void setWriteTitleSize(Integer[] writeTitleSize) {
-        this.writeTitleSize = writeTitleSize;
+    public void setDefaultWriteTitleSize(Integer[] defaultWriteTitleSize) {
+        this.defaultWriteTitleSize = defaultWriteTitleSize;
     }
 
     public void setDefaultWriteTitleColumnAndNameMap(Map<String, String> defaultWriteTitleColumnAndNameMap) {
@@ -600,18 +611,18 @@ public class ExcelWriteUtils {
             cell.setCellStyle(cellStyle);
             rowNum++;
         }
-
-        //写入excel的表头
-        Row titleNameRow = sheet.createRow(rowNum);
-        rowNum++;
-        int[] columnIndexWidth = {0};
-        Integer[] thisTitleSize = writeCriteria.getTitleSize() == null ? writeTitleSize : writeCriteria.getTitleSize();
-        if (thisTitleName != null && thisTitleName.length > 0) {
-            columnIndexWidth = setTitleHeader(sheet, titleNameRow, thisTitleName, thisTitleSize);
-        } else {
-            columnIndexWidth = setTitleHeader(sheet, titleNameRow, thisTitleColumn, thisTitleSize);
+        //是否导出表头
+        boolean thisTitleHeaderFlag = writeCriteria.isTitleHeaderFlag() == null ? defaultTitleHeaderFlag : writeCriteria.isTitleHeaderFlag();
+        if (thisTitleHeaderFlag) {
+            //写入excel的表头
+            Row titleNameRow = sheet.createRow(rowNum);
+            rowNum++;
+            if (thisTitleName != null && thisTitleName.length > 0) {
+                setTitleHeader(titleNameRow, thisTitleName);
+            } else {
+                setTitleHeader(titleNameRow, thisTitleColumn);
+            }
         }
-
         //为表头添加自动筛选
         if (StringUtils.isNotBlank(address)) {
             CellRangeAddress c = (CellRangeAddress) CellRangeAddress.valueOf(address);
@@ -623,13 +634,24 @@ public class ExcelWriteUtils {
         CellStyle floatCellStyle = null;
         //double 类型样式
         CellStyle doubleCellStyle = null;
+        //获取自定义宽度
+        Integer[] thisTitleSize = writeCriteria.getTitleSize() == null ? defaultWriteTitleSize : writeCriteria.getTitleSize();
+        //获取当前列总行数
+        int thisColumnSize = thisTitleName != null && thisTitleName.length > 0 ? thisTitleName.length : thisTitleColumn.length;
+        //自动获取每列宽度,当前自定义列宽度为null时,自动获取每列宽度
+        int[] columnIndexWidth = null;
+        if (thisTitleSize == null) {
+            columnIndexWidth = new int[thisColumnSize];
+        }
         //通过反射获取数据并写入到excel中
         List<?> dataList = writeCriteria.getDataList();
         if (dataList != null && dataList.size() > 0) {
             if (thisTitleColumn.length > 0) {
                 for (int rowIndex = 0; rowIndex < dataList.size(); rowIndex++) {
-                    Object obj = dataList.get(rowIndex);     //获得该对象
-                    Class<?> ownerClass = obj.getClass();     //获得该对对象的class实例
+                    //获得该对象
+                    Object obj = dataList.get(rowIndex);
+                    //获得该对对象的class实例
+                    Class<?> ownerClass = obj.getClass();
                     Row dataRow = writeWorkbook.getSheet(writeCriteria.getSheetName()).createRow((rowIndex + rowNum));
                     for (int columnIndex = 0; columnIndex < thisTitleColumn.length; columnIndex++) {
                         String thisTableHeadName = thisTitleColumn[columnIndex].trim();
@@ -724,9 +746,11 @@ public class ExcelWriteUtils {
                                 } else {
                                     cell.setCellValue(String.valueOf(data));
                                 }
-                                int length = StringUtil.calculatePlaces(String.valueOf(data), 1.9, 1.3);
-                                if (columnIndexWidth[columnIndex] < length) {
-                                    columnIndexWidth[columnIndex] = length;
+                                if (thisTitleSize == null) {
+                                    int length = StringUtil.calculatePlaces(String.valueOf(data), 1.9, 1.3);
+                                    if (columnIndexWidth[columnIndex] < length) {
+                                        columnIndexWidth[columnIndex] = length;
+                                    }
                                 }
                             }
                         } else {   //字段为空 检查该列是否是公式
@@ -742,8 +766,8 @@ public class ExcelWriteUtils {
             }
         }
         //设置自动宽度
-        if (writeCriteria.getTitleSize() == null) {
-            for (int i = 0; i < columnIndexWidth.length; i++) {
+        for (int i = 0; i < thisColumnSize; i++) {
+            if (thisTitleSize == null) {
                 //如果当前宽度小于了，最小单元格宽度,设置默认最小值宽度
                 int thisWidth = columnIndexWidth[i] < rowMinStandardWidth ? rowMinStandardWidth : columnIndexWidth[i];
                 if (thisWidth > 0) {
@@ -756,9 +780,15 @@ public class ExcelWriteUtils {
                     maxWidth = maxWidth > rowWidthMax ? rowWidthMax : maxWidth;
                     sheet.setColumnWidth(i, maxWidth);
                 }
+            } else {
+                //保证自定义的长度下标和列总行数下标对应
+                if (thisTitleSize.length > 0 && i < thisTitleSize.length) {
+                    int thisWidth = thisTitleSize[i] == null ? rowMinStandardWidth : thisTitleSize[i];
+                    //设置宽度
+                    sheet.setColumnWidth(i, thisWidth * rowStandardWidth);
+                }
             }
         }
-
     }
 
     //导出重载方法
@@ -834,14 +864,11 @@ public class ExcelWriteUtils {
     /**
      * 设置导出标题
      *
-     * @param sheet           页
-     * @param titleNameRow    标题行数
-     * @param titleHeader     标题
-     * @param titleHeaderSize 大小->null就根据获取的字符长度计算
+     * @param titleNameRow 标题行数
+     * @param titleHeader  标题
      * @return 每一列宽度
      */
-    private int[] setTitleHeader(Sheet sheet, Row titleNameRow, String[] titleHeader, Integer[] titleHeaderSize) {
-        int[] columnIndexWidth = new int[titleHeader.length];
+    private void setTitleHeader(Row titleNameRow, String[] titleHeader) {
         //设置样式
         HSSFCellStyle titleStyle = getCellStyleNew();
         titleStyle = (HSSFCellStyle) setFontAndBorder(titleStyle, titleFontType, titleFontSize);
@@ -851,24 +878,10 @@ public class ExcelWriteUtils {
             titleStyle = (HSSFCellStyle) setColor(titleStyle, titleBackColor, (short) 10);
         }
         for (int i = 0; i < titleHeader.length; i++) {
-            if (titleHeaderSize != null && titleHeaderSize.length > 0) {
-                if (i < titleHeaderSize.length) {
-                    int length = titleHeaderSize[i] * rowStandardWidth;
-                    //设置宽度
-                    sheet.setColumnWidth(i, length);
-                    columnIndexWidth[i] = length;
-                }
-            } else {
-                //中文一个相当于2个,其他相当于1.3
-                int length = StringUtil.calculatePlaces(titleHeader[i], 2.0, 1.3);
-                sheet.setColumnWidth(i, (length * rowStandardWidth));
-                columnIndexWidth[i] = length;
-            }
             Cell cell = titleNameRow.createCell(i);
             cell.setCellStyle(titleStyle);
             cell.setCellValue(titleHeader[i]);
         }
-        return columnIndexWidth;
     }
 
     //导入私有方法
@@ -1251,6 +1264,19 @@ public class ExcelWriteUtils {
          * 当前页名称
          */
         private String sheetName;
+
+        /**
+         * 设置是否导出表头
+         */
+        private Boolean titleHeaderFlag;
+
+        public Boolean isTitleHeaderFlag() {
+            return titleHeaderFlag;
+        }
+
+        public void setTitleHeaderFlag(Boolean titleHeaderFlag) {
+            this.titleHeaderFlag = titleHeaderFlag;
+        }
 
         public String getSheetName() {
             return sheetName;
