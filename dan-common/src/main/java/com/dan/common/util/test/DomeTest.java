@@ -7,6 +7,7 @@ import com.dan.utils.JsonUtil;
 import com.dan.utils.file.FileUtil;
 import com.dan.utils.network.HttpUtils;
 import com.dan.utils.xt.MapperUtil;
+import com.dan.utils.xt.PinYinUtil;
 import org.joda.time.DateTime;
 import org.junit.Test;
 
@@ -25,6 +26,13 @@ import java.util.*;
  * @description:
  */
 public class DomeTest {
+
+    @Test
+    public void testPinYin() {
+        PinYinUtil pinYinUtil = new PinYinUtil();
+        String str = pinYinUtil.getPinYinFirstChar("啦啦啦", "#");
+        System.out.println("str:" + str);
+    }
 
     @Test
     public void test01() {
@@ -126,8 +134,8 @@ public class DomeTest {
             userInfo.setPhone("电话:123655" + i);
             userInfo.setQq("qq=" + i);
             userInfo.setBirthDay(new Date());
-            userInfo.setTestBigDecimal(BigDecimal.valueOf(777.77707));
-            userInfo.setTestDouble(6666.66);
+            userInfo.setTestBigDecimal(BigDecimal.valueOf(77777.77707));
+            userInfo.setTestDouble(66666.66);
             userInfo.setTestFloat(55.55505F);
             userInfo.setTestLong(1000L);
             userInfoList.add(userInfo);
@@ -280,6 +288,14 @@ public class DomeTest {
         excelWriteUtils.setTitleBackColor(null);
         //设置全部sheet都没有表头
         excelWriteUtils.setDefaultTitleHeaderFlag(false);
+        //Double/Float 保留两位格式化:true 格式化,false:不格式(默认true),注：为true时DecimalStyle不会生效
+        excelWriteUtils.setDecimalFormatFlag(false);
+
+        //格式化值为指定类型显示,值类型不改变(默认：false),  注：为true时生效,但DecimalFormatFlag必须为false
+        excelWriteUtils.setDecimalStyleFlag(true);
+        //设置double类型格式化为金额格式(默认：格式化成两位小数)
+        excelWriteUtils.setDoubleDecimal("#,##0.00");
+        excelWriteUtils.setBigDecimalDecimal("#,##0.00");
         List<UserInfo> userInfoList = null;
         for (int i = 0; i < 3; i++) {
             ExcelWriteUtils.WriteCriteria criteria = excelWriteUtils.createWriteCriteria();
@@ -293,8 +309,8 @@ public class DomeTest {
                 userInfo.setPhone("电话:123655" + i + ":" + j);
                 userInfo.setQq("qq=" + i + ":" + j);
                 userInfo.setBirthDay(new Date());
-                userInfo.setTestBigDecimal(BigDecimal.valueOf(777.77707));
-                userInfo.setTestDouble(6666.66);
+                userInfo.setTestBigDecimal(BigDecimal.valueOf(777777.77707));
+                userInfo.setTestDouble(6666666.66);
                 userInfo.setTestFloat(55.55505F);
                 userInfo.setTestLong(1000L);
                 userInfoList.add(userInfo);
@@ -303,11 +319,11 @@ public class DomeTest {
             if (i == 0) {
                 criteria.setTitleWrite("第一页表头");
                 criteria.setWriteTitleColumnAndNameMap(linkedHashMap1);
+                //设置当前有表头
+                criteria.setTitleHeaderFlag(true);
             } else if (i == 1) {
                 criteria.setTitleWrite("第二页表头");
                 criteria.setWriteTitleColumnAndNameMap(linkedHashMap2);
-                //设置当前有表头
-                criteria.setTitleHeaderFlag(true);
             } else {
                 criteria.setWriteTitleColumnAndNameMap(linkedHashMap3);
                 //自定义每页的宽度

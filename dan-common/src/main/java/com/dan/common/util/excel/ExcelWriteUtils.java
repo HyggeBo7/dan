@@ -611,6 +611,15 @@ public class ExcelWriteUtils {
             cell.setCellStyle(cellStyle);
             rowNum++;
         }
+        //获取自定义宽度
+        Integer[] thisTitleSize = writeCriteria.getTitleSize() == null ? defaultWriteTitleSize : writeCriteria.getTitleSize();
+        //获取当前列总行数
+        int thisColumnSize = thisTitleName != null && thisTitleName.length > 0 ? thisTitleName.length : thisTitleColumn.length;
+        //自动获取每列宽度,当前自定义列宽度为null时,自动获取每列宽度
+        int[] columnIndexWidth = null;
+        if (thisTitleSize == null) {
+            columnIndexWidth = new int[thisColumnSize];
+        }
         //是否导出表头
         boolean thisTitleHeaderFlag = writeCriteria.isTitleHeaderFlag() == null ? defaultTitleHeaderFlag : writeCriteria.isTitleHeaderFlag();
         if (thisTitleHeaderFlag) {
@@ -618,9 +627,9 @@ public class ExcelWriteUtils {
             Row titleNameRow = sheet.createRow(rowNum);
             rowNum++;
             if (thisTitleName != null && thisTitleName.length > 0) {
-                setTitleHeader(titleNameRow, thisTitleName);
+                setTitleHeader(titleNameRow, thisTitleName, columnIndexWidth);
             } else {
-                setTitleHeader(titleNameRow, thisTitleColumn);
+                setTitleHeader(titleNameRow, thisTitleColumn, columnIndexWidth);
             }
         }
         //为表头添加自动筛选
@@ -634,15 +643,6 @@ public class ExcelWriteUtils {
         CellStyle floatCellStyle = null;
         //double 类型样式
         CellStyle doubleCellStyle = null;
-        //获取自定义宽度
-        Integer[] thisTitleSize = writeCriteria.getTitleSize() == null ? defaultWriteTitleSize : writeCriteria.getTitleSize();
-        //获取当前列总行数
-        int thisColumnSize = thisTitleName != null && thisTitleName.length > 0 ? thisTitleName.length : thisTitleColumn.length;
-        //自动获取每列宽度,当前自定义列宽度为null时,自动获取每列宽度
-        int[] columnIndexWidth = null;
-        if (thisTitleSize == null) {
-            columnIndexWidth = new int[thisColumnSize];
-        }
         //通过反射获取数据并写入到excel中
         List<?> dataList = writeCriteria.getDataList();
         if (dataList != null && dataList.size() > 0) {
@@ -690,7 +690,7 @@ public class ExcelWriteUtils {
                                     // 此处设置数据格式
                                     if (decimalStyleFlag && floatDecimal != null) {
                                         if (floatCellStyle == null) {
-                                            floatCellStyle = getCellStyleNew(cell.getCellStyle(), floatDecimal);
+                                            floatCellStyle = getCellStyleNew(floatDecimal);
                                         }
                                         // 设置单元格格式
                                         cell.setCellStyle(floatCellStyle);
@@ -707,7 +707,8 @@ public class ExcelWriteUtils {
                                         // 此处设置数据格式
                                         if (decimalStyleFlag && bigDecimalDecimal != null) {
                                             if (bigDecimalCellStyle == null) {
-                                                bigDecimalCellStyle = getCellStyleNew(cell.getCellStyle(), bigDecimalDecimal);
+                                                //cell.getCellStyle(),
+                                                bigDecimalCellStyle = getCellStyleNew(bigDecimalDecimal);
                                             }
                                             // 设置单元格格式
                                             cell.setCellStyle(bigDecimalCellStyle);
@@ -719,7 +720,7 @@ public class ExcelWriteUtils {
                                         // 此处设置数据格式
                                         if (decimalStyleFlag && doubleDecimal != null) {
                                             if (doubleCellStyle == null) {
-                                                doubleCellStyle = getCellStyleNew(cell.getCellStyle(), doubleDecimal);
+                                                doubleCellStyle = getCellStyleNew(doubleDecimal);
                                             }
                                             // 设置单元格格式
                                             cell.setCellStyle(doubleCellStyle);
@@ -746,7 +747,7 @@ public class ExcelWriteUtils {
                                 } else {
                                     cell.setCellValue(String.valueOf(data));
                                 }
-                                if (thisTitleSize == null) {
+                                if (columnIndexWidth != null) {
                                     int length = StringUtil.calculatePlaces(String.valueOf(data), 1.9, 1.3);
                                     if (columnIndexWidth[columnIndex] < length) {
                                         columnIndexWidth[columnIndex] = length;
@@ -868,7 +869,7 @@ public class ExcelWriteUtils {
      * @param titleHeader  标题
      * @return 每一列宽度
      */
-    private void setTitleHeader(Row titleNameRow, String[] titleHeader) {
+    private void setTitleHeader(Row titleNameRow, String[] titleHeader, int[] columnIndexWidth) {
         //设置样式
         HSSFCellStyle titleStyle = getCellStyleNew();
         titleStyle = (HSSFCellStyle) setFontAndBorder(titleStyle, titleFontType, titleFontSize);
@@ -878,6 +879,12 @@ public class ExcelWriteUtils {
             titleStyle = (HSSFCellStyle) setColor(titleStyle, titleBackColor, (short) 10);
         }
         for (int i = 0; i < titleHeader.length; i++) {
+            //如果columnIndexWidth不为null,说明没有自定义宽度
+            if (columnIndexWidth != null) {
+                //中文一个相当于2个,其他相当于1.3
+                int length = StringUtil.calculatePlaces(titleHeader[i], 2.0, 1.3);
+                columnIndexWidth[i] = length;
+            }
             Cell cell = titleNameRow.createCell(i);
             cell.setCellStyle(titleStyle);
             cell.setCellValue(titleHeader[i]);
