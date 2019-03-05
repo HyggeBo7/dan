@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @fileName: Test
@@ -377,6 +378,26 @@ public class DomeTest {
         for (String s : stringList) {
             System.out.println("s->" + s);
             clearLog(s, autoClearDay);
+        }
+    }
+
+    @Test
+    public void testList() {
+        List<UserInfo> listA = new ArrayList<>();
+        for (int i = 1; i <= 5; i++) {
+            listA.add(new UserInfo("account:" + i, "password:" + i));
+        }
+        List<UserInfo> listB = new ArrayList<>();
+        for (int i = 4; i <= 10; i++) {
+            listB.add(new UserInfo("account:" + i, "password:" + i));
+        }
+        for (int i = 4; i <= 10; i++) {
+            listB.add(new UserInfo("account:" + i, "password:" + i));
+        }
+        for (UserInfo material : listA) {
+            List<UserInfo> thisList = listB.stream().filter(d -> d.getAccount().equals(material.getAccount())).collect(Collectors.toList());
+            //如果有数据
+            System.out.println("thisList:" + JsonUtil.toJson(thisList));
         }
     }
 

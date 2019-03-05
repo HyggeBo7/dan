@@ -1,6 +1,7 @@
 package com.dan.common.util.test;
 
-import java.io.Serializable;
+import com.dan.utils.entity.BaseEntity;
+
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
@@ -11,8 +12,9 @@ import java.util.List;
  * @createDate: 2018-12-20 10:09.
  * @description:
  */
-public class UserInfo implements Serializable {
+public class UserInfo extends BaseEntity {
     private static final long serialVersionUID = -89185136234268487L;
+    private Integer id;
     private String account;
     private String password;
     private String name;
@@ -54,6 +56,14 @@ public class UserInfo implements Serializable {
 
     public List<UserInfo> getUserInfoList() {
         return userInfoList;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public void setUserInfoList(List<UserInfo> userInfoList) {
