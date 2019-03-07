@@ -6,6 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.*;
 
@@ -62,7 +63,7 @@ public class JsonUtil {
     /**
      * 转成Object int to double 问题
      *
-     * @return List<TreeMap < String ,   Object>>
+     * @return List<TreeMap<String,Object>>
      */
     public static List<TreeMap<String, Object>> jsonToMapList(String json) {
         Gson gson = new GsonBuilder()
@@ -139,12 +140,27 @@ public class JsonUtil {
         return hashMap;
     }
 
+    /**
+     * 字符串转对象
+     *
+     * @param json      字符串
+     * @param clazzType 转换的对象:Pagination.class <T>
+     * @param clazz     泛型类型: User.cass
+     * @param <T>       Pagination<User>
+     * @return Pagination<User>
+     */
+    public static <T> T fromGenericJson(String json, Class clazzType, Class clazz) {
+        Type objectType = type(clazzType, clazz);
+        return gson.fromJson(json, objectType);
+    }
+
     class IntegerDefault0Adapter implements JsonSerializer<Integer>, JsonDeserializer<Integer> {
         @Override
         public Integer deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
                 throws JsonParseException {
             try {
-                if (json.getAsString().equals("") || json.getAsString().equals("null")) {//定义为int类型,如果后台返回""或者null,则返回0
+                //定义为int类型,如果后台返回""或者null,则返回0
+                if (json.getAsString().equals("") || json.getAsString().equals("null")) {
                     return null;
                 }
             } catch (Exception ignore) {
@@ -160,6 +176,25 @@ public class JsonUtil {
         public JsonElement serialize(Integer src, Type typeOfSrc, JsonSerializationContext context) {
             return new JsonPrimitive(src);
         }
+    }
+
+    static ParameterizedType type(final Class raw, final Type... args) {
+        return new ParameterizedType() {
+            @Override
+            public Type getRawType() {
+                return raw;
+            }
+
+            @Override
+            public Type[] getActualTypeArguments() {
+                return args;
+            }
+
+            @Override
+            public Type getOwnerType() {
+                return null;
+            }
+        };
     }
 
 }

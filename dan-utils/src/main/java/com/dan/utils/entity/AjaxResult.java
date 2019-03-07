@@ -1,4 +1,4 @@
-package com.dan.web.common.web;
+package com.dan.utils.entity;
 
 import com.dan.utils.JsonUtil;
 

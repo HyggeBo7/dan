@@ -4,7 +4,7 @@
     <parent>
         <artifactId>dan</artifactId>
         <groupId>com.dan</groupId>
-        <version>1.0.7.02</version>
+        <version>1.0.7.03</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>

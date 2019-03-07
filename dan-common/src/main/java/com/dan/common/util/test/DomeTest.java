@@ -4,9 +4,11 @@ import com.alibaba.fastjson.JSONObject;
 import com.dan.common.util.excel.ExcelWriteUtils;
 import com.dan.utils.DateUtil;
 import com.dan.utils.JsonUtil;
+import com.dan.utils.entity.AjaxResult;
 import com.dan.utils.file.FileUtil;
 import com.dan.utils.network.HttpUtils;
 import com.dan.utils.xt.MapperUtil;
+import com.dan.utils.xt.Pagination;
 import com.dan.utils.xt.PinYinUtil;
 import org.joda.time.DateTime;
 import org.junit.Test;
@@ -46,6 +48,18 @@ public class DomeTest {
                 System.out.println(o);
             }
         }
+    }
+
+    @Test
+    public void testHttpListUser() {
+        String url = "http://119.37.194.4:5555/xtp-api/user/listUserByRoleId?roleId=12&oauth=whosyourdaddy";
+        HttpUtils.ResultResponse resultResponse = HttpUtils.createRequest().doGet(url);
+        String data = resultResponse.getData();
+        //System.out.println("value:" + data);
+        AjaxResult ajaxResult = JsonUtil.fromJson(data, AjaxResult.class);
+        Pagination<UserInfo> pagination = JsonUtil.fromGenericJson(JsonUtil.toJson(ajaxResult.getData()), Pagination.class, UserInfo.class);
+        List<UserInfo> userInfoList = pagination.getData();
+        System.out.println("userInfoList:" + userInfoList);
     }
 
     @Test

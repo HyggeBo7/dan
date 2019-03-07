@@ -2,9 +2,9 @@ package com.dan.web.common.springmvc;
 
 import cn.xtits.xtf.common.exception.XTException;
 import cn.xtits.xtf.web.springmvc.JsonCommonRender;
+import com.dan.utils.entity.AjaxResult;
 import com.dan.utils.exception.AppException;
 import com.dan.web.common.exception.AppWebException;
-import com.dan.web.common.web.AjaxResult;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
