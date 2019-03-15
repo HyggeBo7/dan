@@ -77,6 +77,35 @@ public class DomeTest {
     }
 
     @Test
+    public void testListToInteger() {
+        //list实体类,取出xx属性,转成一个List集合
+        List<UserInfo> userInfoList = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            UserInfo userInfo = new UserInfo();
+            userInfo.setId(i);
+            userInfo.setAccount("account-" + i);
+            userInfo.setPassword("password" + i);
+            userInfo.setName("名称名称名称名称名称名称名称" + i);
+            userInfoList.add(userInfo);
+        }
+        for (int i = 0; i < 10; i++) {
+            UserInfo userInfo = new UserInfo();
+            userInfo.setId(i);
+            userInfo.setAccount("account-" + i);
+            userInfo.setPassword("password" + i);
+            userInfo.setName("名称名称名称名称名称名称名称" + i);
+            userInfoList.add(userInfo);
+        }
+        UserInfo userInfo = new UserInfo();
+        userInfo.setId(null);
+        userInfoList.add(userInfo);
+        //取出所有id,并且不为null,去除重复【distinct】
+        List<Integer> userIdList = userInfoList.stream().map(UserInfo::getId).filter(Objects::nonNull).distinct().collect(Collectors.toList());
+
+        System.out.println("userIdList:" + userIdList);
+    }
+
+    @Test
     public void testJsons() {
         String str1 = "{\"name\":\"张三\",\"id\":\"aaaQQQ123\"}";
         String str2 = "{\"name\":\"是好人\",\"id\":\"hahaha\",\"age\":20}";
@@ -364,6 +393,62 @@ public class DomeTest {
         System.out.println("success");
 
 
+    }
+
+    /**
+     * 导出多个标题
+     */
+    @Test
+    public void testWriteSheetsTitles() throws IOException {
+        ExcelWriteUtils excelWriteUtils = ExcelWriteUtils.createWriteExcel();
+        //设置内容样式-默认false
+        excelWriteUtils.setDefaultColumnStyleFlag(true);
+        //标题颜色
+        excelWriteUtils.setTitleBackColor(null);
+        excelWriteUtils.setDefaultWriteTitle("标题");
+        excelWriteUtils.setDefaultWriteTitleList(Arrays.asList("标题1", "标题2", "标题3"));
+        List<Map<String, Object>> headerList = new ArrayList<>();
+        Map<String, Object> map1 = new LinkedHashMap<>();
+        map1.put("供应商名称：", "宁波绚彩照明有限公司");
+        Map<String, Object> map2 = new LinkedHashMap<>();
+        map2.put("日期段：", "2018-11-01~2019-03-15");
+        map2.put("制表日期：", "2019-03-15");
+        headerList.add(map1);
+        headerList.add(map2);
+        excelWriteUtils.setDefaultCustomHeaderList(headerList);
+        List<UserInfo> userInfoList = new ArrayList<>();
+        for (int i = 0; i < 50; i++) {
+            UserInfo userInfo = new UserInfo();
+            userInfo.setAccount("account-" + i + ":" + i);
+            userInfo.setPassword("password" + i + ":" + i);
+            userInfo.setName("名称名称名称名称名称名称名称" + i + ":" + i);
+            userInfo.setMail("邮箱邮箱邮箱邮箱邮箱邮箱邮箱邮箱邮箱邮箱邮箱邮箱邮箱邮箱邮箱sssss得得得得得得得得得得得得得得得得得得得得得得得得" + i + ":" + i);
+            userInfo.setPhone("电话:123655" + i + ":" + i);
+            userInfo.setQq("qq=" + i + ":" + i);
+            userInfo.setBirthDay(new Date());
+            userInfo.setTestBigDecimal(BigDecimal.valueOf(777.77707));
+            userInfo.setTestDouble(6666.66);
+            userInfo.setTestFloat(55.55505F);
+            userInfo.setTestLong(1000L);
+            userInfoList.add(userInfo);
+        }
+        //输出到本地文件url
+        String excelFileUrl = FileUtil.createMkdirMulti("P:/", true, "file/excel/");
+        excelFileUrl = excelFileUrl + DateTime.now().toString("yyyy-MM-dd_") + UUID.randomUUID() + ".xls";
+
+        Map<String, String> linkedHashMap = new LinkedHashMap<>();
+        linkedHashMap.put("account", "账号");
+        linkedHashMap.put("password", "密码");
+        linkedHashMap.put("name", "昵称");
+        linkedHashMap.put("mail", "邮箱");
+        linkedHashMap.put("qq", "QQ");
+        linkedHashMap.put("phone", "电话");
+        linkedHashMap.put("testBigDecimal", "BigDecimal");
+        linkedHashMap.put("testDouble", "Double");
+        linkedHashMap.put("testFloat", "Float");
+        linkedHashMap.put("testLong", "Long");
+        excelWriteUtils.writeExcelFileUrl("sheet1", linkedHashMap, userInfoList, excelFileUrl);
+        System.out.println("success");
     }
 
     @Test

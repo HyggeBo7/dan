@@ -94,6 +94,11 @@ public class ExcelWriteUtils {
     private short contentFontSize = 12;
 
     /**
+     * 自定义文字内容颜色
+     */
+    private String customHeaderFontColor = "606266";
+
+    /**
      * 自定义默认正文样式
      */
     private boolean defaultColumnStyleFlag = false;
@@ -167,6 +172,17 @@ public class ExcelWriteUtils {
      * 设置导出标题
      */
     private String defaultWriteTitle;
+    private List<String> defaultWriteTitleList;
+
+    /**
+     * 多级标题样式
+     */
+    private CellStyle cellStyleTitleWrit;
+
+    /**
+     * 自定义头部内容
+     */
+    private List<Map<String, Object>> defaultCustomHeaderListMap;
 
     /**
      * 是否导出表头
@@ -254,6 +270,10 @@ public class ExcelWriteUtils {
         this.defaultWriteTitle = defaultWriteTitle;
     }
 
+    public void setDefaultWriteTitleList(List<String> defaultWriteTitleList) {
+        this.defaultWriteTitleList = defaultWriteTitleList;
+    }
+
     public void setDefaultWriteTitleSize(Integer[] defaultWriteTitleSize) {
         this.defaultWriteTitleSize = defaultWriteTitleSize;
     }
@@ -320,6 +340,10 @@ public class ExcelWriteUtils {
 
     public void setTitleBackColor(String titleBackColor) {
         this.titleBackColor = titleBackColor;
+    }
+
+    public void setDefaultCustomHeaderList(List<Map<String, Object>> defaultCustomHeaderListMap) {
+        this.defaultCustomHeaderListMap = defaultCustomHeaderListMap;
     }
 
     /**
@@ -600,16 +624,35 @@ public class ExcelWriteUtils {
         String thisTitleWrite = StringUtils.isNotBlank(writeCriteria.getTitleWrite()) ? writeCriteria.getTitleWrite() : defaultWriteTitle;
         if (StringUtils.isNotBlank(thisTitleWrite)) {
             Row row = sheet.createRow(rowNum);
-            // 合并行列,四个参数分别是：起始行，起始列，结束行，结束列
             int thisTitleRowSize = titleRowSize == -1 ? thisTitleColumn.length - 1 : titleRowSize - 1;
-            sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, thisTitleRowSize));
-            Cell cell = row.createCell(0);
-            cell.setCellValue(thisTitleWrite);
-            CellStyle cellStyle = setFontAndBorder(getCellStyleNew(), titleFontType, titleSize, true, true);
-            //居中显示
-            cellStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);
-            cell.setCellStyle(cellStyle);
+            // 合并行列,四个参数分别是：起始行，结束行，起始列，结束列
+            sheet.addMergedRegion(new CellRangeAddress(rowNum, rowNum, 0, thisTitleRowSize));
+            setTitleWritExcelValue(row, thisTitleWrite, 0);
             rowNum++;
+        }
+        //设置多级标题
+        if (writeCriteria.getTitleWriteList() != null && writeCriteria.getTitleWriteList().size() > 0) {
+            int thisTitleRowSize = titleRowSize == -1 ? thisTitleColumn.length - 1 : titleRowSize - 1;
+            for (String title : writeCriteria.getTitleWriteList()) {
+                Row row = sheet.createRow(rowNum);
+                sheet.addMergedRegion(new CellRangeAddress(rowNum, rowNum, 0, thisTitleRowSize));
+                setTitleWritExcelValue(row, title, 0);
+                rowNum++;
+            }
+        }
+        //设置自定义内容
+        if (writeCriteria.getCustomHeaderListMap() != null && writeCriteria.getCustomHeaderListMap().size() > 0) {
+            int cellIndex = 0;
+            for (Map<String, Object> headerMap : writeCriteria.getCustomHeaderListMap()) {
+                Row row = sheet.createRow(rowNum);
+                for (Map.Entry<String, Object> itemEntry : headerMap.entrySet()) {
+                    row.createCell(cellIndex).setCellValue(itemEntry.getKey());
+                    row.createCell(++cellIndex).setCellValue(itemEntry.getValue().toString());
+                    cellIndex++;
+                }
+                rowNum++;
+                cellIndex = 0;
+            }
         }
         //获取自定义宽度
         Integer[] thisTitleSize = writeCriteria.getTitleSize() == null ? defaultWriteTitleSize : writeCriteria.getTitleSize();
@@ -817,7 +860,7 @@ public class ExcelWriteUtils {
     }
 
     public void writeExcelFile(String sheetName, String[] titleColumn, List<?> dataList, File file) {
-        WriteCriteria writeCriteria = new WriteCriteria(sheetName, titleColumn, dataList, null, null);
+        WriteCriteria writeCriteria = initWriteCriteria(sheetName, null, titleColumn, dataList, null, null);
         writeExcel(writeCriteria, file);
     }
 
@@ -826,7 +869,7 @@ public class ExcelWriteUtils {
     }
 
     public void writeExcelFileUrl(String sheetName, Map<String, String> headMap, List<?> dataList, String filePath, Integer titleSize[]) {
-        WriteCriteria writeCriteria = new WriteCriteria(sheetName, headMap, dataList, titleSize, null);
+        WriteCriteria writeCriteria = initWriteCriteria(sheetName, headMap, null, dataList, titleSize, null);
         writeExcel(writeCriteria, filePath);
     }
 
@@ -851,17 +894,59 @@ public class ExcelWriteUtils {
     }
 
     public ByteArrayOutputStream writeExcel(String sheetName, String[] titleColumn, List<?> dataList, Integer[] titleSize) {
-        WriteCriteria writeCriteria = new WriteCriteria(sheetName, titleColumn, dataList, titleSize, null);
+        WriteCriteria writeCriteria = initWriteCriteria(sheetName, null, titleColumn, dataList, titleSize, null);
         return writeExcel(writeCriteria);
     }
 
     public ByteArrayOutputStream writeExcel(String sheetName, Map<String, String> headMap, List<?> dataList, Integer[] titleSize) {
-        WriteCriteria writeCriteria = new WriteCriteria(sheetName, headMap, dataList, titleSize, null);
+        WriteCriteria writeCriteria = initWriteCriteria(sheetName, headMap, null, dataList, titleSize, null);
         return writeExcel(writeCriteria);
+    }
+
+    /**
+     * 初始化配置
+     */
+    private WriteCriteria initWriteCriteria(String sheetName, Map<String, String> headMap, String[] titleColumn, List<?> dataList, Integer[] titleSize, String titleWrite) {
+        WriteCriteria writeCriteria = new WriteCriteria(sheetName, dataList);
+        if (titleColumn != null) {
+            writeCriteria.setTitleColumn(titleColumn);
+        }
+        if (headMap != null) {
+            writeCriteria.setWriteTitleColumnAndNameMap(headMap);
+        }
+        if (titleSize != null) {
+            writeCriteria.setTitleSize(titleSize);
+        }
+        if (StringUtils.isNotBlank(titleWrite)) {
+            writeCriteria.setTitleWrite(titleWrite);
+        }
+        //加入默认配置
+        //多级标题
+        if (defaultWriteTitleList != null && defaultWriteTitleList.size() > 0) {
+            writeCriteria.setTitleWriteList(defaultWriteTitleList);
+        }
+        //自定义当行内容
+        if (defaultCustomHeaderListMap != null && defaultCustomHeaderListMap.size() > 0) {
+            writeCriteria.setCustomHeaderListMap(defaultCustomHeaderListMap);
+        }
+        return writeCriteria;
     }
 
     //导出私有方法
 
+    /**
+     * 设置多级标题
+     */
+    private void setTitleWritExcelValue(Row row, String titleWrite, int columnIndex) {
+        Cell cell = row.createCell(columnIndex);
+        cell.setCellValue(titleWrite);
+        if (cellStyleTitleWrit == null) {
+            cellStyleTitleWrit = setFontAndBorder(getCellStyleNew(), titleFontType, titleSize, true, false);
+            //居中显示
+            cellStyleTitleWrit.setAlignment(HSSFCellStyle.ALIGN_CENTER);
+        }
+        cell.setCellStyle(cellStyleTitleWrit);
+    }
     /**
      * 设置导出标题
      *
@@ -1230,6 +1315,11 @@ public class ExcelWriteUtils {
             super();
         }
 
+        protected WriteCriteria(String sheetName, List<?> dataList) {
+            this.sheetName = sheetName;
+            this.dataList = dataList;
+        }
+
         protected WriteCriteria(String sheetName, String[] titleColumn, List<?> dataList, Integer[] titleSize, String titleWrite) {
             this.sheetName = sheetName;
             this.titleColumn = titleColumn;
@@ -1252,6 +1342,9 @@ public class ExcelWriteUtils {
          * 设置导出excel标题
          */
         private String titleWrite;
+        private List<String> titleWriteList;
+
+        private List<Map<String, Object>> customHeaderListMap;
 
         /**
          * 对应实体类属性列 name
@@ -1276,6 +1369,22 @@ public class ExcelWriteUtils {
          * 设置是否导出表头
          */
         private Boolean titleHeaderFlag;
+
+        public List<Map<String, Object>> getCustomHeaderListMap() {
+            return customHeaderListMap;
+        }
+
+        public void setCustomHeaderListMap(List<Map<String, Object>> customHeaderListMap) {
+            this.customHeaderListMap = customHeaderListMap;
+        }
+
+        public List<String> getTitleWriteList() {
+            return titleWriteList;
+        }
+
+        public void setTitleWriteList(List<String> titleWriteList) {
+            this.titleWriteList = titleWriteList;
+        }
 
         public Boolean isTitleHeaderFlag() {
             return titleHeaderFlag;
