@@ -2,46 +2,43 @@ package com.dan.utils.entity;
 
 import com.dan.utils.JsonUtil;
 
+import java.io.Serializable;
+
 /**
  * Created by Administrator on 2016/1/26.
  */
-public class AjaxResult extends BaseSerializable {
+public class AjaxResultGeneric<T> extends BaseSerializable {
 
     public static final Integer SUCCESS = 1;
     public static final Integer PARAM_ERROR = -1;
     public static final Integer SERVER_ERROR = -500;
+
     private Integer code;
     private String msg;
-    private Object data;
+    private T data;
     private Boolean sNulls = true;
 
-
-    public AjaxResult() {
+    public AjaxResultGeneric() {
         code = SUCCESS;
     }
 
-    public AjaxResult(Object data) {
+    public AjaxResultGeneric(T data) {
         code = SUCCESS;
-        if (null == data) {
-            data = "";
-        }
         this.data = data;
     }
 
-    public AjaxResult(Object data, boolean serializeNulls) {
+    public AjaxResultGeneric(T data, boolean serializeNulls) {
         code = SUCCESS;
         sNulls = serializeNulls;
-        if (null == data) {
-            data = "";
-        }
+
         this.data = data;
     }
 
-    public AjaxResult(Integer code) {
+    public AjaxResultGeneric(Integer code) {
         this.code = code;
     }
 
-    public AjaxResult(Integer code, String msg) {
+    public AjaxResultGeneric(Integer code, String msg) {
         this.code = code;
         if (null == msg) {
             msg = "";
@@ -49,10 +46,7 @@ public class AjaxResult extends BaseSerializable {
         this.msg = msg;
     }
 
-    public AjaxResult(Integer code, String msg, Object data) {
-        if (null == data) {
-            data = "";
-        }
+    public AjaxResultGeneric(Integer code, String msg, T data) {
         if (null == msg) {
             msg = "";
         }
@@ -63,7 +57,7 @@ public class AjaxResult extends BaseSerializable {
 
     @Override
     public String toString() {
-        return "AjaxResult{" +
+        return "AjaxResultT{" +
                 "code=" + code +
                 ", msg='" + msg + '\'' +
                 ", data=" + data +
@@ -95,11 +89,11 @@ public class AjaxResult extends BaseSerializable {
         this.msg = msg;
     }
 
-    public Object getData() {
+    public T getData() {
         return data;
     }
 
-    public void setData(Object data) {
+    public void setData(T data) {
         this.data = data;
     }
 
