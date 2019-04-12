@@ -1,4 +1,4 @@
-package com.dan.web.common.springmvc;
+package com.dan.web.common.springmvc.interceptor;
 
 import cn.xtits.xtf.web.springmvc.RequestContext;
 import org.springframework.web.servlet.ModelAndView;

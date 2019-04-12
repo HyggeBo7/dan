@@ -7,7 +7,7 @@
     <groupId>com.dan</groupId>
     <artifactId>dan</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.7.04</version>
+    <version>1.0.7.05</version>
     <name>dan</name>
     <description>Demo project for Util</description>
 
@@ -19,7 +19,7 @@
     </modules>
 
     <properties>
-        <dan.version>1.0.7.04</dan.version>
+        <dan.version>1.0.7.05</dan.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.encoding>UTF-8</project.encoding>
         <file.encoding>UTF-8</file.encoding>
