@@ -701,8 +701,8 @@ public class ExcelWriteUtils {
                         //字段不为空
                         if (StringUtils.isNotBlank(thisTableHeadName)) {
                             //使首字母大写
-                            String UTitle = Character.toUpperCase(thisTableHeadName.charAt(0)) + thisTableHeadName.substring(1, thisTableHeadName.length());
-                            String methodName = "get" + UTitle;
+                            //String UTitle = Character.toUpperCase(thisTableHeadName.charAt(0)) + thisTableHeadName.substring(1, thisTableHeadName.length());
+                            String methodName = "get" + StringUtil.firstToUpperCase(thisTableHeadName);
 
                             // 设置要执行的方法
                             Object data = null;
@@ -947,6 +947,7 @@ public class ExcelWriteUtils {
         }
         cell.setCellStyle(cellStyleTitleWrit);
     }
+
     /**
      * 设置导出标题
      *

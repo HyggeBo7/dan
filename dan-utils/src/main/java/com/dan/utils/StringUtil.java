@@ -261,7 +261,27 @@ public class StringUtil {
      * @return 字母：true
      */
     public static boolean isLetter(char zm) {
-        return (zm >= 0x0041 && zm <= 0x005A) || (zm >= 0x0061 && zm <= 0x007A);
+        return isUpperCaseLetter(zm) || isLowerCaseLetter(zm);
+    }
+
+    /**
+     * 判断是否大写字母 65
+     *
+     * @param zm 字母
+     * @return 是：true
+     */
+    public static boolean isUpperCaseLetter(char zm) {
+        return zm >= 0x0041 && zm <= 0x005A;
+    }
+
+    /**
+     * 判断是否小写字母 97
+     *
+     * @param zm 字母
+     * @return 是：true
+     */
+    public static boolean isLowerCaseLetter(char zm) {
+        return zm >= 0x0061 && zm <= 0x007A;
     }
 
     /**
@@ -282,6 +302,42 @@ public class StringUtil {
      */
     public static boolean isChinese(char hz) {
         return (hz >= 0x4E00 && hz <= 0x9FA5);
+    }
+
+    /**
+     * 首字母转小写
+     *
+     * @param str 字符串
+     * @return 转换后
+     */
+    public static String firstToLowerCase(String str) {
+        if (StringUtils.isNotBlank(str)) {
+            char[] chars = str.toCharArray();
+            //如果是大写字母
+            if (isUpperCaseLetter(chars[0])) {
+                chars[0] += 32;
+                return String.valueOf(chars);
+            }
+        }
+        return str;
+    }
+
+    /**
+     * 首字母转大写
+     *
+     * @param str 字符串
+     * @return 转换后
+     */
+    public static String firstToUpperCase(String str) {
+        if (StringUtils.isNotBlank(str)) {
+            char[] chars = str.toCharArray();
+            //如果是小写字母
+            if (isLowerCaseLetter(chars[0])) {
+                chars[0] -= 32;
+                return String.valueOf(chars);
+            }
+        }
+        return str;
     }
 
    /* public static void main(String[] args) {
