@@ -254,6 +254,35 @@ public class StringUtil {
         return m.intValue();
     }
 
+    /**
+     * 判断是否字母
+     *
+     * @param zm 字符
+     * @return 字母：true
+     */
+    public static boolean isLetter(char zm) {
+        return (zm >= 0x0041 && zm <= 0x005A) || (zm >= 0x0061 && zm <= 0x007A);
+    }
+
+    /**
+     * 判断是否数字
+     *
+     * @param sz 字符
+     * @return 数字：true
+     */
+    public static boolean isNumeral(char sz) {
+        return (sz >= 0x0030 && sz <= 0x0039);
+    }
+
+    /**
+     * 判断是否汉字
+     *
+     * @param hz 字符
+     * @return 汉字：true
+     */
+    public static boolean isChinese(char hz) {
+        return (hz >= 0x4E00 && hz <= 0x9FA5);
+    }
 
    /* public static void main(String[] args) {
         String s = "safsghgj\n\n\n\n\n\tfdhfghdfg\tdsfgsdfgs\t";
