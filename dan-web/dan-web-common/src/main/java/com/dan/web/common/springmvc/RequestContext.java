@@ -1,6 +1,6 @@
 package com.dan.web.common.springmvc;
 
-import com.dan.utils.RandomUtils;
+import com.dan.utils.lang.RandomUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;

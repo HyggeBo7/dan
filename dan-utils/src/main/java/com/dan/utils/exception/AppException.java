@@ -36,6 +36,12 @@ public class AppException extends RuntimeException implements Serializable {
         this.t = t;
     }
 
+    public AppException(String msg, Throwable t) {
+        super(msg, t);
+        this.code = COMMON_ERROR;
+        this.t = t;
+    }
+
     public Integer getCode() {
         return code;
     }
@@ -58,6 +64,10 @@ public class AppException extends RuntimeException implements Serializable {
 
     public static void throwEx(Throwable e) {
         throw new AppException(COMMON_ERROR, e);
+    }
+
+    public static void throwEx(String message, Throwable e) {
+        throw new AppException(message, e);
     }
 
 }

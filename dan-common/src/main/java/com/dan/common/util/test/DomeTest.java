@@ -2,7 +2,7 @@ package com.dan.common.util.test;
 
 import com.alibaba.fastjson.JSONObject;
 import com.dan.common.util.excel.ExcelWriteUtils;
-import com.dan.utils.DateUtil;
+import com.dan.utils.lang.DateUtil;
 import com.dan.utils.JsonUtil;
 import com.dan.utils.entity.AjaxResult;
 import com.dan.utils.file.FileUtil;

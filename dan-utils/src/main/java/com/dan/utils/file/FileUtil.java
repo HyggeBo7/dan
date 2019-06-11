@@ -230,7 +230,12 @@ public class FileUtil {
         File file = new File(fileUrl);
 
         if (!file.exists()) {
-            boolean mkdirFlag = file.mkdirs();
+            boolean mkdirFlag = false;
+            if (file.isDirectory()) {
+                mkdirFlag = file.mkdirs();
+            } else {
+                mkdirFlag = file.getParentFile().mkdirs();
+            }
             if (mkdirFlag) {
                 logger.info("文件夹【" + file.getAbsolutePath() + "】创建成功...");
                 return suffixFlag ? file.getAbsolutePath() + "/" : file.getAbsolutePath();
@@ -434,6 +439,47 @@ public class FileUtil {
             return file.delete();
         }
         return false;
+    }
+
+    /**
+     * 删除目录，返回删除的文件数
+     *
+     * @param rootPath 待删除的目录
+     * @return 已删除的文件个数
+     */
+    public static int deleteFiles(String rootPath) {
+
+        return deleteFiles(rootPath, 0);
+    }
+
+    /**
+     * 删除目录，返回删除的文件数
+     *
+     * @param rootPath 待删除的目录
+     * @param fileNum  已删除的文件个数
+     * @return 已删除的文件个数
+     */
+    public static int deleteFiles(String rootPath, int fileNum) {
+        File file = new File(rootPath);
+        if (!file.exists()) {
+            return -1;
+        }
+        if (file.isDirectory()) {
+            File[] sonFiles = file.listFiles();
+            if (sonFiles != null && sonFiles.length > 0) {
+                for (File sonFile : sonFiles) {
+                    if (sonFile.isDirectory()) {
+                        fileNum = deleteFiles(sonFile.getAbsolutePath(), fileNum);
+                    } else {
+                        sonFile.delete();
+                        fileNum++;
+                    }
+                }
+            }
+        } else {
+            file.delete();
+        }
+        return fileNum;
     }
 
     /**

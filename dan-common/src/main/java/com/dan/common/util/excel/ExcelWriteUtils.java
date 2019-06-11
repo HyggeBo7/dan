@@ -1,7 +1,7 @@
 package com.dan.common.util.excel;
 
-import com.dan.utils.StringUtil;
 import com.dan.utils.exception.AppException;
+import com.dan.utils.lang.StringUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.hssf.util.CellReference;
@@ -57,12 +57,12 @@ public class ExcelWriteUtils {
     /**
      * 单元格导出宽度  [单元格宽度最小值] * 256
      */
-    private static final int rowStandardWidth = 256;
+    private static final int ROW_STANDARD_WIDTH = 256;
 
     /**
      * 最大宽度-最大不能超过 256 * 256
      */
-    private static final int rowWidthMax = 256 * 256 - 100;
+    private static final int ROW_WIDTH_MAX = 256 * 256 - 100;
 
     /**
      * 导出时间格式 默认 yyyy-MM-dd
@@ -484,7 +484,7 @@ public class ExcelWriteUtils {
                         }
                     }
                     if (rowNum != titleNum) {
-                        if (row != null && Objects.nonNull(row)) {
+                        if (row != null) {
                             if (emptyRowFlag && !judgmentEmptyRowFlag(row)) {
                                 continue;
                             }
@@ -816,12 +816,12 @@ public class ExcelWriteUtils {
                 int thisWidth = columnIndexWidth[i] < rowMinStandardWidth ? rowMinStandardWidth : columnIndexWidth[i];
                 if (thisWidth > 0) {
                     // * 2 * 256 中文适用
-                    int maxWidth = thisWidth * rowStandardWidth;
+                    int maxWidth = thisWidth * ROW_STANDARD_WIDTH;
                     if (defaultColumnStyle != null) {
                         //默认字体大小是10,乘上当前字体大小
                         maxWidth = maxWidth / 10 * contentFontSize;
                     }
-                    maxWidth = maxWidth > rowWidthMax ? rowWidthMax : maxWidth;
+                    maxWidth = maxWidth > ROW_WIDTH_MAX ? ROW_WIDTH_MAX : maxWidth;
                     sheet.setColumnWidth(i, maxWidth);
                 }
             } else {
@@ -829,7 +829,7 @@ public class ExcelWriteUtils {
                 if (thisTitleSize.length > 0 && i < thisTitleSize.length) {
                     int thisWidth = thisTitleSize[i] == null ? rowMinStandardWidth : thisTitleSize[i];
                     //设置宽度
-                    sheet.setColumnWidth(i, thisWidth * rowStandardWidth);
+                    sheet.setColumnWidth(i, thisWidth * ROW_STANDARD_WIDTH);
                 }
             }
         }

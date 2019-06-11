@@ -1,4 +1,4 @@
-package com.dan.utils;
+package com.dan.utils.lang;
 
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.CronExpression;

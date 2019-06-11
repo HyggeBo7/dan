@@ -1,4 +1,4 @@
-package com.dan.utils;
+package com.dan.utils.lang;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -99,13 +99,13 @@ public class HideDataUtil {
         if (StringUtils.isBlank(contentStr)) {
             return contentStr;
         }
-        Pattern pattern = Pattern.compile("((13[0-9])|(14[5,7,9])|(15([0-3]|[5-9]))|(17[0,1,3,5,6,7,8])|(18[0-9])|(19[8|9]))\\d{8}");
-        Matcher matcher = pattern.matcher(contentStr);
+
+        Matcher matcher = Pattern.compile("((13[0-9])|(14[5,7,9])|(15([0-3]|[5-9]))|(17[0,1,3,5,6,7,8])|(18[0-9])|(19[8|9]))\\d{8}").matcher(contentStr);
         StringBuffer sb = new StringBuffer();
         try {
             while (matcher.find()) {
                 String phoneStr = matcher.group();
-                phoneStr = phoneStr.substring(0, 3) + "****" + phoneStr.substring(7, phoneStr.length());
+                phoneStr = phoneStr.substring(0, 3) + "****" + phoneStr.substring(7);
                 matcher.appendReplacement(sb, phoneStr);
             }
             matcher.appendTail(sb);

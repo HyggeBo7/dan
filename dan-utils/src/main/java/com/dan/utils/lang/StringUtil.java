@@ -1,4 +1,4 @@
-package com.dan.utils;
+package com.dan.utils.lang;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -84,9 +84,9 @@ public class StringUtil {
             return "";
         }
         if (param instanceof Integer) {
-            return String.valueOf(param);
+            return Integer.parseInt(param.toString());
         } else if (param instanceof BigDecimal) {
-            return (BigDecimal) param;
+            return new BigDecimal(param.toString());
         } else if (param instanceof Double) {
             String numberStr = String.valueOf(param);
             if (numberStr.contains(".") || numberStr.contains("e") || numberStr.contains("E")) {
@@ -94,15 +94,14 @@ public class StringUtil {
                 if (numberStr.endsWith(".0")) {
                     return v.longValue();
                 }
-                return Double.parseDouble(numberStr);
             }
-            return Long.parseLong(numberStr);
+            return Double.parseDouble(numberStr);
         } else if (param instanceof Float) {
-            return String.valueOf(param);
+            return Float.parseFloat(param.toString());
         } else if (param instanceof Long) {
-            return String.valueOf(param);
+            return Long.parseLong(param.toString());
         } else if (param instanceof Boolean) {
-            return String.valueOf(param);
+            return Boolean.parseBoolean(param.toString());
         }
         return String.valueOf(param);
     }
@@ -129,7 +128,7 @@ public class StringUtil {
         }
         /* else if (param instanceof String) {
         }*/
-        return String.valueOf("'" + param + "'");
+        return "'" + param + "'";
 
     }
 

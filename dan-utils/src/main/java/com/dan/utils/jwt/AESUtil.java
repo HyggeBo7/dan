@@ -23,7 +23,7 @@ public class AESUtil {
     private static String SECURE_TYPE = "SHA1PRNG";
 
     /**
-     * 加密, 顺序是 AES BASE65 URLEncoder
+     * 加密, 顺序是 AES BASE64 URLEncoder
      *
      * @param content
      * @param encryptKey

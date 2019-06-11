@@ -1,6 +1,6 @@
 package com.dan.common.util.pdf;
 
-import com.dan.utils.StringUtil;
+import com.dan.utils.lang.StringUtil;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.*;
 import org.apache.commons.lang3.StringUtils;
