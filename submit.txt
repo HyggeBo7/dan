@@ -1,4 +1,4 @@
-【git-config->https://www.cnblogs.com/tinywan/p/8241077.html】
+﻿【git-config->https://www.cnblogs.com/tinywan/p/8241077.html】
 [core]
 	repositoryformatversion = 0
 	filemode = false
@@ -7,7 +7,7 @@
 	symlinks = false
 	ignorecase = true
 [remote "origin"]
-	url = https://github.com/wubodanran/dan.git
+	url = https://github.com/DearBo7/dan.git
 	fetch = +refs/heads/*:refs/remotes/origin/*
 [remote "second"]
 	url = https://gitee.com/wubodanran/dan.git
