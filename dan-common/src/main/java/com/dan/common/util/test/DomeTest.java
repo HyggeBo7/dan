@@ -2,10 +2,10 @@ package com.dan.common.util.test;
 
 import com.alibaba.fastjson.JSONObject;
 import com.dan.common.util.excel.ExcelWriteUtils;
-import com.dan.utils.lang.DateUtil;
 import com.dan.utils.JsonUtil;
 import com.dan.utils.entity.AjaxResult;
 import com.dan.utils.file.FileUtil;
+import com.dan.utils.lang.DateUtil;
 import com.dan.utils.network.HttpUtils;
 import com.dan.utils.xt.MapperUtil;
 import com.dan.utils.xt.Pagination;
@@ -29,6 +29,14 @@ import java.util.stream.Collectors;
  * @description:
  */
 public class DomeTest {
+
+    @Test
+    public void testDoule() {
+        double num = 0.5569834;
+
+        System.out.println(String.format("%.3f", num));
+
+    }
 
     @Test
     public void testPinYin() {
