@@ -238,6 +238,11 @@ public class ExcelWriteUtils {
      */
     private String fileName;
 
+    /**
+     * 读取excel,最大读取行,小于0读取全部
+     */
+    private int maxReadRowSize = -1;
+
     //导出方法
 
     /**
@@ -344,6 +349,10 @@ public class ExcelWriteUtils {
 
     public void setDefaultCustomHeaderList(List<Map<String, Object>> defaultCustomHeaderListMap) {
         this.defaultCustomHeaderListMap = defaultCustomHeaderListMap;
+    }
+
+    public void setMaxReadRowSize(int maxReadRowSize) {
+        this.maxReadRowSize = maxReadRowSize;
     }
 
     /**
@@ -477,6 +486,10 @@ public class ExcelWriteUtils {
                 }
                 for (Row row : sheet) {
                     int rowNum = row.getRowNum();
+                    //判断是否超出最大读取行数
+                    if (maxReadRowSize > -1 && rowNum > maxReadRowSize) {
+                        break;
+                    }
                     //手动设置排除行
                     if (excludeLineList != null && excludeLineList.size() > 0) {
                         if (getExcludeLineList(excludeLineList, rowNum)) {
