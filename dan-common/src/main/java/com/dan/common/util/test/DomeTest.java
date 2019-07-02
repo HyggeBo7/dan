@@ -2,6 +2,7 @@ package com.dan.common.util.test;
 
 import com.alibaba.fastjson.JSONObject;
 import com.dan.common.util.excel.ExcelWriteUtils;
+import com.dan.common.util.pdf.FreemarkerUtils;
 import com.dan.utils.JsonUtil;
 import com.dan.utils.entity.AjaxResult;
 import com.dan.utils.file.FileUtil;
@@ -29,6 +30,25 @@ import java.util.stream.Collectors;
  * @description:
  */
 public class DomeTest {
+
+    @Test
+    public void testHtml() {
+        String dir = "P:/file/baobiao";
+        String htmlDir = dir + "/html/";
+        String name = "增值税减免税申报明细表1.html";
+        int size = 80;
+        String str = "F00";
+        Map<String, Object> dataMap = new HashMap<>();
+        for (int i = 1; i <= size; i++) {
+            if (i < 11) {
+                dataMap.put(str + "0" + i, "value:" + i);
+            } else {
+                dataMap.put(str + i, "value:" + i);
+            }
+        }
+        FreemarkerUtils.loadHtml(dir, name, dataMap, htmlDir + UUID.randomUUID() + ".html");
+        System.out.println("======================");
+    }
 
     @Test
     public void testDoule() {
