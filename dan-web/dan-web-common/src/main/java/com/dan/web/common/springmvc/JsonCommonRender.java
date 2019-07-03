@@ -1,6 +1,5 @@
 package com.dan.web.common.springmvc;
 
-import com.dan.utils.entity.AjaxResultGeneric;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.apache.commons.lang3.StringUtils;
@@ -75,8 +74,20 @@ public class JsonCommonRender {
 
     public static String getJson(Object obj) {
         String result;
-        if (obj instanceof cn.xtits.xtf.common.web.AjaxResult || obj instanceof com.dan.utils.entity.AjaxResult || obj instanceof AjaxResultGeneric) {
-            if (((cn.xtits.xtf.common.web.AjaxResult) obj).getsNulls() || ((com.dan.utils.entity.AjaxResult) obj).getsNulls() || ((AjaxResultGeneric) obj).getsNulls()) {
+        if (obj instanceof cn.xtits.xtf.common.web.AjaxResult) {
+            if (((cn.xtits.xtf.common.web.AjaxResult) obj).getsNulls()) {
+                result = gson.toJson(obj);
+            } else {
+                result = nullGson.toJson(obj);
+            }
+        } else if (obj instanceof com.dan.utils.entity.AjaxResult) {
+            if (((com.dan.utils.entity.AjaxResult) obj).getsNulls()) {
+                result = gson.toJson(obj);
+            } else {
+                result = nullGson.toJson(obj);
+            }
+        } else if (obj instanceof com.dan.utils.entity.AjaxResultGeneric) {
+            if (((com.dan.utils.entity.AjaxResultGeneric) obj).getsNulls()) {
                 result = gson.toJson(obj);
             } else {
                 result = nullGson.toJson(obj);
