@@ -230,13 +230,8 @@ public class FileUtil {
         File file = new File(fileUrl);
 
         if (!file.exists()) {
-            boolean mkdirFlag = false;
-            if (file.isDirectory()) {
-                mkdirFlag = file.mkdirs();
-            } else {
-                mkdirFlag = file.getParentFile().mkdirs();
-            }
-            if (mkdirFlag) {
+            //mkdirFlag = file.getParentFile().mkdirs(); 获取父级目录创建
+            if (file.mkdirs()) {
                 logger.info("文件夹【" + file.getAbsolutePath() + "】创建成功...");
                 return suffixFlag ? file.getAbsolutePath() + "/" : file.getAbsolutePath();
             } else {
@@ -530,12 +525,27 @@ public class FileUtil {
             fileDir.mkdirs();
         }
         File file = new File(fileDir, fileName);
-        OutputStream os = new FileOutputStream(file);
-        os.write(content, 0, content.length);
-        os.flush();
-        if (null != os) {
-            os.close();
+        OutputStream os = null;
+        try {
+            os = new FileOutputStream(file);
+            os.write(content, 0, content.length);
+        } catch (IOException e) {
+            throw e;
+        } finally {
+            if (null != os) {
+                try {
+                    os.flush();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    os.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
+
     }
 
     /**

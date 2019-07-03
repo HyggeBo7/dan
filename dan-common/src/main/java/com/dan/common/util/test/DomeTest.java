@@ -32,6 +32,12 @@ import java.util.stream.Collectors;
 public class DomeTest {
 
     @Test
+    public void testFile() {
+        File file = new File("P:\\books");
+        System.out.println("==========");
+    }
+
+    @Test
     public void testHtml() {
         String dir = "P:/file/baobiao";
         String htmlDir = dir + "/html/";
