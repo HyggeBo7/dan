@@ -1,6 +1,5 @@
 package com.dan.web.common.springmvc;
 
-import cn.xtits.xtf.web.springmvc.JsonCommonRender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpInputMessage;
@@ -23,7 +22,7 @@ import java.util.List;
  */
 public class JsonMessageConverter implements HttpMessageConverter {
 
-    private static final Logger logger = LoggerFactory.getLogger(com.dan.web.common.springmvc.JsonMessageConverter.class);
+    private static final Logger logger = LoggerFactory.getLogger(JsonMessageConverter.class);
 
     /**
      * 该转换器的支持类型：application/json

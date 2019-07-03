@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class RequestOriginInterceptor extends HandlerInterceptorAdapter {
 
-    public static final Logger logger = LoggerFactory.getLogger(RequestOriginInterceptor.class);
+    private static final Logger logger = LoggerFactory.getLogger(RequestOriginInterceptor.class);
 
     private static final String DEFAULT_ORIGIN = "*";
 

@@ -1,6 +1,6 @@
 package com.dan.web.common.springmvc.interceptor;
 
-import cn.xtits.xtf.web.springmvc.RequestContext;
+import com.dan.web.common.springmvc.RequestContext;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 

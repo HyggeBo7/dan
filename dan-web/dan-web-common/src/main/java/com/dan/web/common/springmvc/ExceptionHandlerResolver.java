@@ -1,10 +1,10 @@
 package com.dan.web.common.springmvc;
 
 import cn.xtits.xtf.common.exception.XTException;
-import cn.xtits.xtf.web.springmvc.JsonCommonRender;
 import com.dan.utils.entity.AjaxResult;
 import com.dan.utils.exception.AppException;
 import com.dan.web.common.exception.AppWebException;
+import com.dan.web.common.util.HttpServletRequestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
@@ -16,18 +16,17 @@ import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
-import java.util.Enumeration;
 
 /**
  * Created by Administrator on 2018/12/4.
  */
 public class ExceptionHandlerResolver extends SimpleMappingExceptionResolver {
-    public static final Logger logger = LoggerFactory.getLogger(com.dan.web.common.springmvc.ExceptionHandlerResolver.class);
+    private static final Logger logger = LoggerFactory.getLogger(ExceptionHandlerResolver.class);
 
     @Override
     public ModelAndView doResolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
         if (ex != null) {
-            logger.error("uri={} para={} trace={}", new Object[]{request.getRequestURI(), getStringRequestParam(request), ExceptionUtils.getStackTrace(ex)});
+            logger.error("uri={} para={} trace={}", new Object[]{request.getRequestURI(), HttpServletRequestUtils.getStringRequestParam(request), ExceptionUtils.getStackTrace(ex)});
             AjaxResult ajaxResult = null;
             if (ex instanceof XTException) {
                 XTException xtException = (XTException) ex;
@@ -68,18 +67,4 @@ public class ExceptionHandlerResolver extends SimpleMappingExceptionResolver {
         return null;
     }
 
-    private String getStringRequestParam(HttpServletRequest request) {
-        Enumeration enumeration = request.getParameterNames();
-        StringBuffer dataSb = new StringBuffer();
-        while (enumeration.hasMoreElements()) {
-            String key = (String) enumeration.nextElement();
-            String data = request.getParameter(key);
-
-            dataSb.append(key).append("=").append(data).append("&");
-        }
-        if (dataSb.length() > 0)
-            dataSb.deleteCharAt(dataSb.length() - 1);
-
-        return dataSb.toString();
-    }
 }

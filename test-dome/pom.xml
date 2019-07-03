@@ -4,7 +4,7 @@
     <parent>
         <artifactId>dan</artifactId>
         <groupId>com.dan</groupId>
-        <version>1.0.7.07</version>
+        <version>1.0.7.08</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -17,6 +17,7 @@
 
     <properties>
         <excel.version>4.0.1</excel.version>
+        <!--<excel.version>3.9</excel.version>-->
     </properties>
 
     <dependencies>

@@ -15,7 +15,7 @@ import java.io.IOException;
  */
 public class RequestContextFilter implements Filter {
 
-    private static final Logger logger = LoggerFactory.getLogger(cn.xtits.xtf.web.springmvc.RequestContextFilter.class);
+    private static final Logger logger = LoggerFactory.getLogger(RequestContextFilter.class);
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {

@@ -17,7 +17,7 @@ import javax.servlet.http.HttpSession;
  */
 public class RequestContext {
 
-    private static final Logger logger = LoggerFactory.getLogger(cn.xtits.xtf.web.springmvc.RequestContext.class);
+    private static final Logger logger = LoggerFactory.getLogger(RequestContext.class);
 
     private static final String REQUEST_SEQ_KEY = "REQUEST_SEQ_KEY";
 
