@@ -383,6 +383,7 @@
                     <forkMode>once</forkMode>
                 </configuration>
             </plugin>
+            <!--发布代码jar插件-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-deploy-plugin</artifactId>
