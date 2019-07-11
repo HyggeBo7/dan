@@ -32,6 +32,29 @@ import java.util.stream.Collectors;
 public class DomeTest {
 
     @Test
+    public void testListMapFilter() {
+        List<Map<String, Object>> mapList = new ArrayList<>();
+        Map<String, Object> map;
+        for (int i = 1; i <= 20; i++) {
+            map = new LinkedHashMap<>();
+            map.put("id", i);
+            map.put("name", "名称name:" + i);
+            mapList.add(map);
+        }
+        for (int i = 1; i <= 20; i++) {
+            map = new LinkedHashMap<>();
+            map.put("id", i);
+            map.put("name", "名称name:" + i);
+            mapList.add(map);
+        }
+        //筛选,去重,获取指定值
+        List<Object> objects = mapList.stream().filter(d -> d.get("id").equals(1)).distinct().map(d -> d.get("id")).collect(Collectors.toList());
+        for (Object object : objects) {
+            System.out.println("object:" + object);
+        }
+    }
+
+    @Test
     public void testFile() {
         File file = new File("P:\\books");
         System.out.println("==========");
