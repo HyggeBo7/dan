@@ -1,0 +1,13 @@
+maven版本号管理:https://www.jianshu.com/p/88da01804d3c  https://www.jianshu.com/p/2816e970b4be
+
+## 设置版本号,会生成备份文件
+mvn versions:set -DnewVersion=1.2.0-SNAPSHOT
+
+## 确定版本号,删除备份的文件
+mvn versions:commit
+
+## 回退版本号
+mvn versions:revert
+
+## 直接修改版本号，无需确认,不会生成备份文件(不能回退版本) RELEASE
+mvn versions:set -DnewVersion=1.1.0 -DgenerateBackupPoms=false
