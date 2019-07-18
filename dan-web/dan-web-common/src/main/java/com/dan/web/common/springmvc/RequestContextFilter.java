@@ -1,7 +1,6 @@
 package com.dan.web.common.springmvc;
 
 import com.dan.utils.JsonUtil;
-import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,13 +28,13 @@ public class RequestContextFilter implements Filter {
         RequestContext.init((HttpServletRequest) request, (HttpServletResponse) response, null);
 
         logger.info("request start| seq:{}, uri:{}, param:{}, cookie:{} ",
-                ArrayUtils.toArray(RequestContext.getSeq(), ((HttpServletRequest) request).getRequestURI(),
-                        ((HttpServletRequest) request).getQueryString(),
-                        JsonUtil.toJson(((HttpServletRequest) request).getCookies())));
+                RequestContext.getSeq(), ((HttpServletRequest) request).getRequestURI(),
+                ((HttpServletRequest) request).getQueryString(),
+                JsonUtil.toJson(((HttpServletRequest) request).getCookies()));
         chain.doFilter(request, response);
 
         logger.info("request end| seq:{}, spend time:{}, response:{}",
-                ArrayUtils.toArray(RequestContext.getSeq(), (System.currentTimeMillis() - start), response.getContentType()));
+                RequestContext.getSeq(), (System.currentTimeMillis() - start), response.getContentType());
 
         RequestContext.clear();
 

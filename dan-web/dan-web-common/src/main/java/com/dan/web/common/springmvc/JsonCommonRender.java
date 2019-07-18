@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 
 /**
  * 返回json时使用, 支持json , jsonp, 需配合RequestContext 使用, 注意
- * Created by Administrator on 2016/1/29.
+ * Created by Dan on 2018/12/4.
  */
 public class JsonCommonRender {
 
@@ -22,19 +22,15 @@ public class JsonCommonRender {
 
     private static final Logger logger = LoggerFactory.getLogger(JsonCommonRender.class);
 
-    private static String CALLBACK_REGEXP = "[^0-9a-zA-Z_\\.]";
-    private static int CALLBACK_MAX_LENGTH = 128;
-    private static Pattern PATTERN = Pattern.compile(CALLBACK_REGEXP);
-    private static String JSON_HEADER_APPEND = "\r\n\r\n";
-    private static String CHAR_SET = "UTF-8";
-    private static String dateFormat;
-
-    static {
-        dateFormat = "yyyy-MM-dd HH:mm:ss";
-    }
+    private final static String CALLBACK_REGEXP = "[^0-9a-zA-Z_.]";
+    private final static int CALLBACK_MAX_LENGTH = 128;
+    private final static Pattern PATTERN = Pattern.compile(CALLBACK_REGEXP);
+    private final static String JSON_HEADER_APPEND = "\r\n\r\n";
+    private final static String CHAR_SET = "UTF-8";
+    private final static String dateFormat = "yyyy-MM-dd HH:mm:ss";
 
 
-    public static String getJsonResult(Object obj) {
+    public String getJsonResult(Object obj) {
         String callback = RequestContext.getStr("callback");
         RequestContext.getResponse().setCharacterEncoding(CHAR_SET);
         RequestContext.getResponse().setHeader("Cache-Control", "no-cache");
@@ -50,7 +46,7 @@ public class JsonCommonRender {
         return text;
     }
 
-    public static String callbackFilter(String callback) {
+    public String callbackFilter(String callback) {
         if (StringUtils.isEmpty(callback)) {
             return StringUtils.EMPTY;
         }
@@ -72,15 +68,26 @@ public class JsonCommonRender {
         return filterCallback;
     }
 
-    public static String getJson(Object obj) {
+    public String getJson(Object obj) {
         String result;
-        if (obj instanceof cn.xtits.xtf.common.web.AjaxResult) {
+        Boolean aBooleanFlag = customizeGetJson(obj);
+        if (aBooleanFlag != null) {
+            if (aBooleanFlag) {
+                result = gson.toJson(obj);
+            } else {
+                result = nullGson.toJson(obj);
+            }
+            return result;
+        }
+
+        /*if (obj instanceof cn.xtits.xtf.common.web.AjaxResult) {
             if (((cn.xtits.xtf.common.web.AjaxResult) obj).getsNulls()) {
                 result = gson.toJson(obj);
             } else {
                 result = nullGson.toJson(obj);
             }
-        } else if (obj instanceof com.dan.utils.entity.AjaxResult) {
+        } else*/
+        if (obj instanceof com.dan.utils.entity.AjaxResult) {
             if (((com.dan.utils.entity.AjaxResult) obj).getsNulls()) {
                 result = gson.toJson(obj);
             } else {
@@ -98,5 +105,16 @@ public class JsonCommonRender {
             result = gson.toJson(obj);
         }
         return result;
+    }
+
+    /**
+     * 通过继承方式,重写此方法处理json
+     *
+     * @param obj Object
+     * @return 返回null, 使用默认处理,true返回原字段,false去掉字段为null的
+     */
+    protected Boolean customizeGetJson(Object obj) {
+
+        return null;
     }
 }

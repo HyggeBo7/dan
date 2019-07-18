@@ -12,7 +12,7 @@ import org.springframework.http.converter.HttpMessageNotWritableException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -24,10 +24,20 @@ public class JsonMessageConverter implements HttpMessageConverter {
 
     private static final Logger logger = LoggerFactory.getLogger(JsonMessageConverter.class);
 
+    private JsonCommonRender jsonCommonRender;
+
+    public JsonMessageConverter() {
+        this(new JsonCommonRender());
+    }
+
+    public JsonMessageConverter(JsonCommonRender jsonCommonRender) {
+        this.jsonCommonRender = jsonCommonRender;
+    }
+
     /**
      * 该转换器的支持类型：application/json
      */
-    private List supportedMediaTypes = Arrays.asList(MediaType.APPLICATION_JSON_UTF8);
+    private List<MediaType> supportedMediaTypes = Collections.singletonList(MediaType.APPLICATION_JSON_UTF8);
 
     @Override
     public boolean canRead(Class aClass, MediaType mediaType) {
@@ -62,6 +72,7 @@ public class JsonMessageConverter implements HttpMessageConverter {
 
     @Override
     public Object read(Class aClass, HttpInputMessage httpInputMessage) throws IOException, HttpMessageNotReadableException {
+
         return null;
     }
 
@@ -69,7 +80,7 @@ public class JsonMessageConverter implements HttpMessageConverter {
     public void write(Object o, MediaType mediaType, HttpOutputMessage httpOutputMessage) throws IOException, HttpMessageNotWritableException {
         try {
             OutputStream out = httpOutputMessage.getBody();
-            byte[] bytes = JsonCommonRender.getJsonResult(o).getBytes(Charset.forName("UTF-8"));
+            byte[] bytes = jsonCommonRender.getJsonResult(o).getBytes(Charset.forName("UTF-8"));
             out.write(bytes);
         } catch (IllegalStateException e) {
             logger.info("httpOutputMessage.getBody():" + e.getMessage());
