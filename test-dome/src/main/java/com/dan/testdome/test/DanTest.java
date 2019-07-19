@@ -1,9 +1,9 @@
 package com.dan.testdome.test;
 
-import com.dan.utils.DateUtil;
-import com.dan.utils.HideDataUtil;
 import com.dan.utils.JsonUtil;
 import com.dan.utils.file.FileUtil;
+import com.dan.utils.lang.DateUtil;
+import com.dan.utils.lang.HideDataUtil;
 import com.dan.utils.xt.PinYinUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
@@ -93,7 +93,7 @@ public class DanTest {
 
     @Test
     public void testPinYin() {
-        System.out.println(PinYinUtil.getPinYin("吴波"));
+        System.out.println(new PinYinUtil().getPinYin("吴波"));
     }
 
 }

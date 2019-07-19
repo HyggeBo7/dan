@@ -1,6 +1,8 @@
-package com.dan.common.util.test;
+package com.dan.common.test;
 
 import com.alibaba.fastjson.JSONObject;
+import com.dan.common.test.entity.TreeNodeImpl;
+import com.dan.common.test.entity.UserInfo;
 import com.dan.common.util.excel.ExcelWriteUtils;
 import com.dan.common.util.pdf.FreemarkerUtils;
 import com.dan.utils.JsonUtil;
@@ -8,6 +10,8 @@ import com.dan.utils.entity.AjaxResult;
 import com.dan.utils.file.FileUtil;
 import com.dan.utils.lang.DateUtil;
 import com.dan.utils.network.HttpUtils;
+import com.dan.common.test.entity.TreeNode;
+import com.dan.utils.tree.TreeNodeUtil;
 import com.dan.utils.xt.MapperUtil;
 import com.dan.utils.xt.Pagination;
 import com.dan.utils.xt.PinYinUtil;
@@ -30,6 +34,57 @@ import java.util.stream.Collectors;
  * @description:
  */
 public class DomeTest {
+
+    @Test
+    public void testListToTreeNodeImpl() {
+        //打乱顺序
+        String json = "[{\"nodeId\":21,\"parentNodeId\":13,\"nodeName\":\"名称:13-21\",\"createDate\":\"2019-07-19 13:22:15\",\"childrenList\":[]},{\"nodeId\":11,\"parentNodeId\":9,\"nodeName\":\"名称:5-9-11\",\"createDate\":\"2019-07-19 13:22:15\",\"childrenList\":[]},{\"nodeId\":2,\"parentNodeId\":1,\"nodeName\":\"名称:1-2\",\"createDate\":\"2019-07-19 13:22:55\",\"childrenList\":[]},{\"nodeId\":3,\"parentNodeId\":2,\"nodeName\":\"名称:1-2-3\",\"createDate\":\"2019-07-19 13:22:45\",\"childrenList\":[]},{\"nodeId\":5,\"parentNodeId\":0,\"nodeName\":\"名称:0-5\",\"createDate\":\"2019-07-19 13:22:55\",\"childrenList\":[]},{\"nodeId\":6,\"parentNodeId\":5,\"nodeName\":\"名称:5-6\",\"createDate\":\"2019-07-19 13:22:45\",\"childrenList\":[]},{\"nodeId\":4,\"parentNodeId\":2,\"nodeName\":\"名称:1-2-4\",\"createDate\":\"2019-07-19 13:22:35\",\"childrenList\":[]},{\"nodeId\":7,\"parentNodeId\":6,\"nodeName\":\"名称:5-6-7\",\"createDate\":\"2019-07-19 13:22:35\",\"childrenList\":[]},{\"nodeId\":9,\"parentNodeId\":5,\"nodeName\":\"名称:5-9\",\"createDate\":\"2019-07-19 13:22:35\",\"childrenList\":[]},{\"nodeId\":8,\"parentNodeId\":6,\"nodeName\":\"名称:5-6-8\",\"createDate\":\"2019-07-19 13:22:25\",\"childrenList\":[]},{\"nodeId\":10,\"parentNodeId\":9,\"nodeName\":\"名称:5-9-10\",\"createDate\":\"2019-07-19 13:22:25\",\"childrenList\":[]},{\"nodeId\":12,\"parentNodeId\":9,\"nodeName\":\"名称:5-9-12\",\"createDate\":\"2019-07-19 13:22:05\",\"childrenList\":[]},{\"nodeId\":13,\"parentNodeId\":0,\"nodeName\":\"名称:0-13\",\"createDate\":\"2019-07-19 13:22:45\",\"childrenList\":[]},{\"nodeId\":14,\"parentNodeId\":13,\"nodeName\":\"名称:13-14\",\"createDate\":\"2019-07-19 13:22:35\",\"childrenList\":[]},{\"nodeId\":15,\"parentNodeId\":14,\"nodeName\":\"名称:13-14-15\",\"createDate\":\"2019-07-19 13:22:25\",\"childrenList\":[]},{\"nodeId\":16,\"parentNodeId\":14,\"nodeName\":\"名称:13-14-16\",\"createDate\":\"2019-07-19 13:22:15\",\"childrenList\":[]},{\"nodeId\":17,\"parentNodeId\":13,\"nodeName\":\"名称:13-17\",\"createDate\":\"2019-07-19 13:22:25\",\"childrenList\":[]},{\"nodeId\":18,\"parentNodeId\":17,\"nodeName\":\"名称:13-17-18\",\"createDate\":\"2019-07-19 13:22:15\",\"childrenList\":[]},{\"nodeId\":1,\"parentNodeId\":0,\"nodeName\":\"名称:0-1\",\"createDate\":\"2019-07-19 13:23:05\",\"childrenList\":[]},{\"nodeId\":19,\"parentNodeId\":17,\"nodeName\":\"名称:13-17-19\",\"createDate\":\"2019-07-19 13:22:05\",\"childrenList\":[]},{\"nodeId\":20,\"parentNodeId\":17,\"nodeName\":\"名称:13-17-20\",\"createDate\":\"2019-07-19 13:21:55\",\"childrenList\":[]},{\"nodeId\":22,\"parentNodeId\":21,\"nodeName\":\"名称:13-21-22\",\"createDate\":\"2019-07-19 13:22:05\",\"childrenList\":[]},{\"nodeId\":23,\"parentNodeId\":21,\"nodeName\":\"名称:13-21-23\",\"createDate\":\"2019-07-19 13:21:55\",\"childrenList\":[]},{\"nodeId\":24,\"parentNodeId\":21,\"nodeName\":\"名称:13-21-24\",\"createDate\":\"2019-07-19 13:21:45\",\"childrenList\":[]},{\"nodeId\":25,\"parentNodeId\":21,\"nodeName\":\"名称:13-21-25\",\"createDate\":\"2019-07-19 13:21:35\",\"childrenList\":[]}]";
+        List<TreeNodeImpl> treeNodeList = JsonUtil.fromListJson(json, TreeNodeImpl.class);
+        List<TreeNodeImpl> listBuildChildTreeNode = TreeNodeUtil.listBuildChildTreeNode(treeNodeList);
+        System.out.println("Impl-listBuildChildTreeNode:" + JsonUtil.toJson(listBuildChildTreeNode));
+        System.out.println("Impl-listBuildChildTreeNode.size():" + listBuildChildTreeNode.size());
+    }
+
+    @Test
+    public void testListToTreeNode() {
+        /*List<TreeNode> treeNodeList = new ArrayList<>();
+        TreeNode treeNode;
+        int idAll = 0;
+        for (int i = 1; i <= 3; i++) {
+            idAll++;
+            treeNode = new TreeNode(idAll, 0, "名称:0-" + idAll, DateUtil.getDate(DateUtil.getTime() - (i * 10000)));
+            treeNodeList.add(treeNode);
+            int iId = idAll;
+            for (int j = 1; j < (i + 1); j++) {
+                idAll++;
+                treeNode = new TreeNode(idAll, iId, "名称:" + iId + "-" + idAll, DateUtil.getDate(DateUtil.getTime() - ((i + j) * 10000)));
+                treeNodeList.add(treeNode);
+                int jId = idAll;
+                for (int z = 1; z < (j + 2); z++) {
+                    idAll++;
+                    treeNode = new TreeNode(idAll, jId, "名称:" + iId + "-" + jId + "-" + idAll, DateUtil.getDate(DateUtil.getTime() - ((i + j + z) * 10000)));
+                    treeNodeList.add(treeNode);
+                }
+            }
+        }*/
+        //打乱顺序
+        String json = "[{\"nodeId\":21,\"parentNodeId\":13,\"nodeName\":\"名称:13-21\",\"createDate\":\"2019-07-19 13:22:15\",\"childrenList\":[]},{\"nodeId\":11,\"parentNodeId\":9,\"nodeName\":\"名称:5-9-11\",\"createDate\":\"2019-07-19 13:22:15\",\"childrenList\":[]},{\"nodeId\":2,\"parentNodeId\":1,\"nodeName\":\"名称:1-2\",\"createDate\":\"2019-07-19 13:22:55\",\"childrenList\":[]},{\"nodeId\":3,\"parentNodeId\":2,\"nodeName\":\"名称:1-2-3\",\"createDate\":\"2019-07-19 13:22:45\",\"childrenList\":[]},{\"nodeId\":5,\"parentNodeId\":0,\"nodeName\":\"名称:0-5\",\"createDate\":\"2019-07-19 13:22:55\",\"childrenList\":[]},{\"nodeId\":6,\"parentNodeId\":5,\"nodeName\":\"名称:5-6\",\"createDate\":\"2019-07-19 13:22:45\",\"childrenList\":[]},{\"nodeId\":4,\"parentNodeId\":2,\"nodeName\":\"名称:1-2-4\",\"createDate\":\"2019-07-19 13:22:35\",\"childrenList\":[]},{\"nodeId\":7,\"parentNodeId\":6,\"nodeName\":\"名称:5-6-7\",\"createDate\":\"2019-07-19 13:22:35\",\"childrenList\":[]},{\"nodeId\":9,\"parentNodeId\":5,\"nodeName\":\"名称:5-9\",\"createDate\":\"2019-07-19 13:22:35\",\"childrenList\":[]},{\"nodeId\":8,\"parentNodeId\":6,\"nodeName\":\"名称:5-6-8\",\"createDate\":\"2019-07-19 13:22:25\",\"childrenList\":[]},{\"nodeId\":10,\"parentNodeId\":9,\"nodeName\":\"名称:5-9-10\",\"createDate\":\"2019-07-19 13:22:25\",\"childrenList\":[]},{\"nodeId\":12,\"parentNodeId\":9,\"nodeName\":\"名称:5-9-12\",\"createDate\":\"2019-07-19 13:22:05\",\"childrenList\":[]},{\"nodeId\":13,\"parentNodeId\":0,\"nodeName\":\"名称:0-13\",\"createDate\":\"2019-07-19 13:22:45\",\"childrenList\":[]},{\"nodeId\":14,\"parentNodeId\":13,\"nodeName\":\"名称:13-14\",\"createDate\":\"2019-07-19 13:22:35\",\"childrenList\":[]},{\"nodeId\":15,\"parentNodeId\":14,\"nodeName\":\"名称:13-14-15\",\"createDate\":\"2019-07-19 13:22:25\",\"childrenList\":[]},{\"nodeId\":16,\"parentNodeId\":14,\"nodeName\":\"名称:13-14-16\",\"createDate\":\"2019-07-19 13:22:15\",\"childrenList\":[]},{\"nodeId\":17,\"parentNodeId\":13,\"nodeName\":\"名称:13-17\",\"createDate\":\"2019-07-19 13:22:25\",\"childrenList\":[]},{\"nodeId\":18,\"parentNodeId\":17,\"nodeName\":\"名称:13-17-18\",\"createDate\":\"2019-07-19 13:22:15\",\"childrenList\":[]},{\"nodeId\":1,\"parentNodeId\":0,\"nodeName\":\"名称:0-1\",\"createDate\":\"2019-07-19 13:23:05\",\"childrenList\":[]},{\"nodeId\":19,\"parentNodeId\":17,\"nodeName\":\"名称:13-17-19\",\"createDate\":\"2019-07-19 13:22:05\",\"childrenList\":[]},{\"nodeId\":20,\"parentNodeId\":17,\"nodeName\":\"名称:13-17-20\",\"createDate\":\"2019-07-19 13:21:55\",\"childrenList\":[]},{\"nodeId\":22,\"parentNodeId\":21,\"nodeName\":\"名称:13-21-22\",\"createDate\":\"2019-07-19 13:22:05\",\"childrenList\":[]},{\"nodeId\":23,\"parentNodeId\":21,\"nodeName\":\"名称:13-21-23\",\"createDate\":\"2019-07-19 13:21:55\",\"childrenList\":[]},{\"nodeId\":24,\"parentNodeId\":21,\"nodeName\":\"名称:13-21-24\",\"createDate\":\"2019-07-19 13:21:45\",\"childrenList\":[]},{\"nodeId\":25,\"parentNodeId\":21,\"nodeName\":\"名称:13-21-25\",\"createDate\":\"2019-07-19 13:21:35\",\"childrenList\":[]}]";
+        List<TreeNode> treeNodeList = JsonUtil.fromListJson(json, TreeNode.class);
+        System.out.println("treeNodeList:" + JsonUtil.toJson(treeNodeList));
+        System.out.println("treeNodeList.size():" + treeNodeList.size());
+        List<TreeNode> listBuildChildTreeNode = TreeNodeUtil.listBuildChildTreeNode(treeNodeList);
+        System.out.println("listBuildChildTreeNode:" + JsonUtil.toJson(listBuildChildTreeNode));
+        System.out.println("listBuildChildTreeNode.size():" + listBuildChildTreeNode.size());
+
+        List<TreeNode> treeNodeList1 = TreeNodeUtil.listBuildChildTreeNode(treeNodeList, 0);
+        System.out.println("treeNodeList1:" + JsonUtil.toJson(listBuildChildTreeNode));
+        System.out.println("treeNodeList1.size():" + listBuildChildTreeNode.size());
+
+        List<TreeNode> buildChildFindNodes = TreeNodeUtil.getBuildChildFindNodes(treeNodeList, 5);
+        System.out.println("buildChildFindNodes:" + JsonUtil.toJson(buildChildFindNodes));
+        System.out.println("buildChildFindNodes.size():" + buildChildFindNodes.size());
+
+    }
 
     @Test
     public void testListMapFilter() {

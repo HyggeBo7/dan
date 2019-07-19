@@ -1,7 +1,7 @@
 package com.dan.testdome.set.test;
 
 import com.dan.testdome.set.ext.ExtLinkedList;
-import com.dan.utils.DateUtil;
+import com.dan.utils.lang.DateUtil;
 import org.junit.Test;
 
 import java.util.Date;
@@ -18,7 +18,7 @@ public class TestSet {
     @Test
     public void test01() {
         int size = 100000;
-        Date startDate = DateUtil.getTime();
+        Date startDate = DateUtil.getDate();
         LinkedList<String> stringLinkedList = new LinkedList<>();
         for (int i = 1; i <= size; i++) {
             stringLinkedList.add("LinkedList:" + i);
@@ -27,11 +27,11 @@ public class TestSet {
             String s = stringLinkedList.get(i);
             System.out.println(s);
         }
-        Date endDate = DateUtil.getTime();
+        Date endDate = DateUtil.getDate();
 
 
         ExtLinkedList<String> extLinkedList = new ExtLinkedList<>();
-        Date startDate2 = DateUtil.getTime();
+        Date startDate2 = DateUtil.getDate();
         for (int i = 1; i <= size; i++) {
             extLinkedList.add("ExtLinkedList:" + i);
         }
@@ -39,7 +39,7 @@ public class TestSet {
             String s = extLinkedList.get(i);
             System.out.println(s);
         }
-        Date endDate2 = DateUtil.getTime();
+        Date endDate2 = DateUtil.getDate();
         System.out.println("LinkedList-时间：" + DateUtil.getMistiming(startDate, endDate) + ",大小：" + stringLinkedList.size());
 
         System.out.println("ExtLinkedList-时间：" + DateUtil.getMistiming(startDate2, endDate2) + ",大小：" + stringLinkedList.size());

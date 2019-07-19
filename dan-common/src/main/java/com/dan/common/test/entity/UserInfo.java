@@ -1,4 +1,4 @@
-package com.dan.common.util.test;
+package com.dan.common.test.entity;
 
 import com.dan.utils.entity.BaseEntity;
 
