@@ -10,7 +10,7 @@
 	url = https://github.com/DearBo7/dan.git
 	fetch = +refs/heads/*:refs/remotes/origin/*
 [remote "second"]
-	url = https://gitee.com/wubodanran/dan.git
+	url = https://gitee.com/DearBO/dan.git
 	fetch = +refs/heads/*:refs/remotes/second/*
 [branch "master"]
 	remote = origin
