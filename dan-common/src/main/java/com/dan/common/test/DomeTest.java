@@ -1,6 +1,7 @@
 package com.dan.common.test;
 
 import com.alibaba.fastjson.JSONObject;
+import com.dan.common.test.entity.TreeNode;
 import com.dan.common.test.entity.TreeNodeImpl;
 import com.dan.common.test.entity.UserInfo;
 import com.dan.common.util.excel.ExcelWriteUtils;
@@ -9,12 +10,13 @@ import com.dan.utils.JsonUtil;
 import com.dan.utils.entity.AjaxResult;
 import com.dan.utils.file.FileUtil;
 import com.dan.utils.lang.DateUtil;
+import com.dan.utils.lang.RandomUtils;
 import com.dan.utils.network.HttpUtils;
-import com.dan.common.test.entity.TreeNode;
 import com.dan.utils.tree.TreeNodeUtil;
 import com.dan.utils.xt.MapperUtil;
 import com.dan.utils.xt.Pagination;
 import com.dan.utils.xt.PinYinUtil;
+import com.google.common.primitives.Ints;
 import org.joda.time.DateTime;
 import org.junit.Test;
 
@@ -34,6 +36,46 @@ import java.util.stream.Collectors;
  * @description:
  */
 public class DomeTest {
+
+    /**
+     * @author: Bo
+     * @date: 2019/07/26 08:57:25.
+     * @description: 测试List<Map> 根据指定内容分组、排序
+     */
+    @Test
+    public void testListMapByGroupOrderBy() {
+
+        String json = "[18,19,8,5,24,17,24,10,17,22]";
+        List<Integer> numList = JsonUtil.fromListJson(json, Integer.class);
+        List<Map<String, Object>> mapList = new ArrayList<>();
+        Map<String, Object> map;
+
+        for (int i = 1; i <= 10; i++) {
+            map = new HashMap<>();
+            //map.put("id", (numList.get(i - 1)));
+            map.put("id", String.valueOf(RandomUtils.getUpper()) + String.valueOf(RandomUtils.getUpper()) + String.valueOf(RandomUtils.getUpper()));
+            map.put("name", "名称" + i);
+
+            mapList.add(map);
+        }
+        System.out.println("构建数据前==>mapList:" + JsonUtil.toJson(mapList));
+        //排序
+        //mapList.sort(Comparator.comparing(d -> d.get("id").toString()));
+        // System.out.println("排序后==>mapList:" + JsonUtil.toJson(mapList));
+        Map<String, List<Map<String, Object>>> integerListMap = mapList.stream().sorted(Comparator.comparing(d -> d.get("id").toString())).collect(Collectors.groupingBy(d -> d.get("id").toString(), LinkedHashMap::new, Collectors.toList()));
+        for (Map.Entry<String, List<Map<String, Object>>> stringListEntry : integerListMap.entrySet()) {
+            System.out.println("key:" + stringListEntry.getKey() + ",value:" + JsonUtil.toJson(stringListEntry.getValue()));
+        }
+    }
+
+    @Test
+    public void testToList() {
+        int[] numArr = {1, 2, 3};
+        List<Integer> integers = new ArrayList<>(Ints.asList(numArr));
+        integers.add(4);
+        integers.add(5);
+        System.out.println(JsonUtil.toJson(integers));
+    }
 
     @Test
     public void testListToTreeNodeImpl() {
