@@ -79,10 +79,6 @@ public class ExcelWriteUtils {
     /**
      * 表头字号
      */
-    private short titleSize = 16;
-    /**
-     * 表头字号
-     */
     private short titleFontSize = 14;
     /**
      * 正文字体
@@ -963,7 +959,7 @@ public class ExcelWriteUtils {
         Cell cell = row.createCell(columnIndex);
         cell.setCellValue(titleWrite);
         if (cellStyleTitleWrit == null) {
-            cellStyleTitleWrit = setFontAndBorder(getCellStyleNew(), titleFontType, titleSize, true, false);
+            cellStyleTitleWrit = setFontAndBorder(getCellStyleNew(), titleFontType, titleFontSize, true, false);
             //居中显示
             cellStyleTitleWrit.setAlignment(HSSFCellStyle.ALIGN_CENTER);
         }
