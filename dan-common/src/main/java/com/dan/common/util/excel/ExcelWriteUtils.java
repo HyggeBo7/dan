@@ -873,6 +873,10 @@ public class ExcelWriteUtils {
         writeExcel(writeCriteriaList, file, null);
     }
 
+    public void writeExcel(List<WriteCriteria> writeCriteriaList, ByteArrayOutputStream outputStream) {
+        writeExcel(writeCriteriaList, null, outputStream);
+    }
+
     public void writeExcelFileUrl(String sheetName, String[] titleColumn, List<?> dataList, String filePath) {
         writeExcelFile(sheetName, titleColumn, dataList, new File(filePath));
     }
