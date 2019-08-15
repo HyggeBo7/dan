@@ -1,5 +1,8 @@
 package com.dan.utils.lang;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @fileName: ObjectUtil
  * @author: Dan
@@ -27,6 +30,36 @@ public class ObjectUtil {
      */
     public static boolean booleanIsNull(Boolean flag) {
         return flag == null;
+    }
+
+    /**
+     * String:1,2,3 转List<Integer> 集合
+     *
+     * @param str 字符串
+     * @return List<Integer>
+     */
+    public static List<Integer> stringToIntegerList(String str) {
+        return stringToIntegerList(str, ",");
+    }
+
+    /**
+     * String:1,2,3 转List<Integer> 集合
+     *
+     * @param str       字符串
+     * @param separator 分割符
+     * @return List<Integer>
+     */
+    public static List<Integer> stringToIntegerList(String str, String separator) {
+        List<Integer> integerList = new ArrayList<>();
+        if (str != null && !"".equals(str.trim())) {
+            String[] splitArr = str.split(separator);
+            if (splitArr.length > 0) {
+                for (String s : splitArr) {
+                    integerList.add(Integer.valueOf(s));
+                }
+            }
+        }
+        return integerList;
     }
 
 }
