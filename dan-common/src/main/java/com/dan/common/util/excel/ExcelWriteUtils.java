@@ -699,40 +699,45 @@ public class ExcelWriteUtils {
         CellStyle floatCellStyle = null;
         //double 类型样式
         CellStyle doubleCellStyle = null;
-        //通过反射获取数据并写入到excel中
         List<?> dataList = writeCriteria.getDataList();
         if (dataList != null && dataList.size() > 0) {
             if (thisTitleColumn.length > 0) {
                 for (int rowIndex = 0; rowIndex < dataList.size(); rowIndex++) {
                     //获得该对象
                     Object obj = dataList.get(rowIndex);
-                    //获得该对对象的class实例
-                    Class<?> ownerClass = obj.getClass();
                     Row dataRow = writeWorkbook.getSheet(writeCriteria.getSheetName()).createRow((rowIndex + rowNum));
                     for (int columnIndex = 0; columnIndex < thisTitleColumn.length; columnIndex++) {
                         String thisTableHeadName = thisTitleColumn[columnIndex].trim();
                         //字段不为空
                         if (StringUtils.isNotBlank(thisTableHeadName)) {
-                            //使首字母大写
-                            //String UTitle = Character.toUpperCase(thisTableHeadName.charAt(0)) + thisTableHeadName.substring(1, thisTableHeadName.length());
-                            String methodName = "get" + StringUtil.firstToUpperCase(thisTableHeadName);
-
-                            // 设置要执行的方法
-                            Object data = null;
-                            try {
-                                //报错.
-                                //Method method = clsss.getDeclaredMethod(methodName);
-                                Method method = ownerClass.getMethod(methodName, new Class[0]);
-                                Object invoke = method.invoke(obj);
-                                data = invoke == null ? "" : invoke;
-                            } catch (NoSuchMethodException en) {
-                                //data = ((LinkedTreeMap) obj).get(title);
+                            // 获取到的值
+                            Object data;
+                            if (obj instanceof Map) {
+                                //行数据为Map
+                                //data = ((Map) obj).get(thisTableHeadName);
                                 data = StringUtil.judgeConversionType(((Map) obj).get(thisTableHeadName));
-                            } catch (IllegalAccessException | InvocationTargetException e) {
-                                e.printStackTrace();
-                                logger.info("==执行方法错误!obj:【{}】,writeExcel:method.invoke:【{}】", e.getMessage(), e);
-                                continue;
+                            } else {
+                                //通过反射获取数据并写入到excel中
+                                //获得该对对象的class实例
+                                Class<?> ownerClass = obj.getClass();
+                                //使首字母大写
+                                String methodName = "get" + StringUtil.firstToUpperCase(thisTableHeadName);
+                                try {
+                                    //报错.
+                                    //Method method = clsss.getDeclaredMethod(methodName);
+                                    Method method = ownerClass.getMethod(methodName, new Class[0]);
+                                    Object invoke = method.invoke(obj);
+                                    data = invoke == null ? "" : invoke;
+                                } catch (NoSuchMethodException en) {
+                                    //data = ((LinkedTreeMap) obj).get(title);
+                                    data = StringUtil.judgeConversionType(((Map) obj).get(thisTableHeadName));
+                                } catch (IllegalAccessException | InvocationTargetException e) {
+                                    e.printStackTrace();
+                                    logger.info("==执行方法错误!obj:【{}】,writeExcel:method.invoke:【{}】", e.getMessage(), e);
+                                    continue;
+                                }
                             }
+
                             Cell cell = dataRow.createCell(columnIndex);
                             if (data != null) {
                                 if (data instanceof Boolean) {
