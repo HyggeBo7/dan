@@ -133,10 +133,8 @@ public class FileUtil {
             } else {
                 return fileName.substring(indexOf + 1, fileName.length());
             }
-        } else {
-            logger.info("没有后缀..." + fileName);
-            return fileName;
         }
+        return "";
     }
 
     /**
