@@ -687,9 +687,9 @@ public class DateUtil {
      *
      * @param cron cron表达式
      */
-    public static String getCronSchduleString(String cron) {
+    public static String getCronScheduledString(String cron) {
 
-        return getCronSchduleString(cron, FORMAT_LONG);
+        return getCronScheduledString(cron, FORMAT_LONG);
     }
 
     /**
@@ -699,8 +699,8 @@ public class DateUtil {
      * @param pattern 格式
      * @return
      */
-    public static String getCronSchduleString(String cron, String pattern) {
-        String timeSchdule = "";
+    public static String getCronScheduledString(String cron, String pattern) {
+        String timeScheduled = "";
         if (!CronExpression.isValidExpression(cron)) {
             throw new AssertionError("Cron is Illegal!Cron表达式有误，cron：" + cron);
         }
@@ -708,11 +708,11 @@ public class DateUtil {
             CronTrigger trigger = TriggerBuilder.newTrigger().withIdentity("Caclulate Date").withSchedule(CronScheduleBuilder.cronSchedule(cron)).build();
             Date time0 = trigger.getStartTime();
             Date time1 = trigger.getFireTimeAfter(time0);
-            timeSchdule = DateUtil.parseToString(time1, pattern);
+            timeScheduled = DateUtil.parseToString(time1, pattern);
         } catch (Exception e) {
             throw new AssertionError("nKnow Time!，cron：" + cron);
         }
-        return timeSchdule;
+        return timeScheduled;
     }
 
     /**
@@ -721,10 +721,10 @@ public class DateUtil {
      * @param cron cron表达式
      * @return
      */
-    public static Date getCronSchduleDate(String cron) {
-        Date[] cronSchduleDate = getCronSchduleDate(cron, 1);
-        if (cronSchduleDate != null && cronSchduleDate.length > 0) {
-            return cronSchduleDate[0];
+    public static Date getCronScheduledDate(String cron) {
+        Date[] cronScheduledDate = getCronScheduledDate(cron, 1);
+        if (cronScheduledDate != null && cronScheduledDate.length > 0) {
+            return cronScheduledDate[0];
         }
         return null;
 
@@ -736,7 +736,7 @@ public class DateUtil {
      * @param cron  表达式
      * @param count 运行次数
      */
-    public static Date[] getCronSchduleDate(String cron, Integer count) {
+    public static Date[] getCronScheduledDate(String cron, Integer count) {
         if (!CronExpression.isValidExpression(cron)) {
             //throw new AssertionError("定时任务Cron格式不正确,Cron：" + cron);
             System.out.println("定时任务Cron格式不正确,Cron：" + cron);
@@ -745,28 +745,43 @@ public class DateUtil {
         if (count == null || count < 1) {
             count = 1;
         }
-        Date[] dateArry = new Date[count];
-        try {
-            CronTrigger trigger = TriggerBuilder.newTrigger().withIdentity("Caclulate Date").withSchedule(CronScheduleBuilder.cronSchedule(cron)).build();
-            Date time0 = trigger.getStartTime();
-            Date time1 = trigger.getFireTimeAfter(time0);
-            dateArry[0] = time1;
-            if (dateArry.length > 1) {
-                Date timeTemp = time1;
-                for (int i = 1; i < dateArry.length; i++) {
-                    timeTemp = trigger.getFireTimeAfter(timeTemp);
-                    if (timeTemp != null) {
-                        dateArry[i] = timeTemp;
-                    } else {
-                        throw new AssertionError("nKnow Time!，cron：" + cron);
-                    }
+        Date[] dateArray = new Date[count];
+        CronTrigger trigger = TriggerBuilder.newTrigger().withIdentity("Caclulate Date").withSchedule(CronScheduleBuilder.cronSchedule(cron)).build();
+        Date time0 = trigger.getStartTime();
+        Date time1 = trigger.getFireTimeAfter(time0);
+        dateArray[0] = time1;
+        if (dateArray.length > 1) {
+            Date timeTemp = time1;
+            for (int i = 1; i < dateArray.length; i++) {
+                timeTemp = trigger.getFireTimeAfter(timeTemp);
+                if (timeTemp != null) {
+                    dateArray[i] = timeTemp;
+                } else {
+                    break;
                 }
             }
-        } catch (Exception e) {
-            System.out.println("unKnow Time!");
         }
-        return dateArry;
+        return dateArray;
     }
 
+    /**
+     * 检验表达式是否正确
+     *
+     * @param cron cron表达式
+     * @return 正确:true
+     */
+    public static boolean cronValidExpressionFlag(String cron) {
+        return StringUtils.isNotBlank(cron) && CronExpression.isValidExpression(cron);
+    }
+
+    /**
+     * 是否还有下一次执行时间
+     *
+     * @param cron cron表达式
+     * @return 有:true
+     */
+    public static boolean cronNextFlag(String cron) {
+        return getCronScheduledDate(cron) != null;
+    }
 
 }
