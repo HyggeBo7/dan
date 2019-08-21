@@ -208,12 +208,16 @@ public class DomeTest {
     public void testHttpListUser() {
         String url = "http://119.37.194.4:5555/xtp-api/user/listUserByRoleId?roleId=12&oauth=whosyourdaddy";
         HttpUtils.ResultResponse resultResponse = HttpUtils.createRequest().doGet(url);
-        String data = resultResponse.getData();
-        //System.out.println("value:" + data);
-        AjaxResult ajaxResult = JsonUtil.fromJson(data, AjaxResult.class);
-        Pagination<UserInfo> pagination = JsonUtil.fromGenericJson(JsonUtil.toJson(ajaxResult.getData()), Pagination.class, UserInfo.class);
-        List<UserInfo> userInfoList = pagination.getData();
-        System.out.println("userInfoList:" + userInfoList);
+        if (resultResponse.isSuccess()) {
+            String data = resultResponse.getData();
+            //System.out.println("value:" + data);
+            AjaxResult ajaxResult = JsonUtil.fromJson(data, AjaxResult.class);
+            Pagination<UserInfo> pagination = JsonUtil.fromGenericJson(JsonUtil.toJson(ajaxResult.getData()), Pagination.class, UserInfo.class);
+            List<UserInfo> userInfoList = pagination.getData();
+            System.out.println("userInfoList:" + userInfoList);
+        } else {
+            System.out.println(resultResponse.toString());
+        }
     }
 
     @Test

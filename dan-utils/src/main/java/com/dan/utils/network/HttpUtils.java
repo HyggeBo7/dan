@@ -4,6 +4,7 @@ import com.dan.utils.JsonUtil;
 import com.dan.utils.entity.BaseSerializable;
 import com.dan.utils.exception.AppException;
 import com.dan.utils.network.common.HttpStatusCode;
+import com.dan.utils.network.exception.HttpException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +20,7 @@ import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -44,13 +46,14 @@ public class HttpUtils {
      * http
      */
     private static final String HTTP = "http";
-    /**
-     * 默认请求
-     */
-    private static final String DEFAULT_METHOD = "POST";
     private static final String METHOD_GET = "GET";
     private static final String METHOD_POST = "POST";
     private static final int SUCCESS_CODE = 200;
+    private static final String ACCEPT = "Accept";
+    private static final String ACCEPT_CONTENT_TYPE = "application/json, text/plain, */*";
+    private static final String CONTENT_TYPE = "Content-Type";
+    private static final String CONTENT_TYPE_1 = "content-type";
+    private static final String CONTENT_TYPE_JSON = "application/json";
     //private static final String DEFAULT_CONTENT_TYPE = "application/x-www-form-urlencoded";
     private static final int DEFAULT_CONNECT_TIMEOUT = 1000 * 10;
     private static final int DEFAULT_READ_TIMEOUT = 1000 * 10;
@@ -109,15 +112,43 @@ public class HttpUtils {
         return wrapRequest(requestUrl, paramMap, headerMap, encoding, METHOD_GET);
     }
 
+    public ResultResponse doPostJson(String requestUrl, String paramJson) {
+
+        return doPostJson(requestUrl, paramJson, null);
+    }
+
+    public ResultResponse doPostJson(String requestUrl, String paramJson, Map<String, String> headerMap) {
+
+        return doPostJson(requestUrl, paramJson, headerMap, DEFAULT_ENCODING);
+    }
+
+    public ResultResponse doPostJson(String requestUrl, String paramJson, Map<String, String> headerMap, String encoding) {
+        if (headerMap == null) {
+            headerMap = new HashMap<>();
+        }
+        String contentType = StringUtils.isBlank(headerMap.get(CONTENT_TYPE)) ? headerMap.get(CONTENT_TYPE_1) : headerMap.get(CONTENT_TYPE);
+        if (StringUtils.isBlank(contentType)) {
+            headerMap.put(CONTENT_TYPE, CONTENT_TYPE_JSON);
+        }
+        if (StringUtils.isBlank(headerMap.get(ACCEPT))) {
+            headerMap.put(ACCEPT, ACCEPT_CONTENT_TYPE);
+        }
+        return wrapRequest(requestUrl, null, headerMap, encoding, METHOD_POST, paramJson);
+    }
+
+    private ResultResponse wrapRequest(String requestUrl, Map<String, Object> paramMap, Map<String, String> headerMap, String encoding, String requestMethod) {
+        return wrapRequest(requestUrl, paramMap, headerMap, encoding, requestMethod, null);
+    }
+
     /**
      * 设置http/https,post/get
      */
-    private ResultResponse wrapRequest(String requestUrl, Map<String, Object> paramMap, Map<String, String> headerMap, String encoding, String requestMethod) {
+    private ResultResponse wrapRequest(String requestUrl, Map<String, Object> paramMap, Map<String, String> headerMap, String encoding, String requestMethod, String paramJson) {
         if (StringUtils.isBlank(requestUrl)) {
             logger.info("请求地址不能为空!requestUrl:【{}】", requestUrl);
             AppException.throwEx("请求地址不能为空!requestUrl:" + requestUrl);
         }
-        requestMethod = StringUtils.isBlank(requestMethod) ? DEFAULT_METHOD : requestMethod;
+        requestMethod = StringUtils.isBlank(requestMethod) ? METHOD_POST : requestMethod;
         boolean methodPostFlag = true;
         if (requestMethod.toUpperCase().equals(METHOD_GET)) {
             methodPostFlag = false;
@@ -127,10 +158,10 @@ public class HttpUtils {
         if (requestUrl.startsWith(HTTPS)) {
             httpsFlag = true;
         }
-        return request(requestUrl, methodPostFlag, paramMap, headerMap, encoding, httpsFlag);
+        return request(requestUrl, methodPostFlag, paramMap, headerMap, encoding, httpsFlag, paramJson);
     }
 
-    private ResultResponse request(String requestUrl, boolean methodPostFlag, Map<String, Object> paramMap, Map<String, String> headerMap, String encoding, boolean httpsFlag) {
+    private ResultResponse request(String requestUrl, boolean methodPostFlag, Map<String, Object> paramMap, Map<String, String> headerMap, String encoding, boolean httpsFlag, String paramJson) {
         InputStream inputStream = null;
         PrintWriter out = null;
         BufferedReader in = null;
@@ -171,19 +202,29 @@ public class HttpUtils {
             }
             // 设置通用的请求属性
             if (usePropertyFlag) {
-                connection.setRequestProperty("accept", "*/*");
-                connection.setRequestProperty("connection", "Keep-Alive");
-                connection.setRequestProperty("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
+                if (paramMap == null || paramMap.get(ACCEPT) == null) {
+                    connection.setRequestProperty("Accept", "*/*");
+                }
+                connection.setRequestProperty("Connection", "Keep-Alive");
+                connection.setRequestProperty("User-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
             }
 
             // 当paramMap不为null时向输出流写数据
-            if (methodPostFlag && null != paramMap) {
-                // 获取URLConnection对象对应的输出流
-                out = new PrintWriter(connection.getOutputStream());
-                // 发送请求参数
-                out.print(genUrlParam(paramMap));
-                // flush输出流的缓冲
-                out.flush();
+            if (methodPostFlag) {
+                boolean paramFlag = null != paramMap && paramMap.size() > 0 || StringUtils.isNotBlank(paramJson);
+                if (paramFlag) {
+                    // 获取URLConnection对象对应的输出流
+                    out = new PrintWriter(connection.getOutputStream());
+                    // 发送请求参数
+                    if (StringUtils.isNotBlank(paramJson)) {
+                        out.print(paramJson);
+                    }
+                    if (paramMap != null && paramMap.size() > 0) {
+                        out.print(genUrlParam(paramMap));
+                    }
+                    // flush输出流的缓冲
+                    out.flush();
+                }
             }
             int responseCode = connection.getResponseCode();
             ResultResponse resultResponse = new ResultResponse(responseCode, connection.getResponseMessage());
@@ -200,9 +241,10 @@ public class HttpUtils {
             }
             return resultResponse;
         } catch (IOException ce) {
-            ce.printStackTrace();
+            //ce.printStackTrace();
             logger.error("url:【{}】,msg:【{}】", requestUrl, ce.getMessage(), ce);
-            AppException.throwEx(ce);
+            //AppException.throwEx(ce);
+            return HttpException.handleException(ce);
         } finally {
             if (out != null) {
                 out.close();
@@ -223,7 +265,6 @@ public class HttpUtils {
                 connection = null;
             }
         }
-        return null;
     }
 
     private void setHttps(HttpsURLConnection connection) {
@@ -296,7 +337,7 @@ public class HttpUtils {
         this.readTimeout = readTimeout < 0 ? DEFAULT_READ_TIMEOUT : readTimeout;
     }
 
-    public class ResultResponse extends BaseSerializable {
+    public static class ResultResponse extends BaseSerializable {
 
         private int status;
         private String msg;
@@ -320,10 +361,21 @@ public class HttpUtils {
             this.data = data;
         }
 
+        public ResultResponse(int status, String message, String msg, String data) {
+            this.status = status;
+            this.msg = msg;
+            this.message = message;
+            this.data = data;
+        }
+
 
         @Override
         public String toString() {
             return JsonUtil.toJson(this);
+        }
+
+        public boolean isSuccess() {
+            return status == SUCCESS_CODE;
         }
 
         public int getStatus() {
