@@ -1,4 +1,4 @@
-package com.dan.web.common.service;
+package com.dan.web.common.test.redis.service.impl;
 
 /**
  * @fileName: RedisService
@@ -10,6 +10,7 @@ public interface RedisService {
 
     boolean lock(String key, String value);
 
-    void unlock(String key, String value);
+    boolean unlock(String key, String value);
 
 }
+

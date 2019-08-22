@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
@@ -40,11 +40,15 @@
         <fastjson.version>1.2.58</fastjson.version>
 
         <!-- Maven plugins -->
-        <maven_jar_version>3.0.2</maven_jar_version>
         <apache-rat-plugin.version>0.12</apache-rat-plugin.version>
         <arguments/>
-        <skip_maven_deploy>false</skip_maven_deploy>
+        <maven_surefire.version>2.22.1</maven_surefire.version>
         <maven_javadoc.version>3.0.1</maven_javadoc.version>
+        <maven_source.version>3.1.0</maven_source.version>
+        <maven_compiler.version>3.1</maven_compiler.version>
+        <maven_jar.version>3.0.2</maven_jar.version>
+        <maven-deploy.version>2.8.2</maven-deploy.version>
+
         <maven_clean.version>3.1.0</maven_clean.version>
     </properties>
 
@@ -293,38 +297,56 @@
         <pluginManagement>
             <plugins>
                 <!-- keep surefire and failsafe in sync -->
-                <plugin>
+                <!--<plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>2.22.1</version>
-                </plugin>
+                    <version>${maven_surefire.version}</version>
+                </plugin>-->
+                <!--生成doc-->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
                     <version>${maven_javadoc.version}</version>
+                </plugin>
+                <!-- Source -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>${maven_source.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${maven_compiler.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>${maven_jar.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>${maven-deploy.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-clean-plugin</artifactId>
                     <version>${maven_clean.version}</version>
                 </plugin>
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>build-helper-maven-plugin</artifactId>
-                    <version>1.10</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-shade-plugin</artifactId>
-                    <!--<version>2.4.3</version>-->
-                    <configuration>
-                        <createDependencyReducedPom>false</createDependencyReducedPom>
-                    </configuration>
-                </plugin>
             </plugins>
         </pluginManagement>
         <plugins>
-            <!--生成doc jar包-->
+            <!--通过插件来执行JUnit或者TestNG的测试用例-->
+            <!--<plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <useSystemClassLoader>true</useSystemClassLoader>
+                    <forkMode>once</forkMode>
+                </configuration>
+            </plugin>-->
+            <!--生成 javadoc包-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
@@ -347,6 +369,15 @@
                             <goal>jar</goal>
                         </goals>
                     </execution>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <doclint>none</doclint>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
             <!--生成源码jar包-->
@@ -360,17 +391,23 @@
                             <goal>jar</goal>
                         </goals>
                     </execution>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
                 </executions>
                 <configuration>
                     <excludes>
                         <exclude>com/dan/common/test/**</exclude>
+                        <exclude>com/dan/web/common/test/**</exclude>
                     </excludes>
                 </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>${maven_jar_version}</version>
                 <configuration>
                     <archive>
                         <addMavenDescriptor>true</addMavenDescriptor>
@@ -387,15 +424,8 @@
                     <excludes>
                         <!--com.dan.common.test包下的文件不要打包-->
                         <exclude>com/dan/common/test/**</exclude>
+                        <exclude>com/dan/web/common/test/**</exclude>
                     </excludes>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <useSystemClassLoader>true</useSystemClassLoader>
-                    <forkMode>once</forkMode>
                 </configuration>
             </plugin>
             <!--发布代码jar插件-->
@@ -403,18 +433,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-deploy-plugin</artifactId>
                 <configuration>
-                    <skip>${skip_maven_deploy}</skip>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <compilerArgument>-proc:none</compilerArgument>
-                    <fork>true</fork>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
-                    <encoding>${file.encoding}</encoding>
+                    <skip>true</skip>
                 </configuration>
             </plugin>
             <plugin>
@@ -463,11 +482,13 @@
                                 <!-- exclude the internal threadlocal files -->
                                 <!--<exclude>**/org/apache/dubbo/common/threadlocal/InternalThreadLocal.java</exclude>-->
                                 <exclude>com/dan/common/test/**</exclude>
+                                <exclude>com/dan/web/common/test/**</exclude>
                             </excludes>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
+            <!--能够为项目代码库打tag，并将项目代码库中的代码发布到SCM的新版本-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
@@ -477,6 +498,17 @@
                     <releaseProfiles>release</releaseProfiles>
                     <goals>deploy</goals>
                     <arguments>${arguments}</arguments>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <compilerArgument>-proc:none</compilerArgument>
+                    <fork>true</fork>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <encoding>${file.encoding}</encoding>
                 </configuration>
             </plugin>
         </plugins>

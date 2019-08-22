@@ -1,7 +1,6 @@
-package com.dan.web.common.service.impl;
+package com.dan.web.common.test.redis.service.impl;
 
 import com.dan.utils.exception.AppException;
-import com.dan.web.common.service.RedisService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -60,15 +59,17 @@ public class RedisServiceImpl implements RedisService {
      * @param value
      */
     @Override
-    public void unlock(String key, String value) {
+    public boolean unlock(String key, String value) {
         try {
             String currentValue = redisTemplate.opsForValue().get(key);
             if (StringUtils.isNotBlank(currentValue) && currentValue.equals(value)) {
                 redisTemplate.opsForValue().getOperations().delete(key);
+                return true;
             }
         } catch (Exception e) {
             System.err.println("【redis分布式锁加锁异常】：" + e);
         }
+        return false;
     }
 
     public static void main(String[] args) {
@@ -83,7 +84,10 @@ public class RedisServiceImpl implements RedisService {
         //逻辑代码
 
         //解锁
-        redisUtil.unlock(key, strTime);
+        boolean unlock = redisUtil.unlock(key, strTime);
+        if (!unlock) {
+            System.out.println("解锁失败...");
+        }
     }
 
 }
