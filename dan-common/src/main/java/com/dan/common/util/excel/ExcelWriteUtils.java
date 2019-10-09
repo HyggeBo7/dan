@@ -64,6 +64,17 @@ public class ExcelWriteUtils {
      */
     private static final int ROW_WIDTH_MAX = 256 * 256 - 100;
 
+
+    /**
+     * 用于计算单元格宽度-一个中文字符为1.9长度(by:2019年10月9日17:07:07)
+     */
+    private double defaultCharChineseSize = 1.97d;
+
+    /**
+     * 用于计算单元格宽度-其他为1.3长度(by:2019年10月9日17:07:07)
+     */
+    private double defaultCharOtherSize = 1.3d;
+
     /**
      * 导出时间格式 默认 yyyy-MM-dd
      */
@@ -79,7 +90,7 @@ public class ExcelWriteUtils {
     /**
      * 表头字号
      */
-    private short titleFontSize = 14;
+    private short titleFontSize = 16;
     /**
      * 正文字体
      */
@@ -90,14 +101,24 @@ public class ExcelWriteUtils {
     private short contentFontSize = 12;
 
     /**
+     * 自定义内容字号(by:2019年10月9日17:07:07)
+     */
+    private short customContentFontSize = 14;
+
+    /**
+     * 自定义内容字号是否加粗(by:2019年10月9日17:07:07)
+     */
+    private boolean customContentKeyBoldFlag = true;
+
+    /**
      * 自定义文字内容颜色
      */
     private String customHeaderFontColor = "606266";
 
     /**
-     * 自定义默认正文样式
+     * 自定义默认正文样式(by:2019年10月9日17:07:07)
      */
-    private boolean defaultColumnStyleFlag = false;
+    private boolean defaultContentStyleFlag = false;
 
     /**
      * 定义默认样式
@@ -160,9 +181,14 @@ public class ExcelWriteUtils {
     private Map<String, String> defaultWriteTitleColumnAndNameMap;
 
     /**
-     * 设置头部大小
+     * 设置每列单元格固定宽度-[原字段defaultWriteTitleSize](by-u:2019年10月9日16:32:27)
      */
-    private Integer[] defaultWriteTitleSize;
+    private Integer[] defaultColumnWidth;
+
+    /**
+     * 设置每列单元格最小宽度(根据字符自动计算生效)-不设置每列固定宽度生效(by:2019年10月9日16:32:27)
+     */
+    private Integer[] defaultMinColumnWidth;
 
     /**
      * 设置导出标题
@@ -184,6 +210,11 @@ public class ExcelWriteUtils {
      * 是否导出表头
      */
     private boolean defaultTitleHeaderFlag = true;
+
+    /**
+     * 如果值为null是否设置成""(by:2019年10月9日16:32:27)
+     */
+    private boolean valueIsNullToEmptyFlag = false;
 
     //导入(读取)-import
 
@@ -255,12 +286,44 @@ public class ExcelWriteUtils {
         return writeWorkbook.createCellStyle();
     }
 
+    /**
+     * 设置标题大小
+     *
+     * @param titleFontSize 大小
+     */
+    public void setTitleFontSize(short titleFontSize) {
+        this.titleFontSize = titleFontSize;
+    }
+
+    /**
+     * 设置内容字体大小
+     *
+     * @param contentFontSize 大小
+     */
     public void setContentFontSize(short contentFontSize) {
         this.contentFontSize = contentFontSize;
     }
 
-    public void setDefaultColumnStyleFlag(boolean defaultColumnStyleFlag) {
-        this.defaultColumnStyleFlag = defaultColumnStyleFlag;
+    /**
+     * 设置自定义内容字体大小
+     *
+     * @param customContentFontSize 大小
+     */
+    public void setCustomContentFontSize(short customContentFontSize) {
+        this.customContentFontSize = customContentFontSize;
+    }
+
+    /**
+     * 设置自定义内容key值是否加粗
+     *
+     * @param customContentKeyBoldFlag bool
+     */
+    public void setCustomContentKeyBoldFlag(boolean customContentKeyBoldFlag) {
+        this.customContentKeyBoldFlag = customContentKeyBoldFlag;
+    }
+
+    public void setDefaultContentStyleFlag(boolean defaultContentStyleFlag) {
+        this.defaultContentStyleFlag = defaultContentStyleFlag;
     }
 
     public void setDefaultColumnStyle(CellStyle defaultColumnStyle) {
@@ -275,8 +338,12 @@ public class ExcelWriteUtils {
         this.defaultWriteTitleList = defaultWriteTitleList;
     }
 
-    public void setDefaultWriteTitleSize(Integer[] defaultWriteTitleSize) {
-        this.defaultWriteTitleSize = defaultWriteTitleSize;
+    public void setDefaultColumnWidth(Integer[] defaultColumnWidth) {
+        this.defaultColumnWidth = defaultColumnWidth;
+    }
+
+    public void setDefaultMinColumnWidth(Integer[] defaultMinColumnWidth) {
+        this.defaultMinColumnWidth = defaultMinColumnWidth;
     }
 
     public void setDefaultWriteTitleColumnAndNameMap(Map<String, String> defaultWriteTitleColumnAndNameMap) {
@@ -287,8 +354,20 @@ public class ExcelWriteUtils {
         return addWriteCriteriaList;
     }
 
+    public void setDefaultCharChineseSize(Double defaultCharChineseSize) {
+        this.defaultCharChineseSize = defaultCharChineseSize;
+    }
+
+    public void setDefaultCharOtherSize(Double defaultCharOtherSize) {
+        this.defaultCharOtherSize = defaultCharOtherSize;
+    }
+
     public void setRowMinStandardWidth(int rowMinStandardWidth) {
         this.rowMinStandardWidth = rowMinStandardWidth;
+    }
+
+    public void setValueIsNullToEmptyFlag(boolean valueIsNullToEmptyFlag) {
+        this.valueIsNullToEmptyFlag = valueIsNullToEmptyFlag;
     }
 
     public void setTitleRowSize(int titleRowSize) {
@@ -615,7 +694,7 @@ public class ExcelWriteUtils {
 
         //添加Worksheet（不添加sheet时生成的xls文件打开时会报错)
         Sheet sheet = thisWorkBoot.createSheet(writeCriteria.getSheetName());
-        if (defaultColumnStyleFlag) {
+        if (defaultContentStyleFlag) {
             //设置默认sheet样式
             if (defaultColumnStyle == null) {
                 defaultColumnStyle = setFontAndBorder(getCellStyleNew(), contentFontType, contentFontSize, false, false);
@@ -652,11 +731,21 @@ public class ExcelWriteUtils {
         //设置自定义内容
         if (writeCriteria.getCustomHeaderListMap() != null && writeCriteria.getCustomHeaderListMap().size() > 0) {
             int cellIndex = 0;
+            CellStyle keyCellStyle = setFontAndBorder(getCellStyleNew(), contentFontType, customContentFontSize, customContentKeyBoldFlag, false);
+            CellStyle valueCellStyle = setFontAndBorder(getCellStyleNew(), contentFontType, customContentFontSize, false, false);
             for (Map<String, Object> headerMap : writeCriteria.getCustomHeaderListMap()) {
                 Row row = sheet.createRow(rowNum);
                 for (Map.Entry<String, Object> itemEntry : headerMap.entrySet()) {
-                    row.createCell(cellIndex).setCellValue(itemEntry.getKey());
-                    row.createCell(++cellIndex).setCellValue(itemEntry.getValue().toString());
+                    Cell keyCell = row.createCell(cellIndex);
+                    keyCell.setCellStyle(keyCellStyle);
+                    keyCell.setCellValue(itemEntry.getKey());
+                    if (itemEntry.getValue() != null) {
+                        Cell valueCell = row.createCell(++cellIndex);
+                        valueCell.setCellStyle(valueCellStyle);
+                        valueCell.setCellValue(itemEntry.getValue().toString());
+                    } else {
+                        cellIndex++;
+                    }
                     cellIndex++;
                 }
                 rowNum++;
@@ -664,7 +753,7 @@ public class ExcelWriteUtils {
             }
         }
         //获取自定义宽度
-        Integer[] thisTitleSize = writeCriteria.getTitleSize() == null ? defaultWriteTitleSize : writeCriteria.getTitleSize();
+        Integer[] thisTitleSize = writeCriteria.getColumnWidth() == null ? defaultColumnWidth : writeCriteria.getColumnWidth();
         //获取当前列总行数
         int thisColumnSize = thisTitleName != null && thisTitleName.length > 0 ? thisTitleName.length : thisTitleColumn.length;
         //自动获取每列宽度,当前自定义列宽度为null时,自动获取每列宽度
@@ -722,8 +811,7 @@ public class ExcelWriteUtils {
                                     //报错.
                                     //Method method = clsss.getDeclaredMethod(methodName);
                                     Method method = ownerClass.getMethod(methodName, new Class[0]);
-                                    Object invoke = method.invoke(obj);
-                                    data = invoke == null ? "" : invoke;
+                                    data = method.invoke(obj);
                                 } catch (NoSuchMethodException en) {
                                     //data = ((LinkedTreeMap) obj).get(title);
                                     data = StringUtil.judgeConversionType(((Map) obj).get(thisTableHeadName));
@@ -733,11 +821,18 @@ public class ExcelWriteUtils {
                                     continue;
                                 }
                             }
-
-                            Cell cell = dataRow.createCell(columnIndex);
+                            //如果值为null,设置成""
+                            if (data == null && valueIsNullToEmptyFlag) {
+                                Cell cell = dataRow.createCell(columnIndex);
+                                cell.setCellValue("");
+                                continue;
+                            }
                             if (data != null) {
+                                Cell cell = dataRow.createCell(columnIndex);
                                 if (data instanceof Boolean) {
-                                    cell.setCellValue(String.valueOf(data));
+                                    cell.setCellValue(Boolean.parseBoolean(String.valueOf(data)));
+                                } else if (data instanceof Short) {
+                                    cell.setCellValue(Short.parseShort(String.valueOf(data)));
                                 } else if (data instanceof Integer) {
                                     cell.setCellValue(Integer.parseInt(String.valueOf(data)));
                                        /* HSSFCellStyle cellStyle = writeWorkbook.createCellStyle();
@@ -795,9 +890,10 @@ public class ExcelWriteUtils {
                                 } else if (data instanceof Long) {
                                     cell.setCellValue(Long.parseLong(String.valueOf(data)));
                                 } else if (data instanceof Date) {
-                                    if (data != null && StringUtils.isNotBlank(exportDataFormat)) {
+                                    if (StringUtils.isNotBlank(exportDataFormat)) {
                                         String format = new SimpleDateFormat(exportDataFormat).format(((Date) data));
                                         cell.setCellValue(format);
+                                        data = format;
                                     } else {
                                         cell.setCellValue(String.valueOf(data));
                                     }
@@ -805,7 +901,7 @@ public class ExcelWriteUtils {
                                     cell.setCellValue(String.valueOf(data));
                                 }
                                 if (columnIndexWidth != null) {
-                                    int length = StringUtil.calculatePlaces(String.valueOf(data), 1.9, 1.3);
+                                    int length = StringUtil.calculatePlaces(String.valueOf(data), defaultCharChineseSize, defaultCharOtherSize);
                                     if (columnIndexWidth[columnIndex] < length) {
                                         columnIndexWidth[columnIndex] = length;
                                     }
@@ -821,6 +917,21 @@ public class ExcelWriteUtils {
                     }
                 }
 
+            }
+        }
+
+        //设置每列最小宽度
+        if (thisTitleSize == null && defaultMinColumnWidth != null && defaultMinColumnWidth.length > 0) {
+            int minWidthLength = defaultMinColumnWidth.length;
+            for (int i = 0; i < thisColumnSize; i++) {
+                if (i < minWidthLength) {
+                    Integer thisWidthValue = defaultMinColumnWidth[i];
+                    if (thisWidthValue != null && thisWidthValue > columnIndexWidth[i]) {
+                        columnIndexWidth[i] = thisWidthValue;
+                    }
+                } else {
+                    break;
+                }
             }
         }
         //设置自动宽度
@@ -886,8 +997,8 @@ public class ExcelWriteUtils {
         writeExcelFileUrl(sheetName, headMap, dataList, filePath, null);
     }
 
-    public void writeExcelFileUrl(String sheetName, Map<String, String> headMap, List<?> dataList, String filePath, Integer titleSize[]) {
-        WriteCriteria writeCriteria = initWriteCriteria(sheetName, headMap, null, dataList, titleSize, null);
+    public void writeExcelFileUrl(String sheetName, Map<String, String> headMap, List<?> dataList, String filePath, Integer columnWidth[]) {
+        WriteCriteria writeCriteria = initWriteCriteria(sheetName, headMap, null, dataList, columnWidth, null);
         writeExcel(writeCriteria, filePath);
     }
 
@@ -911,20 +1022,20 @@ public class ExcelWriteUtils {
         return writeExcel(sheetName, titleColumn, dataList, null);
     }
 
-    public ByteArrayOutputStream writeExcel(String sheetName, String[] titleColumn, List<?> dataList, Integer[] titleSize) {
-        WriteCriteria writeCriteria = initWriteCriteria(sheetName, null, titleColumn, dataList, titleSize, null);
+    public ByteArrayOutputStream writeExcel(String sheetName, String[] titleColumn, List<?> dataList, Integer[] columnWidth) {
+        WriteCriteria writeCriteria = initWriteCriteria(sheetName, null, titleColumn, dataList, columnWidth, null);
         return writeExcel(writeCriteria);
     }
 
-    public ByteArrayOutputStream writeExcel(String sheetName, Map<String, String> headMap, List<?> dataList, Integer[] titleSize) {
-        WriteCriteria writeCriteria = initWriteCriteria(sheetName, headMap, null, dataList, titleSize, null);
+    public ByteArrayOutputStream writeExcel(String sheetName, Map<String, String> headMap, List<?> dataList, Integer[] columnWidth) {
+        WriteCriteria writeCriteria = initWriteCriteria(sheetName, headMap, null, dataList, columnWidth, null);
         return writeExcel(writeCriteria);
     }
 
     /**
      * 初始化配置
      */
-    private WriteCriteria initWriteCriteria(String sheetName, Map<String, String> headMap, String[] titleColumn, List<?> dataList, Integer[] titleSize, String titleWrite) {
+    private WriteCriteria initWriteCriteria(String sheetName, Map<String, String> headMap, String[] titleColumn, List<?> dataList, Integer[] columnWidth, String titleWrite) {
         WriteCriteria writeCriteria = new WriteCriteria(sheetName, dataList);
         if (titleColumn != null) {
             writeCriteria.setTitleColumn(titleColumn);
@@ -932,8 +1043,8 @@ public class ExcelWriteUtils {
         if (headMap != null) {
             writeCriteria.setWriteTitleColumnAndNameMap(headMap);
         }
-        if (titleSize != null) {
-            writeCriteria.setTitleSize(titleSize);
+        if (columnWidth != null) {
+            writeCriteria.setColumnWidth(columnWidth);
         }
         if (StringUtils.isNotBlank(titleWrite)) {
             writeCriteria.setTitleWrite(titleWrite);
@@ -985,8 +1096,7 @@ public class ExcelWriteUtils {
         for (int i = 0; i < titleHeader.length; i++) {
             //如果columnIndexWidth不为null,说明没有自定义宽度
             if (columnIndexWidth != null) {
-                //中文一个相当于2个,其他相当于1.3
-                int length = StringUtil.calculatePlaces(titleHeader[i], 2.0, 1.3);
+                int length = StringUtil.calculatePlaces(titleHeader[i], defaultCharChineseSize, defaultCharOtherSize);
                 columnIndexWidth[i] = length;
             }
             Cell cell = titleNameRow.createCell(i);
@@ -1223,6 +1333,9 @@ public class ExcelWriteUtils {
      * @return
      */
     public CellStyle setFontAndBorder(CellStyle style, String fontName, short size, boolean boldFlag, boolean borderFlag) {
+        if (style == null) {
+            style = getCellStyleNew();
+        }
         Font font = writeWorkbook.createFont();
         font.setFontHeightInPoints(size);
         font.setFontName(fontName);
@@ -1339,20 +1452,20 @@ public class ExcelWriteUtils {
             this.dataList = dataList;
         }
 
-        protected WriteCriteria(String sheetName, String[] titleColumn, List<?> dataList, Integer[] titleSize, String titleWrite) {
+        protected WriteCriteria(String sheetName, String[] titleColumn, List<?> dataList, Integer[] columnWidth, String titleWrite) {
             this.sheetName = sheetName;
             this.titleColumn = titleColumn;
             this.dataList = dataList;
             this.titleWrite = titleWrite;
-            this.titleSize = titleSize;
+            this.columnWidth = columnWidth;
         }
 
-        protected WriteCriteria(String sheetName, Map<String, String> writeTitleColumnAndNameMap, List<?> dataList, Integer[] titleSize, String titleWrite) {
+        protected WriteCriteria(String sheetName, Map<String, String> writeTitleColumnAndNameMap, List<?> dataList, Integer[] columnWidth, String titleWrite) {
             this.sheetName = sheetName;
             this.writeTitleColumnAndNameMap = writeTitleColumnAndNameMap;
             this.dataList = dataList;
             this.titleWrite = titleWrite;
-            this.titleSize = titleSize;
+            this.columnWidth = columnWidth;
         }
 
         private List<?> dataList;
@@ -1375,9 +1488,9 @@ public class ExcelWriteUtils {
         private Map<String, String> writeTitleColumnAndNameMap;
 
         /**
-         * 自定义列的宽度
+         * 自定义列的固定宽度-[原字段 titleSize]
          */
-        private Integer[] titleSize;
+        private Integer[] columnWidth;
 
         /**
          * 当前页名称
@@ -1437,12 +1550,12 @@ public class ExcelWriteUtils {
             this.writeTitleColumnAndNameMap = writeTitleColumnAndNameMap;
         }
 
-        public Integer[] getTitleSize() {
-            return titleSize;
+        public Integer[] getColumnWidth() {
+            return columnWidth;
         }
 
-        public void setTitleSize(Integer[] titleSize) {
-            this.titleSize = titleSize;
+        public void setColumnWidth(Integer[] columnWidth) {
+            this.columnWidth = columnWidth;
         }
 
         public void setTitleWrite(String titleWrite) {

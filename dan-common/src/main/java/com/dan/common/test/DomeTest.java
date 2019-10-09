@@ -529,7 +529,7 @@ public class DomeTest {
             } else {
                 criteria.setWriteTitleColumnAndNameMap(linkedHashMap3);
                 //自定义每页的宽度
-                criteria.setTitleSize(new Integer[]{50, 20, 30});
+                criteria.setColumnWidth(new Integer[]{50, 20, 30});
                 //取消表头
                 criteria.setTitleHeaderFlag(false);
             }

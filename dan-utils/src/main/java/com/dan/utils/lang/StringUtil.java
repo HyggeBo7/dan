@@ -83,7 +83,9 @@ public class StringUtil {
         if (param == null) {
             return "";
         }
-        if (param instanceof Integer) {
+        if (param instanceof Short) {
+            return Short.parseShort(param.toString());
+        } else if (param instanceof Integer) {
             return Integer.parseInt(param.toString());
         } else if (param instanceof BigDecimal) {
             return new BigDecimal(param.toString());
@@ -113,7 +115,9 @@ public class StringUtil {
         if (param == null) {
             return "";
         }
-        if (param instanceof Integer) {
+        if (param instanceof Short) {
+            return String.valueOf(param);
+        } else if (param instanceof Integer) {
             return String.valueOf(param);
         } else if (param instanceof BigDecimal) {
             return String.valueOf(param);
@@ -248,6 +252,8 @@ public class StringUtil {
             } else if (c <= 0x00FF) {
                 //英文字符
                 m += numberSize;
+            } else {
+                m += 1;
             }
         }
         return m.intValue();
