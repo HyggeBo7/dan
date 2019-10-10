@@ -358,7 +358,7 @@ public class DomeTest {
         //设置excel导出标题
         //excelWriteUtils.setDefaultWriteTitle("哈哈哈哈哈哈");
         //设置内容样式-默认false
-        excelWriteUtils.setDefaultColumnStyleFlag(true);
+        excelWriteUtils.setDefaultContentStyleFlag(true);
 
         Integer[] titleSize = {50, 20, 10, 50, 50, 50, 50, 50, 50, 50};
 
@@ -404,7 +404,7 @@ public class DomeTest {
 
         ExcelWriteUtils excelWriteUtils = ExcelWriteUtils.createWriteExcel();
         //设置内容样式-默认false
-        excelWriteUtils.setDefaultColumnStyleFlag(true);
+        excelWriteUtils.setDefaultContentStyleFlag(true);
         //标题颜色
         excelWriteUtils.setTitleBackColor(null);
         List<UserInfo> userInfoList = null;
@@ -485,7 +485,7 @@ public class DomeTest {
         linkedHashMap3.put("testLong", "Long");
         ExcelWriteUtils excelWriteUtils = ExcelWriteUtils.createWriteExcel();
         //设置内容样式-默认false
-        excelWriteUtils.setDefaultColumnStyleFlag(true);
+        excelWriteUtils.setDefaultContentStyleFlag(true);
         //标题颜色
         excelWriteUtils.setTitleBackColor(null);
         //设置全部sheet都没有表头
@@ -560,7 +560,7 @@ public class DomeTest {
     public void testWriteSheetsTitles() throws IOException {
         ExcelWriteUtils excelWriteUtils = ExcelWriteUtils.createWriteExcel();
         //设置内容样式-默认false
-        excelWriteUtils.setDefaultColumnStyleFlag(true);
+        excelWriteUtils.setDefaultContentStyleFlag(true);
         //标题颜色
         excelWriteUtils.setTitleBackColor(null);
         excelWriteUtils.setDefaultWriteTitle("标题");
