@@ -66,12 +66,12 @@ public class ExcelWriteUtils {
 
 
     /**
-     * 用于计算单元格宽度-一个中文字符为1.9长度(by:2019年10月9日17:07:07)
+     * 用于计算单元格宽度-一个中文字符为1.97长度
      */
     private double defaultCharChineseSize = 1.97d;
 
     /**
-     * 用于计算单元格宽度-其他为1.3长度(by:2019年10月9日17:07:07)
+     * 用于计算单元格宽度-其他为1.3长度
      */
     private double defaultCharOtherSize = 1.3d;
 
@@ -736,9 +736,11 @@ public class ExcelWriteUtils {
             for (Map<String, Object> headerMap : writeCriteria.getCustomHeaderListMap()) {
                 Row row = sheet.createRow(rowNum);
                 for (Map.Entry<String, Object> itemEntry : headerMap.entrySet()) {
-                    Cell keyCell = row.createCell(cellIndex);
-                    keyCell.setCellStyle(keyCellStyle);
-                    keyCell.setCellValue(itemEntry.getKey());
+                    if (itemEntry.getKey() != null) {
+                        Cell keyCell = row.createCell(cellIndex);
+                        keyCell.setCellStyle(keyCellStyle);
+                        keyCell.setCellValue(itemEntry.getKey());
+                    }
                     if (itemEntry.getValue() != null) {
                         Cell valueCell = row.createCell(++cellIndex);
                         valueCell.setCellStyle(valueCellStyle);
