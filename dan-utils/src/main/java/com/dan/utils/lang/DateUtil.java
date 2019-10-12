@@ -545,12 +545,11 @@ public class DateUtil {
      */
     public static Date getTimeOneDay(Integer currentYear, Integer currentMonth) {
         Calendar cal = Calendar.getInstance();
-
         cal.set(currentYear, currentMonth, 1, 0, 0, 0);
         cal.add(Calendar.MONTH, -1);
         cal.set(Calendar.DAY_OF_MONTH, 1);
-        //System.out.println("第一天："+DateUtil.parseToString(cal.getTime()));
-
+        //毫秒
+        cal.set(Calendar.MILLISECOND, 0);
         return cal.getTime();
     }
 
@@ -561,14 +560,12 @@ public class DateUtil {
      * @param currentMonth 月
      * @return Date
      */
-    public static Date getTimelastDay(Integer currentYear, Integer currentMonth) {
+    public static Date getTimeLastDay(Integer currentYear, Integer currentMonth) {
         Calendar cal = Calendar.getInstance();
-        //当月最后一天
         cal.set(currentYear, currentMonth, 1, 23, 59, 59);
         cal.add(Calendar.MONTH, -1);
         cal.set(Calendar.DAY_OF_MONTH, cal.getActualMaximum(Calendar.DAY_OF_MONTH));
-        // System.out.println("最后一天："+DateUtil.parseToString(cal.getTime()));
-
+        cal.set(Calendar.MILLISECOND, 999);
         return cal.getTime();
     }
 
@@ -585,7 +582,7 @@ public class DateUtil {
         cal.set(cal.get(Calendar.YEAR), (cal.get(Calendar.MONTH) + 1), 1, 0, 0, 0);
         cal.add(Calendar.MONTH, -1);
         cal.set(Calendar.DAY_OF_MONTH, 1);
-
+        cal.set(Calendar.MILLISECOND, 0);
         return cal.getTime();
     }
 
@@ -602,6 +599,7 @@ public class DateUtil {
         cal.set(cal.get(Calendar.YEAR), (cal.get(Calendar.MONTH) + 1), 1, 23, 59, 59);
         cal.add(Calendar.MONTH, -1);
         cal.set(Calendar.DAY_OF_MONTH, cal.getActualMaximum(Calendar.DAY_OF_MONTH));
+        cal.set(Calendar.MILLISECOND, 999);
         return cal.getTime();
     }
 
