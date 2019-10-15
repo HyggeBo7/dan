@@ -113,12 +113,12 @@ public class ExcelWriteUtils {
     /**
      * 自定义文字内容颜色
      */
-    private String customHeaderFontColor = "606266";
+    private String customHeaderFontColor = "CFD5DA";
 
     /**
-     * 自定义默认正文样式(by:2019年10月9日17:07:07)
+     * 自定义默认正文样式(by:2019年10月9日17:07:07)-默认true
      */
-    private boolean defaultContentStyleFlag = false;
+    private boolean defaultContentStyleFlag = true;
 
     /**
      * 定义默认样式
@@ -710,9 +710,11 @@ public class ExcelWriteUtils {
         int rowNum = 0;
         //判断是否有标题,写入标题
         String thisTitleWrite = StringUtils.isNotBlank(writeCriteria.getTitleWrite()) ? writeCriteria.getTitleWrite() : defaultWriteTitle;
+        //获取当前列总行数
+        int thisColumnSize = thisTitleColumn.length;
         if (StringUtils.isNotBlank(thisTitleWrite)) {
             Row row = sheet.createRow(rowNum);
-            int thisTitleRowSize = titleRowSize == -1 ? thisTitleColumn.length - 1 : titleRowSize - 1;
+            int thisTitleRowSize = titleRowSize == -1 ? thisColumnSize - 1 : titleRowSize - 1;
             // 合并行列,四个参数分别是：起始行，结束行，起始列，结束列
             sheet.addMergedRegion(new CellRangeAddress(rowNum, rowNum, 0, thisTitleRowSize));
             setTitleWritExcelValue(row, thisTitleWrite, 0);
@@ -754,10 +756,12 @@ public class ExcelWriteUtils {
                 cellIndex = 0;
             }
         }
+        //设置导出图片
+        if (writeCriteria.getExcelHeaderImageList() != null && writeCriteria.getExcelHeaderImageList().size() > 0) {
+            rowNum = exportImages(rowNum, thisColumnSize - 1, writeCriteria.getExcelHeaderImageList(), thisWorkBoot, sheet);
+        }
         //获取自定义宽度
         Integer[] thisTitleSize = writeCriteria.getColumnWidth() == null ? defaultColumnWidth : writeCriteria.getColumnWidth();
-        //获取当前列总行数
-        int thisColumnSize = thisTitleName != null && thisTitleName.length > 0 ? thisTitleName.length : thisTitleColumn.length;
         //自动获取每列宽度,当前自定义列宽度为null时,自动获取每列宽度
         int[] columnIndexWidth = null;
         if (thisTitleSize == null) {
@@ -767,8 +771,7 @@ public class ExcelWriteUtils {
         boolean thisTitleHeaderFlag = writeCriteria.isTitleHeaderFlag() == null ? defaultTitleHeaderFlag : writeCriteria.isTitleHeaderFlag();
         if (thisTitleHeaderFlag) {
             //写入excel的表头
-            Row titleNameRow = sheet.createRow(rowNum);
-            rowNum++;
+            Row titleNameRow = sheet.createRow(rowNum++);
             if (thisTitleName != null && thisTitleName.length > 0) {
                 setTitleHeader(titleNameRow, thisTitleName, columnIndexWidth);
             } else {
@@ -960,6 +963,11 @@ public class ExcelWriteUtils {
                 }
             }
         }
+        //导出数据后面的图片
+        if (writeCriteria.getExcelDataImageList() != null && writeCriteria.getExcelDataImageList().size() > 0) {
+            rowNum = (dataList != null ? dataList.size() : 0) + rowNum;
+            exportImages(rowNum, thisColumnSize - 1, writeCriteria.getExcelDataImageList(), thisWorkBoot, sheet);
+        }
     }
 
     //导出重载方法
@@ -1105,6 +1113,38 @@ public class ExcelWriteUtils {
             cell.setCellStyle(titleStyle);
             cell.setCellValue(titleHeader[i]);
         }
+    }
+
+    /**
+     * 导出图片-2019年10月15日12:27:26
+     *
+     * @param startRow       导出的开始行
+     * @param columnSize     列总数
+     * @param excelImageList 导出的图片
+     * @param thisWorkBoot   workBook
+     * @param sheet          sheet
+     * @return 开始行 + 导出图片的行
+     */
+    private int exportImages(int startRow, int columnSize, List<ExcelImage> excelImageList, Workbook thisWorkBoot, Sheet sheet) {
+        if (excelImageList != null && excelImageList.size() > 0) {
+            Drawing drawingPatriarch = sheet.createDrawingPatriarch();
+            for (ExcelImage excelImage : excelImageList) {
+                if (excelImage.isMergedRegionFlag()) {
+                    //合并单元格,startRow + excelImage.getRowNum() - 1,因为Excel行是从0开始,所以要-1
+                    sheet.addMergedRegion(new CellRangeAddress(startRow, startRow + excelImage.getRowNum() - 1, 0, excelImage.getColNum() < 0 ? columnSize : excelImage.getColNum()));
+                }
+                if (excelImage.getHeight() > 0) {
+                    //设置高
+                    sheet.createRow(startRow).setHeight(excelImage.getHeight());
+                }
+                //设置图片在当前行 0-字段长度,主要设置图片属性
+                ClientAnchor anchor = drawingPatriarch.createAnchor(0, 1, 1023, 255, 0, startRow, excelImage.getColNum() < 0 ? columnSize : excelImage.getColNum(), startRow + excelImage.getRowNum() - 1);
+                anchor.setAnchorType(excelImage.getAnchorType());
+                drawingPatriarch.createPicture(anchor, thisWorkBoot.addPicture(excelImage.getImageByte(), HSSFWorkbook.PICTURE_TYPE_PNG));
+                startRow += excelImage.getRowNum();
+            }
+        }
+        return startRow;
     }
 
     //导入私有方法
@@ -1504,6 +1544,16 @@ public class ExcelWriteUtils {
          */
         private Boolean titleHeaderFlag;
 
+        /**
+         * excel导出图片-自定义列
+         */
+        private List<ExcelImage> excelHeaderImageList;
+
+        /**
+         * excel导出图片-列表数据下面
+         */
+        private List<ExcelImage> excelDataImageList;
+
         public List<Map<String, Object>> getCustomHeaderListMap() {
             return customHeaderListMap;
         }
@@ -1576,6 +1626,21 @@ public class ExcelWriteUtils {
             return dataList;
         }
 
+        public List<ExcelImage> getExcelHeaderImageList() {
+            return excelHeaderImageList;
+        }
+
+        public void setExcelHeaderImageList(List<ExcelImage> excelHeaderImageList) {
+            this.excelHeaderImageList = excelHeaderImageList;
+        }
+
+        public List<ExcelImage> getExcelDataImageList() {
+            return excelDataImageList;
+        }
+
+        public void setExcelDataImageList(List<ExcelImage> excelDataImageList) {
+            this.excelDataImageList = excelDataImageList;
+        }
     }
 
     public static class ReadCriteria {
