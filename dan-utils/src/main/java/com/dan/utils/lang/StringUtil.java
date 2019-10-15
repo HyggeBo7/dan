@@ -73,7 +73,7 @@ public class StringUtil {
                 String regex = "\\$\\{" + entry.getKey() + "\\}";
                 Pattern pattern = Pattern.compile(regex);
                 Matcher matcher = pattern.matcher(content);
-                content = matcher.replaceAll(judgeType(entry.getValue()));
+                content = matcher.replaceAll(judgeTypeString(entry.getValue()));
             }
         }
         return content;
@@ -105,35 +105,21 @@ public class StringUtil {
         } else if (param instanceof Boolean) {
             return Boolean.parseBoolean(param.toString());
         }
-        return String.valueOf(param);
+        return param;
     }
 
     /**
      * 判断类型-String类型返回结果加单引号
      */
-    public static String judgeType(Object param) {
+    public static String judgeTypeString(Object param) {
         if (param == null) {
             return "";
         }
-        if (param instanceof Short) {
-            return String.valueOf(param);
-        } else if (param instanceof Integer) {
-            return String.valueOf(param);
-        } else if (param instanceof BigDecimal) {
-            return String.valueOf(param);
-        } else if (param instanceof Double) {
-            return String.valueOf(param);
-        } else if (param instanceof Float) {
-            return String.valueOf(param);
-        } else if (param instanceof Long) {
-            return String.valueOf(param);
-        } else if (param instanceof Boolean) {
+        if (param instanceof String) {
+            return "'" + param + "'";
+        } else {
             return String.valueOf(param);
         }
-        /* else if (param instanceof String) {
-        }*/
-        return "'" + param + "'";
-
     }
 
     /**
