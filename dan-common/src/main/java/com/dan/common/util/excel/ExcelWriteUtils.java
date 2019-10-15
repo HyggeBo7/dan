@@ -1130,15 +1130,15 @@ public class ExcelWriteUtils {
             Drawing drawingPatriarch = sheet.createDrawingPatriarch();
             for (ExcelImage excelImage : excelImageList) {
                 if (excelImage.isMergedRegionFlag()) {
-                    //合并单元格,startRow + excelImage.getRowNum() - 1,因为Excel行是从0开始,所以要-1
-                    sheet.addMergedRegion(new CellRangeAddress(startRow, startRow + excelImage.getRowNum() - 1, 0, excelImage.getColNum() < 0 ? columnSize : excelImage.getColNum()));
+                    //合并单元格,RowNum和ColNum都要 - 1,因为Excel行是从0开始
+                    sheet.addMergedRegion(new CellRangeAddress(startRow, startRow + excelImage.getRowNum() - 1, 0, excelImage.getColNum() < 1 ? columnSize : excelImage.getColNum() - 1));
                 }
                 if (excelImage.getHeight() > 0) {
                     //设置高
                     sheet.createRow(startRow).setHeight(excelImage.getHeight());
                 }
                 //设置图片在当前行 0-字段长度,主要设置图片属性
-                ClientAnchor anchor = drawingPatriarch.createAnchor(0, 1, 1023, 255, 0, startRow, excelImage.getColNum() < 0 ? columnSize : excelImage.getColNum(), startRow + excelImage.getRowNum() - 1);
+                ClientAnchor anchor = drawingPatriarch.createAnchor(0, 1, 1023, 255, 0, startRow, excelImage.getColNum() < 1 ? columnSize : excelImage.getColNum() - 1, startRow + excelImage.getRowNum() - 1);
                 anchor.setAnchorType(excelImage.getAnchorType());
                 drawingPatriarch.createPicture(anchor, thisWorkBoot.addPicture(excelImage.getImageByte(), HSSFWorkbook.PICTURE_TYPE_PNG));
                 startRow += excelImage.getRowNum();

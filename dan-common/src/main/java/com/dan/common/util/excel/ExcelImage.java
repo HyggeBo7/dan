@@ -14,7 +14,7 @@ public class ExcelImage {
     private short colHeight = 255;
 
     public ExcelImage(byte[] imageByte, short height, int format) {
-        this(imageByte, height, format, 1, -1);
+        this(imageByte, height, format, 1, 0);
     }
 
     public ExcelImage(byte[] imageByte, short height, int format, int rowNum, int colNum) {
@@ -53,7 +53,7 @@ public class ExcelImage {
      */
     private int rowNum;
     /**
-     * 占单元格几列-小于0自动获取列表总列
+     * 占单元格几列-小于1自动获取列表总列
      */
     private int colNum;
 
