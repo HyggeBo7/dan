@@ -12,6 +12,7 @@ import com.dan.utils.entity.AjaxResult;
 import com.dan.utils.file.FileUtil;
 import com.dan.utils.lang.DateUtil;
 import com.dan.utils.lang.ImageUtils;
+import com.dan.utils.lang.ObjectUtil;
 import com.dan.utils.lang.RandomUtils;
 import com.dan.utils.network.HttpUtils;
 import com.dan.utils.tree.TreeNodeUtil;
@@ -801,5 +802,31 @@ public class DomeTest {
             }
         }
         System.out.println("set:size:" + size);
+    }
+
+    @Test
+    public void testObjIsEmpty() {
+        HashMap<Object, Object> hashMap = new HashMap<>();
+        hashMap.put("lalal", 1);
+        LinkedHashMap<Object, Object> linkedHashMap = new LinkedHashMap<>();
+        linkedHashMap.put("lalal", 1);
+        ArrayList<Object> arrayList = new ArrayList<>();
+        arrayList.add("aaa");
+
+        System.out.println("HashMap:" + ObjectUtil.isNotEmptyObj(hashMap));
+        System.out.println("linkedHashMap:" + ObjectUtil.isNotEmptyObj(linkedHashMap));
+        System.out.println("arrayList:" + ObjectUtil.isNotEmptyObj(arrayList));
+
+        String[] stringArr = {"10"};
+        int[] intArr = {};
+        Integer[] integerArr = new Integer[10];
+        System.out.println("stringArr:" + ObjectUtil.isNotEmptyObj(stringArr));
+        System.out.println("intArr:" + ObjectUtil.isNotEmptyObj(intArr));
+        System.out.println("integerArr:" + ObjectUtil.isNotEmptyObj(integerArr));
+        UserInfo userInfo = new UserInfo();
+        System.out.println("userInfo:" + ObjectUtil.isNotEmptyObj(userInfo));
+        System.out.println("string:" + ObjectUtil.isNotEmptyObj("123654"));
+        System.out.println("int:" + ObjectUtil.isNotEmptyObj(123));
+        System.out.println("defaultIfNull(null,123)" + ObjectUtil.defaultIfNull(null, 123));
     }
 }
