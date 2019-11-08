@@ -436,12 +436,16 @@ public class DateUtil {
 
     /**
      * 获取一个时间段所有日期-(天数)
+     * 开始日期-结束日期(小于/等于)
+     * <pre>
+     *     (2019-11-15 10:00:10,2019-11-30 23:59:59)==>2019-11-15 00:00:00->2019-11-30 00:00:00
+     * </pre>
      *
      * @param beginDate 开始时间
      * @param endDate   结束时间
      * @return List<Date>
      */
-    public static List<Date> getDatesDay(Date beginDate, Date endDate) {
+    public static List<Date> getDatesByDay(Date beginDate, Date endDate) {
         return getDates(beginDate, endDate, Calendar.DAY_OF_MONTH, 1);
     }
 
@@ -452,7 +456,7 @@ public class DateUtil {
      * @param endDate   结束时间
      * @return List<Date>
      */
-    public static List<Date> getDatesMonth(Date beginDate, Date endDate) {
+    public static List<Date> getDatesByMonth(Date beginDate, Date endDate) {
         return getDates(beginDate, endDate, Calendar.MONTH, 1);
     }
 
@@ -464,7 +468,7 @@ public class DateUtil {
      * @param format    时间格式
      * @return List<String>
      */
-    public static List<String> getDatesDayString(Date beginDate, Date endDate, String format) {
+    public static List<String> getDatesByDayString(Date beginDate, Date endDate, String format) {
         return getDatesString(beginDate, endDate, Calendar.DAY_OF_MONTH, 1, format);
     }
 
@@ -476,7 +480,7 @@ public class DateUtil {
      * @param format    时间格式
      * @return List<String>
      */
-    public static List<String> getDatesMonthString(Date beginDate, Date endDate, String format) {
+    public static List<String> getDatesByMonthString(Date beginDate, Date endDate, String format) {
         return getDatesString(beginDate, endDate, Calendar.MONTH, 1, format);
     }
 
@@ -495,14 +499,14 @@ public class DateUtil {
         Calendar calBegin = Calendar.getInstance();
         // 使用给定的 Date 设置此 Calendar 的时间
         calBegin.setTime(beginDate);
-        Calendar calEnd = Calendar.getInstance();
-        // 使用给定的 Date 设置此 Calendar 的时间
-        calEnd.setTime(endDate);
         // 测试此日期是否在指定日期之后
         while (endDate.after(calBegin.getTime())) {
             // 根据日历的规则，为给定的日历字段添加或减去指定的时间量
             calBegin.add(field, amount);
-            returnDate.add(calBegin.getTime());
+            //处理有可能,还没有加之前开始时间小于结束日期,增加后就大于结束日期了
+            if (calBegin.getTime().getTime() <= endDate.getTime()) {
+                returnDate.add(calBegin.getTime());
+            }
         }
         return returnDate;
     }
@@ -524,16 +528,28 @@ public class DateUtil {
         Calendar calBegin = Calendar.getInstance();
         // 使用给定的 Date 设置此 Calendar 的时间
         calBegin.setTime(beginDate);
-        Calendar calEnd = Calendar.getInstance();
-        // 使用给定的 Date 设置此 Calendar 的时间
-        calEnd.setTime(endDate);
         // 测试此日期是否在指定日期之后
         while (endDate.after(calBegin.getTime())) {
             // 根据日历的规则，为给定的日历字段添加或减去指定的时间量
             calBegin.add(field, amount);
-            returnDateStr.add(sd.format(calBegin.getTime()));
+            if (calBegin.getTime().getTime() <= endDate.getTime()) {
+                returnDateStr.add(sd.format(calBegin.getTime()));
+            }
         }
         return returnDateStr;
+    }
+
+    /**
+     * 获取当月第一天
+     *
+     * @param currentDate 日期
+     * @return 第一天
+     */
+    public static Date getDateFirstDay(Date currentDate) {
+        if (currentDate == null) {
+            return null;
+        }
+        return getTimeFirstDay(getYear(currentDate), getMonth(currentDate));
     }
 
     /**
@@ -543,7 +559,7 @@ public class DateUtil {
      * @param currentMonth 月
      * @return Date
      */
-    public static Date getTimeOneDay(Integer currentYear, Integer currentMonth) {
+    public static Date getTimeFirstDay(Integer currentYear, Integer currentMonth) {
         Calendar cal = Calendar.getInstance();
         cal.set(currentYear, currentMonth, 1, 0, 0, 0);
         cal.add(Calendar.MONTH, -1);
@@ -551,6 +567,19 @@ public class DateUtil {
         //毫秒
         cal.set(Calendar.MILLISECOND, 0);
         return cal.getTime();
+    }
+
+    /**
+     * 获取当月最后一天
+     *
+     * @param currentDate 日期
+     * @return 最后一天
+     */
+    public static Date getDateLastDay(Date currentDate) {
+        if (currentDate == null) {
+            return null;
+        }
+        return getTimeLastDay(getYear(currentDate), getMonth(currentDate));
     }
 
     /**
