@@ -182,7 +182,6 @@ public class HttpUtils {
             connection.setReadTimeout(DEFAULT_READ_TIMEOUT);
 
             // 设置请求方式（GET/POST）
-
             if (methodPostFlag) {
                 // 发送POST请求必须设置如下两行
                 connection.setDoOutput(true);
@@ -195,7 +194,7 @@ public class HttpUtils {
             connection.setUseCaches(false);
 
             //设置头部
-            if (headerMap != null && headerMap.size() == 0) {
+            if (headerMap != null && headerMap.size() > 0) {
                 for (Map.Entry<String, String> headerItem : headerMap.entrySet()) {
                     connection.setRequestProperty(headerItem.getKey(), headerItem.getValue());
                 }
@@ -203,10 +202,11 @@ public class HttpUtils {
             // 设置通用的请求属性
             if (usePropertyFlag) {
                 if (paramMap == null || paramMap.get(ACCEPT) == null) {
-                    connection.setRequestProperty("Accept", "*/*");
+                    connection.addRequestProperty("Accept", "*/*");
                 }
-                connection.setRequestProperty("Connection", "Keep-Alive");
-                connection.setRequestProperty("User-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
+                connection.addRequestProperty("Connection", "keep-alive");
+                //  Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)
+                connection.addRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64)");
             }
 
             // 当paramMap不为null时向输出流写数据
