@@ -201,7 +201,7 @@ public class HttpUtils {
             }
             // 设置通用的请求属性
             if (usePropertyFlag) {
-                if (paramMap == null || paramMap.get(ACCEPT) == null) {
+                if (headerMap == null || headerMap.get(ACCEPT) == null) {
                     connection.addRequestProperty("Accept", "*/*");
                 }
                 connection.addRequestProperty("Connection", "keep-alive");
