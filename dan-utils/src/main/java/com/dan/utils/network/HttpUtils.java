@@ -50,6 +50,7 @@ public class HttpUtils {
     private static final String METHOD_POST = "POST";
     private static final int SUCCESS_CODE = 200;
     private static final String ACCEPT = "Accept";
+    private static final String USER_AGENT = "User-Agent";
     private static final String ACCEPT_CONTENT_TYPE = "application/json, text/plain, */*";
     private static final String CONTENT_TYPE = "Content-Type";
     private static final String CONTENT_TYPE_1 = "content-type";
@@ -202,11 +203,13 @@ public class HttpUtils {
             // 设置通用的请求属性
             if (usePropertyFlag) {
                 if (headerMap == null || headerMap.get(ACCEPT) == null) {
-                    connection.addRequestProperty("Accept", "*/*");
+                    connection.addRequestProperty(ACCEPT, "*/*");
+                }
+                if (headerMap == null || headerMap.get(USER_AGENT) == null) {
+                    //  Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)
+                    connection.addRequestProperty(USER_AGENT, "Mozilla/5.0 (Windows NT 6.1; Win64; x64)");
                 }
                 connection.addRequestProperty("Connection", "keep-alive");
-                //  Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)
-                connection.addRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64)");
             }
 
             // 当paramMap不为null时向输出流写数据
