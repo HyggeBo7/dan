@@ -12,7 +12,7 @@ import java.net.URLEncoder;
 import java.security.SecureRandom;
 
 /**
- * Created by ShengHaiJiang on 6/29/15.
+ * Created by Bo on 6/29/15.
  */
 public class AESUtil {
 

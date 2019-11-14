@@ -21,44 +21,34 @@ public class AjaxResult extends BaseSerializable {
     }
 
     public AjaxResult(Object data) {
-        code = SUCCESS;
-        if (null == data) {
-            data = "";
-        }
-        this.data = data;
+        this(SUCCESS, null, data);
     }
 
     public AjaxResult(Object data, boolean serializeNulls) {
-        code = SUCCESS;
-        sNulls = serializeNulls;
-        if (null == data) {
-            data = "";
-        }
-        this.data = data;
-    }
-
-    public AjaxResult(Integer code) {
-        this.code = code;
+        this(SUCCESS, null, data, serializeNulls);
     }
 
     public AjaxResult(Integer code, String msg) {
-        this.code = code;
-        if (null == msg) {
-            msg = "";
-        }
-        this.msg = msg;
+        this(code, msg, null);
     }
 
     public AjaxResult(Integer code, String msg, Object data) {
-        if (null == data) {
-            data = "";
-        }
-        if (null == msg) {
-            msg = "";
+        this(code, msg, data, true);
+    }
+
+    public AjaxResult(Integer code, String msg, Object data, boolean serializeNulls) {
+        if (!serializeNulls) {
+            if (null == data) {
+                data = "";
+            }
+            if (null == msg) {
+                msg = "";
+            }
         }
         this.code = code;
         this.msg = msg;
         this.data = data;
+        this.sNulls = serializeNulls;
     }
 
     @Override

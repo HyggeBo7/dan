@@ -1,7 +1,7 @@
 package com.dan.utils.enums;
 
 /**
- * Created by ShengHaiJiang on 2017/3/27.
+ * Created by Bo on 2017/3/27.
  */
 public enum ErrorCodeEnums {
 

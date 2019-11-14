@@ -2,8 +2,6 @@ package com.dan.utils.entity;
 
 import com.dan.utils.JsonUtil;
 
-import java.io.Serializable;
-
 /**
  * Created by Administrator on 2016/1/26.
  */
@@ -23,36 +21,31 @@ public class AjaxResultGeneric<T> extends BaseSerializable {
     }
 
     public AjaxResultGeneric(T data) {
-        code = SUCCESS;
-        this.data = data;
+        this(SUCCESS, null, data);
     }
 
     public AjaxResultGeneric(T data, boolean serializeNulls) {
-        code = SUCCESS;
-        sNulls = serializeNulls;
-
-        this.data = data;
-    }
-
-    public AjaxResultGeneric(Integer code) {
-        this.code = code;
+        this(SUCCESS, null, data, serializeNulls);
     }
 
     public AjaxResultGeneric(Integer code, String msg) {
-        this.code = code;
-        if (null == msg) {
-            msg = "";
-        }
-        this.msg = msg;
+        this(code, msg, null);
     }
 
     public AjaxResultGeneric(Integer code, String msg, T data) {
-        if (null == msg) {
-            msg = "";
+        this(code, msg, data, true);
+    }
+
+    public AjaxResultGeneric(Integer code, String msg, T data, boolean serializeNulls) {
+        if (!serializeNulls) {
+            if (null == msg) {
+                msg = "";
+            }
         }
         this.code = code;
         this.msg = msg;
         this.data = data;
+        this.sNulls = serializeNulls;
     }
 
     @Override
