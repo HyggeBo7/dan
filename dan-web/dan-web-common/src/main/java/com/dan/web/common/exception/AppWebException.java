@@ -1,5 +1,6 @@
 package com.dan.web.common.exception;
 
+import com.dan.utils.exception.ExceptionHandlerService;
 import com.netflix.hystrix.exception.HystrixBadRequestException;
 
 import java.io.Serializable;
@@ -7,7 +8,7 @@ import java.io.Serializable;
 /**
  * Created by dan on 2016/3/2.
  */
-public class AppWebException extends HystrixBadRequestException implements Serializable {
+public class AppWebException extends HystrixBadRequestException implements ExceptionHandlerService, Serializable {
     private static final long serialVersionUID = -416273111872183366L;
 
     public static final Integer PARAM_ERROR = 400;
@@ -38,19 +39,26 @@ public class AppWebException extends HystrixBadRequestException implements Seria
         this.t = t;
     }
 
+    @Override
     public Integer getCode() {
         return code;
+    }
+
+    @Override
+    public String getExceptionMsg() {
+        return getMessage();
     }
 
     public void setCode(Integer code) {
         this.code = code;
     }
 
-    public Throwable getT() {
+    @Override
+    public Throwable getThrowable() {
         return t;
     }
 
-    public void setT(Throwable t) {
+    public void setThrowable(Throwable t) {
         this.t = t;
     }
 

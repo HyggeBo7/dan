@@ -1,7 +1,7 @@
 package com.dan.web.common.springmvc;
 
 import com.dan.utils.entity.AjaxResult;
-import com.dan.utils.exception.AppException;
+import com.dan.utils.exception.ExceptionHandlerService;
 import com.dan.web.common.util.HttpServletRequestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -43,10 +43,10 @@ public class ExceptionHandlerResolver extends SimpleMappingExceptionResolver {
                 ajaxResult = new AjaxResult(code, message, null);
             }*/
             if (ajaxResult == null) {
-                if (ex instanceof AppException) {
-                    AppException appException = (AppException) ex;
+                if (ex instanceof ExceptionHandlerService) {
+                    ExceptionHandlerService appException = (ExceptionHandlerService) ex;
                     Integer code = appException.getCode();
-                    String message = appException.getMessage();
+                    String message = appException.getExceptionMsg();
                     ajaxResult = new AjaxResult(code, message, null);
                 } else if (ex.getClass().getName().equals("org.apache.shiro.authz.UnauthorizedException")) {
                     //Subject does not have permission [material:update]
