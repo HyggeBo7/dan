@@ -2,7 +2,6 @@ package com.dan.web.common.springmvc;
 
 import com.dan.utils.entity.AjaxResult;
 import com.dan.utils.exception.AppException;
-import com.dan.web.common.exception.AppWebException;
 import com.dan.web.common.util.HttpServletRequestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -37,23 +36,17 @@ public class ExceptionHandlerResolver extends SimpleMappingExceptionResolver {
         if (ex != null) {
             logger.error("uri={} para={} trace={}", request.getRequestURI(), HttpServletRequestUtils.getStringRequestParam(request), ExceptionUtils.getStackTrace(ex));
             AjaxResult ajaxResult = customizeException(ex);
-            /*if (ex instanceof XTException) {
-                XTException xtException = (XTException) ex;
-                Integer code = xtException.getCode();
-                String message = xtException.getMessage();
+            /*else if (ex instanceof AppWebException) {
+                AppWebException appWebException = (AppWebException) ex;
+                Integer code = appWebException.getCode();
+                String message = appWebException.getMessage();
                 ajaxResult = new AjaxResult(code, message, null);
-            } else*/
-
+            }*/
             if (ajaxResult == null) {
                 if (ex instanceof AppException) {
                     AppException appException = (AppException) ex;
                     Integer code = appException.getCode();
                     String message = appException.getMessage();
-                    ajaxResult = new AjaxResult(code, message, null);
-                } else if (ex instanceof AppWebException) {
-                    AppWebException appWebException = (AppWebException) ex;
-                    Integer code = appWebException.getCode();
-                    String message = appWebException.getMessage();
                     ajaxResult = new AjaxResult(code, message, null);
                 } else if (ex.getClass().getName().equals("org.apache.shiro.authz.UnauthorizedException")) {
                     //Subject does not have permission [material:update]
