@@ -29,7 +29,7 @@ public class FreemarkerUtils {
         if (baseDir == null || !baseDir.isDirectory() || StringUtils.isBlank(fileName)) {
             throw new IllegalArgumentException("模板目录不存在或模板名称不存在!");
         }
-        Configuration cfg = new Configuration(Configuration.VERSION_2_3_23);
+        Configuration cfg = new Configuration(Configuration.VERSION_2_3_29);
         try {
             cfg.setDirectoryForTemplateLoading(baseDir);
             cfg.setDefaultEncoding("UTF-8");
