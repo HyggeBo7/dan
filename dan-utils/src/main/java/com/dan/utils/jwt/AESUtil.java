@@ -73,12 +73,12 @@ public class AESUtil {
 
     }
 
-    public static void main(String[] args) {
+    /*public static void main(String[] args) {
         String content = "bo";
         String decryptKey = "dan";
         String encryptAES = AESUtil.encryptAES(content, decryptKey);
         String decryptAES = AESUtil.decryptAES(encryptAES, decryptKey);
         System.out.println("decryptAES:" + decryptAES + ",encryptAES:" + encryptAES);
-    }
+    }*/
 
 }

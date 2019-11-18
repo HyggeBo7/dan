@@ -14,7 +14,6 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * @author joker
@@ -295,22 +294,21 @@ public class RSAUtils {
         return flag;
     }
 
-    public static void main(String[] args) {
+    /*public static void main(String[] args) {
         Map<String, Object> map = new HashMap<>();
         map = RSAUtils.init();
         System.out.println("公钥：" + RSAUtils.getPublicKey(map));
         System.out.println("私钥：" + RSAUtils.getPrivateKey(map));
-//		 String publicKey = RSAUtils.getPublicKey(map);
-//		 String privateKey = RSAUtils.getPrivateKey(map);
+        // String publicKey = RSAUtils.getPublicKey(map);
+        //String privateKey = RSAUtils.getPrivateKey(map);
         String publicKey = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCMFWbEYvvKDrSbunjCawaL2dwCr+kuPnF8QR589qa0UgrNdDTI1WlrESEZXD+27U6WLwv9fOicKWmdchx+9h6R24iJnos7VHI6Wyy6zYnE+pbU+KTCwzsO3n+Pbe2q7AHrEHsGZp0y+HvXULha4mQRCv52fXdXNi2nCca1iHtGAQIDAQAB";
 
         String privateKey = "MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBAIwVZsRi+8oOtJu6eMJrBovZ3AKv6S4+cXxBHnz2prRSCs10NMjVaWsRIRlcP7btTpYvC/186JwpaZ1yHH72HpHbiImeiztUcjpbLLrNicT6ltT4pMLDOw7ef49t7arsAesQewZmnTL4e9dQuFriZBEK/nZ9d1c2LacJxrWIe0YBAgMBAAECgYBjawz0dAue67DilQT/dlW/C29JuO8VEtwYA19P8P1/HHruNXsAzfVzN0T2arINcX5EuD8aOHwd2IZMZ6AxuxsV/Jusev61rxCI5XzWs7jIbdqbZCVG97S4mdnh2HtfHi63AC4NjdB2iC7lqgZxW14tVrRQvpzOsRoSNlfapVHGwQJBAL2u0ijT8tP3VnmGPg7jEr7ECE1unPZYM8JKdFwWuzbrnGJ8PeU3W3Z3HRCoCxY15JmntrO6FE2RZkjSzabutW8CQQC9D0wS73a/UrCB5Nto4V4Ywe2zC6PV5HB5MEkzq9TiL/5IsdQQgveD7Qzkf9NEIAkaPDN8sohQY4Wd76xdpmOPAkEAvVUq4SXuVDWmU1bzythNda0mvGOUuTABOgYnb2QhKwiy6HsrLQi8etsaX+3cYycYL2eArpUmfuaLOlVwgRf0cQJBALM7N1GUNy02BSN/hQou7XfnEaN124JBKOebASq9MfqkqRrdiz+ECYbGSjyteenRvQ9kFyOWVWhwkRGjT/MQdL0CQCi5PIsS8EO2a79OgZ3uUUGB1ay9/tsTUxpCvNTL3xl7VTmuk7FuU6jtGaHmKotT2hPHXByRNBhx+IR5ewW4b1Q=";
         // 由前四行代码获得公、私密钥
-
-//		 String publicKey ="MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCMFWbEYvvKDrSbunjCawaL2dwCr+kuPnF8QR589qa0UgrNdDTI1WlrESEZXD+27U6WLwv9fOicKWmdchx+9h6R24iJnos7VHI6Wyy6zYnE+pbU+KTCwzsO3n+Pbe2q7AHrEHsGZp0y+HvXULha4mQRCv52fXdXNi2nCca1iHtGAQIDAQAB";
+        // String publicKey ="MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCMFWbEYvvKDrSbunjCawaL2dwCr+kuPnF8QR589qa0UgrNdDTI1WlrESEZXD+27U6WLwv9fOicKWmdchx+9h6R24iJnos7VHI6Wyy6zYnE+pbU+KTCwzsO3n+Pbe2q7AHrEHsGZp0y+HvXULha4mQRCv52fXdXNi2nCca1iHtGAQIDAQAB";
         // String privateKey=
         //"MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCMFWbEYvvKDrSbunjCawaL2dwCr+kuPnF8QR589qa0UgrNdDTI1WlrESEZXD+27U6WLwv9fOicKWmdchx+9h6R24iJnos7VHI6Wyy6zYnE+pbU+KTCwzsO3n+Pbe2q7AHrEHsGZp0y+HvXULha4mQRCv52fXdXNi2nCca1iHtGAQIDAQAB";
-//		 String privateKey ="MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBAIwVZsRi+8oOtJu6eMJrBovZ3AKv6S4+cXxBHnz2prRSCs10NMjVaWsRIRlcP7btTpYvC/186JwpaZ1yHH72HpHbiImeiztUcjpbLLrNicT6ltT4pMLDOw7ef49t7arsAesQewZmnTL4e9dQuFriZBEK/nZ9d1c2LacJxrWIe0YBAgMBAAECgYBjawz0dAue67DilQT/dlW/C29JuO8VEtwYA19P8P1/HHruNXsAzfVzN0T2arINcX5EuD8aOHwd2IZMZ6AxuxsV/Jusev61rxCI5XzWs7jIbdqbZCVG97S4mdnh2HtfHi63AC4NjdB2iC7lqgZxW14tVrRQvpzOsRoSNlfapVHGwQJBAL2u0ijT8tP3VnmGPg7jEr7ECE1unPZYM8JKdFwWuzbrnGJ8PeU3W3Z3HRCoCxY15JmntrO6FE2RZkjSzabutW8CQQC9D0wS73a/UrCB5Nto4V4Ywe2zC6PV5HB5MEkzq9TiL/5IsdQQgveD7Qzkf9NEIAkaPDN8sohQY4Wd76xdpmOPAkEAvVUq4SXuVDWmU1bzythNda0mvGOUuTABOgYnb2QhKwiy6HsrLQi8etsaX+3cYycYL2eArpUmfuaLOlVwgRf0cQJBALM7N1GUNy02BSN/hQou7XfnEaN124JBKOebASq9MfqkqRrdiz+ECYbGSjyteenRvQ9kFyOWVWhwkRGjT/MQdL0CQCi5PIsS8EO2a79OgZ3uUUGB1ay9/tsTUxpCvNTL3xl7VTmuk7FuU6jtGaHmKotT2hPHXByRNBhx+IR5ewW4b1Q=";
+        //String privateKey ="MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBAIwVZsRi+8oOtJu6eMJrBovZ3AKv6S4+cXxBHnz2prRSCs10NMjVaWsRIRlcP7btTpYvC/186JwpaZ1yHH72HpHbiImeiztUcjpbLLrNicT6ltT4pMLDOw7ef49t7arsAesQewZmnTL4e9dQuFriZBEK/nZ9d1c2LacJxrWIe0YBAgMBAAECgYBjawz0dAue67DilQT/dlW/C29JuO8VEtwYA19P8P1/HHruNXsAzfVzN0T2arINcX5EuD8aOHwd2IZMZ6AxuxsV/Jusev61rxCI5XzWs7jIbdqbZCVG97S4mdnh2HtfHi63AC4NjdB2iC7lqgZxW14tVrRQvpzOsRoSNlfapVHGwQJBAL2u0ijT8tP3VnmGPg7jEr7ECE1unPZYM8JKdFwWuzbrnGJ8PeU3W3Z3HRCoCxY15JmntrO6FE2RZkjSzabutW8CQQC9D0wS73a/UrCB5Nto4V4Ywe2zC6PV5HB5MEkzq9TiL/5IsdQQgveD7Qzkf9NEIAkaPDN8sohQY4Wd76xdpmOPAkEAvVUq4SXuVDWmU1bzythNda0mvGOUuTABOgYnb2QhKwiy6HsrLQi8etsaX+3cYycYL2eArpUmfuaLOlVwgRf0cQJBALM7N1GUNy02BSN/hQou7XfnEaN124JBKOebASq9MfqkqRrdiz+ECYbGSjyteenRvQ9kFyOWVWhwkRGjT/MQdL0CQCi5PIsS8EO2a79OgZ3uUUGB1ay9/tsTUxpCvNTL3xl7VTmuk7FuU6jtGaHmKotT2hPHXByRNBhx+IR5ewW4b1Q=";
 
         String str = UUID.randomUUID().toString();
         // 公钥加密，私钥解密
@@ -329,5 +327,5 @@ public class RSAUtils {
         // 验证签名:因为enStr2是由私钥生成的,所以验证的时候需要用公钥来验证
         boolean status = verify(enStr2, publicKey, sign);
         System.out.println("状态:" + status);
-    }
+    }*/
 }
