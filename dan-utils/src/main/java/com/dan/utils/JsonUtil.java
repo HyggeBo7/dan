@@ -20,18 +20,17 @@ public class JsonUtil {
 
     private static final Logger logger = LoggerFactory.getLogger(JsonUtil.class);
 
-    private static Gson gson = new GsonBuilder()
+    private static final Gson GSON = new GsonBuilder()
 //            .registerTypeAdapter(Integer.class, new IntegerDefault0Adapter())
 //            .registerTypeAdapter(int.class, new IntegerDefault0Adapter())
             .setDateFormat("yyyy-MM-dd HH:mm:ss")
             .create();
 
-    public static <T> T fromJson(String json, Class<T> cls) {
-
+    public static <T> T fromJson(final String json, final Class<T> cls) {
         if (StringUtils.isBlank(json)) {
             return null;
         }
-        return gson.fromJson(json, cls);
+        return GSON.fromJson(json, cls);
     }
 
     /**
@@ -41,13 +40,20 @@ public class JsonUtil {
      * @param cls  类
      * @return 返回泛型
      */
-    public static <T> List<T> fromListJson(String json, Class<T> cls) {
+    public static <T> List<T> fromListJson(final String json, final Class<T> cls) {
         List<T> list = new ArrayList<T>();
         JsonArray array = new JsonParser().parse(json).getAsJsonArray();
         for (final JsonElement elem : array) {
-            list.add(gson.fromJson(elem, cls));
+            list.add(GSON.fromJson(elem, cls));
         }
         return list;
+    }
+
+    public static <T> List<T> fromListJsonType(final String json, final Class<T> clazz) {
+        if (StringUtils.isBlank(json)) {
+            return null;
+        }
+        return GSON.fromJson(json, TypeToken.getParameterized(List.class, clazz).getType());
     }
 
     /**
@@ -57,13 +63,13 @@ public class JsonUtil {
      * @return json String
      */
     public static String toJson(Object obj) {
-        return gson.toJson(obj);
+        return GSON.toJson(obj);
     }
 
     /**
      * 转成Object int to double 问题
      *
-     * @return List<TreeMap<String,Object>>
+     * @return List<TreeMap < String, Object>>
      */
     public static List<TreeMap<String, Object>> jsonToMapList(String json) {
         Gson gson = new GsonBuilder()
@@ -151,7 +157,7 @@ public class JsonUtil {
      */
     public static <T> T fromGenericJson(String json, Class clazzType, Class clazz) {
         Type objectType = type(clazzType, clazz);
-        return gson.fromJson(json, objectType);
+        return GSON.fromJson(json, objectType);
     }
 
     class IntegerDefault0Adapter implements JsonSerializer<Integer>, JsonDeserializer<Integer> {

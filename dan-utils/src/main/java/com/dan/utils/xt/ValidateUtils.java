@@ -55,6 +55,7 @@ public class ValidateUtils {
      * URL
      */
     public final static Pattern URL = Pattern.compile("(https://|http://)?([\\w-]+\\.)+[\\w-]+(/[\\w-]\\.?%&=]*)?");
+
     /**
      * 中文字、英文字母、数字和下划线
      */
