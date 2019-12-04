@@ -498,7 +498,7 @@ public class ExcelWriteUtils {
         return importExcel(fileName, is, 0, 0, sheetName);
     }
 
-    private static ExcelWriteUtils importExcel(String fileName, InputStream is, int startSheet, int endSheet) throws IOException {
+    public static ExcelWriteUtils importExcel(String fileName, InputStream is, int startSheet, int endSheet) throws IOException {
         return importExcel(fileName, is, startSheet, endSheet, null);
     }
 
