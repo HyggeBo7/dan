@@ -33,6 +33,13 @@ public class JsonUtil {
         return GSON.fromJson(json, cls);
     }
 
+    public static <T> T fromTypeJson(final String json, final Type typeOfT) {
+        if (StringUtils.isBlank(json)) {
+            return null;
+        }
+        return GSON.fromJson(json, typeOfT);
+    }
+
     /**
      * 转成list
      *

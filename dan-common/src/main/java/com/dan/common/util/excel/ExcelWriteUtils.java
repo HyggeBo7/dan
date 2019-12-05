@@ -1,6 +1,7 @@
 package com.dan.common.util.excel;
 
 import com.dan.utils.exception.AppException;
+import com.dan.utils.lang.DateUtil;
 import com.dan.utils.lang.StringUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.*;
@@ -76,7 +77,7 @@ public class ExcelWriteUtils {
     private double defaultCharOtherSize = 1.3d;
 
     /**
-     * 导出时间格式 默认 yyyy-MM-dd
+     * 导出时间格式 默认 yyyy-MM-dd HH:mm:ss
      */
     private String exportDataFormat = "yyyy-MM-dd HH:mm:ss";
     /**
@@ -244,9 +245,20 @@ public class ExcelWriteUtils {
     private boolean debugNumFlag = false;
 
     /**
-     * 排除读取行
+     * 排除读取行--(行从0开始)
      */
     private List<Integer> excludeLineList;
+
+    /**
+     * 导入时间格式 默认 null,设置时间格式，导入的时间字段就按照该格式处理
+     * by:2019年12月5日10:11:06
+     */
+    private String importDataFormat;
+
+    /**
+     * 读取excel,最大读取行,小于0读取全部-(行从1开始)
+     */
+    private int maxReadRowSize = -1;
 
     //公用
 
@@ -264,11 +276,6 @@ public class ExcelWriteUtils {
      * 文件名
      */
     private String fileName;
-
-    /**
-     * 读取excel,最大读取行,小于0读取全部
-     */
-    private int maxReadRowSize = -1;
 
     //导出方法
 
@@ -444,6 +451,17 @@ public class ExcelWriteUtils {
 
     //导入方法
 
+
+    /**
+     * 导入的日期格式,设置了就按照当前格式格式化
+     * by:2019年12月5日10:11:06
+     *
+     * @param importDataFormat 日期格式
+     */
+    public void setImportDataFormat(String importDataFormat) {
+        this.importDataFormat = importDataFormat;
+    }
+
     public void setExcludeLineList(String excludeLine) {
         String[] split = excludeLine.split(",");
         List<Integer> integerList = new ArrayList<>();
@@ -457,6 +475,16 @@ public class ExcelWriteUtils {
 
     public void setExcludeLineList(List<Integer> excludeLineList) {
         this.excludeLineList = excludeLineList;
+    }
+
+    /**
+     * 清空排除行
+     * by:2019年12月5日10:11:06
+     */
+    public void clearExcludeLine() {
+        if (this.excludeLineList != null && this.excludeLineList.size() > 0) {
+            this.excludeLineList.clear();
+        }
     }
 
     public void setEmptyRowFlag(boolean emptyRowFlag) {
@@ -538,7 +566,7 @@ public class ExcelWriteUtils {
      * 读取excel文件
      *
      * @param titleFlag   是否设置自定义标题
-     * @param titleNum    标题列数
+     * @param titleNum    标题列数--(行从1开始)
      * @param scienceFlag 是否保留科学计数法
      * @return
      */
@@ -581,7 +609,7 @@ public class ExcelWriteUtils {
                             for (Cell c : row) {
                                 // 判断是否具有合并单元格
                                 boolean isMerge = isMergedRegion(sheet, rowNum, c.getColumnIndex());
-                                String key = "";
+                                String key = null;
                                 if (titleFlag) {
                                     key = String.valueOf(sheet.getRow(titleNum < 0 ? 0 : titleNum).getCell(c.getColumnIndex()));
                                 } else {
@@ -1236,17 +1264,24 @@ public class ExcelWriteUtils {
      * 处理时间格式
      */
     private String dealFormulaDate(Cell cell) {
+        Date date = cell.getDateCellValue();
+        if (date == null) {
+            return cell.toString();
+        }
+        //如果导出格式不为null,当前日期就按照自定义格式处理
+        if (StringUtils.isNotBlank(importDataFormat)) {
+            return new SimpleDateFormat(importDataFormat).format(date);
+        }
         // 获取单元格的样式值，即获取单元格格式对应的数值
         int style = cell.getCellStyle().getDataFormat();
-        Date date = cell.getDateCellValue();
-        String value = null;
+        String value;
         // 对不同格式的日期类型做不同的输出，与单元格格式保持一致
         switch (style) {
             case 14:
                 value = new SimpleDateFormat("yyyy/MM/dd").format(date);
                 break;
             case 22:
-                value = new SimpleDateFormat(" yyyy/MM/dd HH:mm:ss").format(date);
+                value = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(date);
                 break;
             case 178:
                 value = new SimpleDateFormat("yyyy'年'M'月'd'日'").format(date);
@@ -1261,7 +1296,11 @@ public class ExcelWriteUtils {
                 value = new SimpleDateFormat("yyyy/MM/dd HH:mm a").format(date);
                 break;
             default:
-                value = cell.toString();
+                try {
+                    value = new SimpleDateFormat(DateUtil.FORMAT_LONG).format(date);
+                } catch (Exception e) {
+                    value = cell.toString();
+                }
                 break;
         }
         return value;
