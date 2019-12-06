@@ -5,10 +5,10 @@ import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.codec.binary.StringUtils;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 /**
@@ -16,7 +16,7 @@ import java.util.Date;
  */
 public class JwtUtil {
 
-    private static final String DEFAULT_KEY = "dan_bo_key";
+    private static final String DEFAULT_KEY = "dear_bo_key";
 
     /**
      * 由字符串生成加密key
@@ -27,10 +27,10 @@ public class JwtUtil {
         byte[] encodedKey;
         try {
             encodedKey = Base64.decodeBase64(stringKey);
+            //对值长度有限制
+            //encodedKey = DatatypeConverter.parseBase64Binary(stringKey);
         } catch (Throwable e) {
-            //java.util.Base64.getMimeDecoder();
-            //java.util.Base64.getDecoder();
-            encodedKey = java.util.Base64.getDecoder().decode(StringUtils.getBytesUtf8(stringKey));
+            encodedKey = java.util.Base64.getDecoder().decode(stringKey.getBytes(StandardCharsets.UTF_8));
         }
         return new SecretKeySpec(encodedKey, 0, encodedKey.length, "AES");
     }
@@ -95,7 +95,6 @@ public class JwtUtil {
         Claims claims = JwtUtil.parseJWT(token, key);
         Date expirationDate = claims.getExpiration();
         System.out.println("claims.getSubject():" + claims.getSubject());
-
     }*/
 
 }
