@@ -8,8 +8,6 @@ import java.io.Serializable;
  * @createDate: 2019-01-24 13:06.
  * @description: 序列化
  */
-public class BaseSerializable implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public interface BaseSerializable extends Serializable {
 
 }

@@ -105,6 +105,14 @@ public class DomeTest {
         System.out.println("excelFileUrl:" + excelFileUrl);
     }
 
+    @Test
+    public void testHttpImg302() {
+        String url = "http://pic.tsmp4.net/api/erciyuan/img.php";
+        HttpUtils.ResultResponse resultResponse = HttpUtils.createRequest().setHeaderFieldFlag(true).doGet(url);
+        List<String> stringList = resultResponse.getHeaderFields().get("Location");
+        System.out.println(stringList.get(0));
+        System.out.println("resultResponse:" + resultResponse.toString());
+    }
     /*@Test
     public void testBase64File() throws IOException {
         File file = new File("P:/file/" + UUID.randomUUID() + ".png");

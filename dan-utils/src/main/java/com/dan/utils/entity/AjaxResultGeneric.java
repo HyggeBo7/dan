@@ -5,7 +5,7 @@ import com.dan.utils.JsonUtil;
 /**
  * Created by Administrator on 2016/1/26.
  */
-public class AjaxResultGeneric<T> extends BaseSerializable {
+public class AjaxResultGeneric<T> implements BaseSerializable {
 
     public static final Integer SUCCESS = 1;
     public static final Integer PARAM_ERROR = -1;

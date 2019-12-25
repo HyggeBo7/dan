@@ -1,6 +1,5 @@
 package com.dan.utils.network;
 
-import com.dan.utils.JsonUtil;
 import com.dan.utils.entity.BaseSerializable;
 import com.dan.utils.exception.AppException;
 import com.dan.utils.network.common.HttpStatusCode;
@@ -21,6 +20,7 @@ import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -64,6 +64,10 @@ public class HttpUtils {
      * 是否设置通用属性
      */
     private boolean usePropertyFlag = true;
+    /**
+     * 是否获取请求头
+     */
+    private boolean headerFieldFlag = false;
 
     private HttpUtils() {
 
@@ -165,7 +169,6 @@ public class HttpUtils {
     private ResultResponse request(String requestUrl, boolean methodPostFlag, Map<String, Object> paramMap, Map<String, String> headerMap, String encoding, boolean httpsFlag, String paramJson) {
         InputStream inputStream = null;
         PrintWriter out = null;
-        BufferedReader in = null;
         HttpURLConnection connection = null;
         try {
             if (!methodPostFlag && paramMap != null) {
@@ -231,16 +234,16 @@ public class HttpUtils {
             }
             int responseCode = connection.getResponseCode();
             ResultResponse resultResponse = new ResultResponse(responseCode, connection.getResponseMessage());
+            if (headerFieldFlag) {
+                resultResponse.setHeaderFields(connection.getHeaderFields());
+            }
             if (responseCode == SUCCESS_CODE) {
                 // 从输入流读取返回内容
                 inputStream = connection.getInputStream();
-                in = new BufferedReader(new InputStreamReader(inputStream, encoding));
-                String str = null;
-                StringBuffer resultBuffer = new StringBuffer();
-                while ((str = in.readLine()) != null) {
-                    resultBuffer.append(str);
-                }
-                resultResponse.setData(resultBuffer.toString());
+                resultResponse.setData(toInputStreamConvertString(inputStream, encoding));
+            } else if (connection.getErrorStream() != null) {
+                inputStream = connection.getErrorStream();
+                resultResponse.setErrorData(toInputStreamConvertString(inputStream, encoding));
             }
             return resultResponse;
         } catch (IOException ce) {
@@ -256,16 +259,41 @@ public class HttpUtils {
                 if (inputStream != null) {
                     inputStream.close();
                 }
-                if (in != null) {
-                    in.close();
-                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
             if (connection != null) {
                 connection.disconnect();
-                connection = null;
+            }
+        }
+    }
+
+    /**
+     * 流转字符
+     *
+     * @param inputStream 流
+     * @param encoding    编码
+     * @return 字符
+     * @throws IOException
+     */
+    private String toInputStreamConvertString(InputStream inputStream, String encoding) throws IOException {
+        BufferedReader in = null;
+        StringBuffer resultBuffer = new StringBuffer();
+        try {
+            in = new BufferedReader(new InputStreamReader(inputStream, encoding));
+            String str;
+            while ((str = in.readLine()) != null) {
+                resultBuffer.append(str);
+            }
+            return resultBuffer.toString();
+        } finally {
+            if (null != in) {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -324,6 +352,11 @@ public class HttpUtils {
         return usePropertyFlag;
     }
 
+    public HttpUtils setUsePropertyFlag(boolean usePropertyFlag) {
+        this.usePropertyFlag = usePropertyFlag;
+        return this;
+    }
+
     public int getConnectTimeout() {
         return connectTimeout;
     }
@@ -332,20 +365,28 @@ public class HttpUtils {
         return readTimeout;
     }
 
-    public void setConnectTimeout(int connectTimeout) {
+    public HttpUtils setConnectTimeout(int connectTimeout) {
         this.connectTimeout = connectTimeout < 1 ? DEFAULT_CONNECT_TIMEOUT : connectTimeout;
+        return this;
     }
 
-    public void setReadTimeout(int readTimeout) {
+    public HttpUtils setReadTimeout(int readTimeout) {
         this.readTimeout = readTimeout < 0 ? DEFAULT_READ_TIMEOUT : readTimeout;
+        return this;
     }
 
-    public static class ResultResponse extends BaseSerializable {
+    public HttpUtils setHeaderFieldFlag(boolean headerFieldFlag) {
+        this.headerFieldFlag = headerFieldFlag;
+        return this;
+    }
 
+    public static class ResultResponse implements BaseSerializable {
         private int status;
         private String msg;
         private String message;
         private String data;
+        private String errorData;
+        private Map<String, List<String>> headerFields;
 
         public ResultResponse() {
 
@@ -371,10 +412,9 @@ public class HttpUtils {
             this.data = data;
         }
 
-
         @Override
         public String toString() {
-            return JsonUtil.toJson(this);
+            return String.format("{\"status\":%s,\"message\":'%s',\"msg\":'%s',\"data\":'%s',\"errorData\":'%s'}", status, message, msg, data, errorData);
         }
 
         public boolean isSuccess() {
@@ -408,6 +448,22 @@ public class HttpUtils {
 
         public void setData(String data) {
             this.data = data;
+        }
+
+        public String getErrorData() {
+            return errorData;
+        }
+
+        public void setErrorData(String errorData) {
+            this.errorData = errorData;
+        }
+
+        public Map<String, List<String>> getHeaderFields() {
+            return headerFields;
+        }
+
+        public void setHeaderFields(Map<String, List<String>> headerFields) {
+            this.headerFields = headerFields;
         }
     }
 

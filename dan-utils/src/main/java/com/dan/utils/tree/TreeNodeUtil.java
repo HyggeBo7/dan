@@ -84,7 +84,7 @@ public class TreeNodeUtil {
      *
      * @param <T> 泛型必须继承AbstractTreeNode或者实现AbstractTreeNodeImpl
      */
-    public abstract static class AbstractTreeNode<T> extends BaseSerializable implements AbstractTreeNodeImpl<T> {
+    public abstract static class AbstractTreeNode<T> implements BaseSerializable, AbstractTreeNodeImpl<T> {
 
         /**
          * 子列表
