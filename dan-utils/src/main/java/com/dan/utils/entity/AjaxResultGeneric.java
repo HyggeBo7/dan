@@ -3,7 +3,7 @@ package com.dan.utils.entity;
 import com.dan.utils.JsonUtil;
 
 /**
- * Created by Administrator on 2016/1/26.
+ * Created by Bo on 2019/1/26.
  */
 public class AjaxResultGeneric<T> implements BaseSerializable {
 
@@ -50,7 +50,7 @@ public class AjaxResultGeneric<T> implements BaseSerializable {
 
     @Override
     public String toString() {
-        return "AjaxResultT{" +
+        return "AjaxResultGeneric{" +
                 "code=" + code +
                 ", msg='" + msg + '\'' +
                 ", data=" + data +
