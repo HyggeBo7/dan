@@ -19,9 +19,7 @@ import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @fileName: HttpClientUtil
@@ -58,16 +56,25 @@ public class HttpUtils {
     //private static final String DEFAULT_CONTENT_TYPE = "application/x-www-form-urlencoded";
     private static final int DEFAULT_CONNECT_TIMEOUT = 1000 * 10;
     private static final int DEFAULT_READ_TIMEOUT = 1000 * 10;
-    private int connectTimeout;
-    private int readTimeout;
+    /**
+     * 结果转String类型
+     */
+    private boolean resultToStringFlag = true;
+    /**
+     * 是否自动关闭
+     */
+    private boolean disconnectFlag = true;
+    /**
+     * 默认cookie字段
+     */
+    private String defaultHeaderCookieField = "Set-Cookie";
+    private Integer connectTimeout;
+    private Integer readTimeout;
+
     /**
      * 是否设置通用属性
      */
     private boolean usePropertyFlag = true;
-    /**
-     * 是否获取请求头
-     */
-    private boolean headerFieldFlag = false;
 
     private HttpUtils() {
 
@@ -182,8 +189,8 @@ public class HttpUtils {
             } else {
                 connection = (HttpURLConnection) url.openConnection();
             }
-            connection.setConnectTimeout(DEFAULT_CONNECT_TIMEOUT);
-            connection.setReadTimeout(DEFAULT_READ_TIMEOUT);
+            connection.setConnectTimeout(getConnectTimeout());
+            connection.setReadTimeout(getReadTimeout());
 
             // 设置请求方式（GET/POST）
             if (methodPostFlag) {
@@ -234,13 +241,14 @@ public class HttpUtils {
             }
             int responseCode = connection.getResponseCode();
             ResultResponse resultResponse = new ResultResponse(responseCode, connection.getResponseMessage());
-            if (headerFieldFlag) {
-                resultResponse.setHeaderFields(connection.getHeaderFields());
-            }
+            resultResponse.setHeaderCookieField(defaultHeaderCookieField);
+            resultResponse.setResultResponse(connection);
             if (responseCode == SUCCESS_CODE) {
-                // 从输入流读取返回内容
-                inputStream = connection.getInputStream();
-                resultResponse.setData(toInputStreamConvertString(inputStream, encoding));
+                if (resultToStringFlag) {
+                    // 从输入流读取返回内容
+                    inputStream = connection.getInputStream();
+                    resultResponse.setData(toInputStreamConvertString(inputStream, encoding));
+                }
             } else if (connection.getErrorStream() != null) {
                 inputStream = connection.getErrorStream();
                 resultResponse.setErrorData(toInputStreamConvertString(inputStream, encoding));
@@ -262,8 +270,7 @@ public class HttpUtils {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
-            if (connection != null) {
+            if (disconnectFlag && connection != null) {
                 connection.disconnect();
             }
         }
@@ -278,6 +285,9 @@ public class HttpUtils {
      * @throws IOException
      */
     private String toInputStreamConvertString(InputStream inputStream, String encoding) throws IOException {
+        if (inputStream == null) {
+            return null;
+        }
         BufferedReader in = null;
         StringBuffer resultBuffer = new StringBuffer();
         try {
@@ -358,11 +368,11 @@ public class HttpUtils {
     }
 
     public int getConnectTimeout() {
-        return connectTimeout;
+        return connectTimeout == null ? DEFAULT_CONNECT_TIMEOUT : connectTimeout;
     }
 
     public int getReadTimeout() {
-        return readTimeout;
+        return readTimeout == null ? DEFAULT_READ_TIMEOUT : readTimeout;
     }
 
     public HttpUtils setConnectTimeout(int connectTimeout) {
@@ -375,8 +385,20 @@ public class HttpUtils {
         return this;
     }
 
-    public HttpUtils setHeaderFieldFlag(boolean headerFieldFlag) {
-        this.headerFieldFlag = headerFieldFlag;
+    public HttpUtils setResultToString(boolean flag) {
+        this.resultToStringFlag = flag;
+        return this;
+    }
+
+    public HttpUtils setDisconnectFlag(boolean disconnectFlag) {
+        this.disconnectFlag = disconnectFlag;
+        return this;
+    }
+
+    public HttpUtils setHeaderCookieField(String headerCookieField) {
+        if (headerCookieField != null && headerCookieField.length() > 0) {
+            this.defaultHeaderCookieField = headerCookieField;
+        }
         return this;
     }
 
@@ -386,7 +408,8 @@ public class HttpUtils {
         private String message;
         private String data;
         private String errorData;
-        private Map<String, List<String>> headerFields;
+        private String headerCookieField;
+        private HttpURLConnection resultResponse;
 
         public ResultResponse() {
 
@@ -458,12 +481,100 @@ public class HttpUtils {
             this.errorData = errorData;
         }
 
-        public Map<String, List<String>> getHeaderFields() {
-            return headerFields;
+        public HttpURLConnection getResultResponse() {
+            return resultResponse;
         }
 
-        public void setHeaderFields(Map<String, List<String>> headerFields) {
-            this.headerFields = headerFields;
+        public void setResultResponse(HttpURLConnection resultResponse) {
+            this.resultResponse = resultResponse;
+        }
+
+        public Map<String, List<String>> getHeaders() {
+            if (resultResponse == null) {
+                return Collections.emptyMap();
+            }
+            Map<String, List<String>> headerFields = resultResponse.getHeaderFields();
+            return headerFields != null ? headerFields : Collections.emptyMap();
+        }
+
+        /**
+         * 在Header里获取所有cookie
+         * 可能会包含:[Domain,Expires,Path,HttpOnly]等信息
+         * 处理后的:cookies()
+         * headerCookieField:默认Set-Cookie
+         *
+         * @return List
+         */
+        public List<String> getHeaderCookies() {
+            return getHeaderCookies(getHeaderCookieField());
+        }
+
+        public List<String> getHeaderCookies(String headerCookieField) {
+            if (headerCookieField == null || headerCookieField.isEmpty() || resultResponse == null) {
+                return Collections.emptyList();
+            }
+            List<String> cookieList = getHeaders().get(headerCookieField);
+            return cookieList != null ? cookieList : Collections.emptyList();
+        }
+
+        /**
+         * 获取cookie,在原cookie基础上,截取第一个 ; 前
+         *
+         * @return map(key, value)
+         */
+        public Map<String, String> getCookies() {
+            List<String> cookies = getHeaderCookies();
+            if (cookies.size() < 1) {
+                return Collections.emptyMap();
+            }
+            Map<String, String> cookieMap = new LinkedHashMap<>(cookies.size());
+            for (String cookie : cookies) {
+                String subCookie = StringUtils.substring(cookie, 0, cookie.indexOf(";"));
+                int indexOf = subCookie.indexOf('=');
+                if (indexOf > -1) {
+                    String key = StringUtils.substring(subCookie, 0, indexOf);
+                    String value = StringUtils.substring(subCookie, indexOf + 1);
+                    cookieMap.put(key, value);
+                }
+            }
+            return cookieMap;
+        }
+
+        /**
+         * cookie转成String
+         *
+         * @return String
+         */
+        public String getCookiesToString() {
+            List<String> cookies = getHeaderCookies();
+            if (cookies.size() < 1) {
+                return null;
+            }
+            StringBuilder stringBuilder = new StringBuilder();
+            for (String cookie : cookies) {
+                String subCookie = StringUtils.substring(cookie, 0, cookie.indexOf(";"));
+                int indexOf = subCookie.indexOf('=');
+                if (indexOf > -1) {
+                    stringBuilder.append(subCookie).append(';');
+                }
+            }
+            return stringBuilder.toString();
+        }
+
+        public void close() {
+            if (resultResponse != null) {
+                resultResponse.disconnect();
+            }
+        }
+
+        public String getHeaderCookieField() {
+            return headerCookieField;
+        }
+
+        public void setHeaderCookieField(String headerCookieField) {
+            if (StringUtils.isNotBlank(headerCookieField)) {
+                this.headerCookieField = headerCookieField;
+            }
         }
     }
 

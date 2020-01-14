@@ -63,7 +63,7 @@ public class ProjectTest {
     public void testTencentCheckIn() {
         String url = "https://vip.video.qq.com/fcgi-bin/comm_cgi?name=hierarchical_task_system&cmd=2&_=1573203663793&callback=Zepto1573203623995";
         String cookie = "tvfe_boss_uuid=02a135417eb2a9e6; video_platform=2; video_guid=10637fbc8386aa4a; pgv_pvid=1445208576; pgv_pvi=7874613248; RK=XpghHgPJNO; ptcz=b87e50cb7a83790b60797f19d2ed9cf346866a775bde7ee7454f7b8d6476ced0; ptui_loginuin=1143311620; pgv_info=ssid=s6592245476; pgv_si=s2532952064; _qpsvr_localtk=0.5369199070964024; ptisp=cm; main_login=qq; vqq_access_token=C16114C5B554FB3944EA0518BD07A44B; vqq_appid=101483052; vqq_openid=E0AC2C8BB1058083DD4CD7972802C74D; vqq_vuserid=169496460; vqq_vusession=mabhOn6SPE3aBAHy-Sycdg..; vqq_refresh_token=8C16CD4FD8DEE125141CF02283448636; login_time_init=2019-11-11 9:22:17; uid=224268488; vqq_next_refresh_time=6598; vqq_login_time_init=1573435338; login_time_last=2019-11-11 9:22:18";
-        String cookie1 = "tvfe_boss_uuid=02a135417eb2a9e6; video_guid=10637fbc8386aa4a; video_platform=2; pgv_pvid=1445208576; pgv_pvi=7874613248; RK=XpghHgPJNO; ptcz=b87e50cb7a83790b60797f19d2ed9cf346866a775bde7ee7454f7b8d6476ced0; ptui_loginuin=1143311620; pgv_info=ssid=s6592245476; pgv_si=s2532952064; _qpsvr_localtk=0.5369199070964024; ptisp=cm; main_login=qq; vqq_access_token=477E2959E26072399D9509356EECED64; vqq_appid=101483052; vqq_openid=7D8F19C87694EA7B5BD4FBB2BC81CE3C; vqq_vuserid=178661733; vqq_vusession=Z2tFZaT32lwPoEnl8oP-Kw..; vqq_refresh_token=748F7621982C71192FCE0DB30B35476D; login_time_init=2019-11-11 11:46:42; uid=226231994; vqq_next_refresh_time=6598; vqq_login_time_init=1573444003; login_time_last=2019-11-11 11:46:43";
+        String cookie1 = "main_login=qq;vqq_vusession=Z2tFZaT32lwPoEnl8oP-Kw..;";
         Map<String, String> headerMap = new LinkedHashMap<>();
         headerMap.put("Cookie", cookie1);
         HttpUtils httpUtils = HttpUtils.createRequest();
@@ -75,7 +75,7 @@ public class ProjectTest {
     @Test
     public void testTencentHZCheckIn() {
         String url = "https://vip.qzone.qq.com/fcg-bin/v2/fcg_mobile_vip_site_checkin?t=0.46869834180487055&g_tk=364202229&qzonetoken=(function(){var%20t&uin=202515345&format=json263698854";
-        String cookie = "pgv_pvi=9176929280; pgv_si=s1162546176; ptisp=cm; RK=XJIh3tgJFC; ptcz=b2fbeddbfcd2c7498602b0a2c37804921aa065dbb1366a8b6c3fdbf5b66fd1e6; uin=o0202515345; skey=@0Ui5i8LwO; p_uin=o0202515345; pt4_token=liJJdat3A4vP76Ducxm4tx*qDTntzPXD-Zfv6D1pVOI_; p_skey=rqpk4AmbB84xrrI6dU4He-hycBYx1XJx0HXlRFqhkzk_";
+        String cookie = "main_login=qq;vqq_vusession=Z2tFZaT32lwPoEnl8oP-Kw..;";
         Map<String, String> headerMap = new LinkedHashMap<>();
         headerMap.put("Cookie", cookie);
         //headerMap.put("User-Agent", "Dalvik/2.1.0 (Linux; U; Android 5.1.1; h60-l01 Build/LYZ28N)");
@@ -91,6 +91,20 @@ public class ProjectTest {
         Date parseToDate = DateUtil.parseToDate(strDate, "yyyy/MM/dd");
         String parseToString = DateUtil.parseToString(parseToDate);
         System.out.println("parseToString:" + parseToString);
+    }
+
+    @Test
+    public void getCookieByTicket() {
+        String ticket = "AAEAMJuTZLWamQDXR1CMRIrz30-C9fLSksCLUOe0FC9jRbiT0N6oI6AMlWw4nfVH-CoMZQ";
+        String url = "https://passport.jd.com/uc/qrCodeTicketValidation?t=" + ticket;
+        Map<String, String> headMap = new LinkedHashMap<>();
+        headMap.put("Referer", "https://passport.jd.com/new/login.aspx?ReturnUrl=https%3A%2F%2Fwww.jd.com%2F");
+        headMap.put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.36");
+        HttpUtils httpUtils = HttpUtils.createRequest();
+        HttpUtils.ResultResponse resultResponse = httpUtils.doGet(url, null, headMap);
+        Map<String, String> cookies = resultResponse.getCookies();
+        String cookiesToString = resultResponse.getCookiesToString();
+        System.out.println("resultResponse:" + resultResponse);
     }
 
 }

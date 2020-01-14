@@ -21,10 +21,17 @@ public class JsonUtil {
     private static final Logger logger = LoggerFactory.getLogger(JsonUtil.class);
 
     private static final Gson GSON = new GsonBuilder()
+            //取消自动转义("=" === "\u003d")
+            .disableHtmlEscaping()
 //            .registerTypeAdapter(Integer.class, new IntegerDefault0Adapter())
 //            .registerTypeAdapter(int.class, new IntegerDefault0Adapter())
             .setDateFormat("yyyy-MM-dd HH:mm:ss")
             .create();
+
+
+    public static Gson getGson() {
+        return GSON;
+    }
 
     public static <T> T fromJson(final String json, final Class<T> cls) {
         if (StringUtils.isBlank(json)) {

@@ -108,8 +108,8 @@ public class DomeTest {
     @Test
     public void testHttpImg302() {
         String url = "http://pic.tsmp4.net/api/erciyuan/img.php";
-        HttpUtils.ResultResponse resultResponse = HttpUtils.createRequest().setHeaderFieldFlag(true).doGet(url);
-        List<String> stringList = resultResponse.getHeaderFields().get("Location");
+        HttpUtils.ResultResponse resultResponse = HttpUtils.createRequest().doGet(url);
+        List<String> stringList = resultResponse.getHeaders().get("Location");
         System.out.println(stringList.get(0));
         System.out.println("resultResponse:" + resultResponse.toString());
     }
