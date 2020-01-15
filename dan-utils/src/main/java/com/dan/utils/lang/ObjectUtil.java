@@ -61,10 +61,30 @@ public class ObjectUtil {
     }
 
     /**
+     * 判断Boolean不为true
+     *
+     * @param flag Boolean
+     * @return boolean
+     */
+    public static boolean booleanIsNotTrue(Boolean flag) {
+        return flag == null || !flag;
+    }
+
+    /**
      * 判断Boolean是否为false
      */
     public static boolean booleanIsFalse(Boolean flag) {
         return flag != null && !flag;
+    }
+
+    /**
+     * 判断Boolean不为False
+     *
+     * @param flag Boolean
+     * @return boolean
+     */
+    public static boolean booleanIsNotFalse(Boolean flag) {
+        return flag == null || flag;
     }
 
     /**

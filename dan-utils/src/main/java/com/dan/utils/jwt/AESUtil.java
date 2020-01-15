@@ -17,16 +17,27 @@ import java.security.SecureRandom;
 public class AESUtil {
 
     private static Logger logger = LoggerFactory.getLogger(AESUtil.class);
+    private static final String DEFAULT_KEY = "DearBoKey";
 
     private static String DEFAULT_CHARSET = "UTF-8";
     private static String AES = "AES";
     private static String SECURE_TYPE = "SHA1PRNG";
 
     /**
+     * 加密
+     *
+     * @param content 内容
+     * @return 加密后的
+     */
+    public static String encryptAES(String content) {
+        return encryptAES(content, DEFAULT_KEY);
+    }
+
+    /**
      * 加密, 顺序是 AES BASE64 URLEncoder
      *
-     * @param content
-     * @param encryptKey
+     * @param content    内容
+     * @param encryptKey key
      * @return
      */
     public static String encryptAES(String content, String encryptKey) {
@@ -45,6 +56,16 @@ public class AESUtil {
             logger.error("AES encrypt error", e);
             throw new RuntimeException("AES encrypt error", e);
         }
+    }
+
+    /**
+     * 解密
+     *
+     * @param content 内容
+     * @return 解密结果
+     */
+    public static String decryptAES(String content) {
+        return decryptAES(content, DEFAULT_KEY);
     }
 
     /**
@@ -73,11 +94,10 @@ public class AESUtil {
 
     }
 
-    /*public static void main(String[] args) {
-        String content = "bo";
-        String decryptKey = "dan";
-        String encryptAES = AESUtil.encryptAES(content, decryptKey);
-        String decryptAES = AESUtil.decryptAES(encryptAES, decryptKey);
+    /*public static void main(String[] args) throws Exception {
+        String content = "HAHA中文唉";
+        String encryptAES = AESUtil.encryptAES(content);
+        String decryptAES = AESUtil.decryptAES(encryptAES);
         System.out.println("decryptAES:" + decryptAES + ",encryptAES:" + encryptAES);
     }*/
 

@@ -8,7 +8,6 @@ import org.apache.commons.codec.binary.Base64;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 /**
@@ -16,7 +15,7 @@ import java.util.Date;
  */
 public class JwtUtil {
 
-    private static final String DEFAULT_KEY = "dear_bo_key";
+    private static final String DEFAULT_KEY = "DearBoKey";
 
     /**
      * 由字符串生成加密key
@@ -24,14 +23,10 @@ public class JwtUtil {
      * @return
      */
     public static SecretKey generalKey(String stringKey) {
-        byte[] encodedKey;
-        try {
-            encodedKey = Base64.decodeBase64(stringKey);
-            //对值长度有限制
-            //encodedKey = DatatypeConverter.parseBase64Binary(stringKey);
-        } catch (Throwable e) {
-            encodedKey = java.util.Base64.getDecoder().decode(stringKey.getBytes(StandardCharsets.UTF_8));
-        }
+        byte[] encodedKey = Base64.decodeBase64(stringKey);
+        //对值长度有限制
+        //encodedKey = DatatypeConverter.parseBase64Binary(stringKey);
+
         return new SecretKeySpec(encodedKey, 0, encodedKey.length, "AES");
     }
 
@@ -49,7 +44,6 @@ public class JwtUtil {
      * @return 加密内容
      */
     public static String createJWT(String id, String subject, long ttlMillis, String generalKey) throws Exception {
-
         SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
         long nowMillis = System.currentTimeMillis();
         Date now = new Date(nowMillis);
@@ -73,6 +67,7 @@ public class JwtUtil {
 
     /**
      * 解密jwt
+     * 注意加密的版本-codec
      *
      * @param jwt
      * @return
