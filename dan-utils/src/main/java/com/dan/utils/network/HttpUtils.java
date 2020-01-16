@@ -179,7 +179,11 @@ public class HttpUtils {
         HttpURLConnection connection = null;
         try {
             if (!methodPostFlag && paramMap != null) {
-                requestUrl += "?" + genUrlParam(paramMap);
+                char spliceChar = '?';
+                if (requestUrl.indexOf(spliceChar) > -1) {
+                    spliceChar = '&';
+                }
+                requestUrl += spliceChar + genUrlParam(paramMap);
             }
             URL url = new URL(requestUrl);
             // 打开和URL之间的连接

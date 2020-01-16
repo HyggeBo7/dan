@@ -10,6 +10,8 @@ import com.dan.common.util.pdf.FreemarkerUtils;
 import com.dan.utils.JsonUtil;
 import com.dan.utils.entity.AjaxResult;
 import com.dan.utils.file.FileUtil;
+import com.dan.utils.jwt.AESUtil;
+import com.dan.utils.jwt.JwtUtil;
 import com.dan.utils.lang.DateUtil;
 import com.dan.utils.lang.ImageUtils;
 import com.dan.utils.lang.ObjectUtil;
@@ -20,6 +22,7 @@ import com.dan.utils.xt.MapperUtil;
 import com.dan.utils.xt.Pagination;
 import com.dan.utils.xt.PinYinUtil;
 import com.google.common.primitives.Ints;
+import io.jsonwebtoken.Claims;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
@@ -103,6 +106,22 @@ public class DomeTest {
         excelFileUrl = excelFileUrl + DateTime.now().getMillis() + ".xls";
         excelWriteUtils.writeExcel(writeCriteria, new File(excelFileUrl));
         System.out.println("excelFileUrl:" + excelFileUrl);
+    }
+
+
+    @Test
+    public void testJwtAndAes() throws Exception {
+
+        String authToken = "{\"userId\":10,\"userName\":\"管理员\",\"appToken\":\"CJzdWIiOiJ7XCJ1c2VySDkwMTUeyJhbGciOiJI\",\"superFlag\":false}";
+        //7天有效期
+        String token = JwtUtil.createToken("10", authToken, 24 * 60 * 60 * 1000 * 7);
+        System.out.println("===========token:" + token);
+        String encryptToken = AESUtil.encryptAES(token);
+
+        String decryptToken = AESUtil.decryptAES(encryptToken);
+        Claims claims = JwtUtil.parseToken(decryptToken);
+        Date expirationDate = claims.getExpiration();
+        System.out.println("claims.getSubject():" + claims.getSubject());
     }
 
     @Test

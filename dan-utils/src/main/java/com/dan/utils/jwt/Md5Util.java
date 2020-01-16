@@ -12,7 +12,7 @@ import java.security.NoSuchAlgorithmException;
  * @author dan
  * @date 创建时间：2018年5月14日 上午11:11:51
  */
-public class Md5Utils {
+public class Md5Util {
 
     private static final String ENCRYPTION_ALGORITHM = "MD5";
 

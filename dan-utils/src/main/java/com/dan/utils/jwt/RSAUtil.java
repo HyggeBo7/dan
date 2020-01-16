@@ -19,7 +19,7 @@ import java.util.Map;
  * @author joker
  * @date 创建时间：2018年5月18日 下午1:00:09
  */
-public class RSAUtils {
+public class RSAUtil {
     /**
      * 定义加密方式
      */
