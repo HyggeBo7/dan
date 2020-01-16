@@ -4,6 +4,7 @@ import com.dan.utils.entity.BaseSerializable;
 import com.dan.utils.exception.AppException;
 import com.dan.utils.network.common.HttpStatusCode;
 import com.dan.utils.network.exception.HttpException;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -411,11 +412,13 @@ public class HttpUtils {
         private String msg;
         private String message;
         private String data;
-        private String errorData;
-        private String headerCookieField;
-        private HttpURLConnection resultResponse;
+        private transient String errorData;
+        @JsonIgnore
+        private transient String headerCookieField;
+        @JsonIgnore
+        private transient HttpURLConnection resultResponse;
 
-        public ResultResponse() {
+        private ResultResponse() {
 
         }
 
