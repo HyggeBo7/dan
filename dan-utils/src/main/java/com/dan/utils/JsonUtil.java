@@ -169,7 +169,7 @@ public class JsonUtil {
      * @param <T>       Pagination<User>
      * @return Pagination<User>
      */
-    public static <T> T fromGenericJson(String json, Class clazzType, Class clazz) {
+    public static <T> T fromGenericJson(String json, Class<?> clazzType, Class<?> clazz) {
         Type objectType = type(clazzType, clazz);
         return GSON.fromJson(json, objectType);
     }
@@ -198,7 +198,7 @@ public class JsonUtil {
         }
     }
 
-    static ParameterizedType type(final Class raw, final Type... args) {
+    static ParameterizedType type(final Class<?> raw, final Type... args) {
         return new ParameterizedType() {
             @Override
             public Type getRawType() {
