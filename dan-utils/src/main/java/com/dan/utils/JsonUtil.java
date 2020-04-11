@@ -55,6 +55,9 @@ public class JsonUtil {
      * @return 返回泛型
      */
     public static <T> List<T> fromListJson(final String json, final Class<T> cls) {
+        if (StringUtils.isBlank(json)) {
+            return null;
+        }
         List<T> list = new ArrayList<T>();
         JsonArray array = new JsonParser().parse(json).getAsJsonArray();
         for (final JsonElement elem : array) {
@@ -77,6 +80,9 @@ public class JsonUtil {
      * @return json String
      */
     public static String toJson(Object obj) {
+        if (obj == null) {
+            return null;
+        }
         return GSON.toJson(obj);
     }
 
@@ -86,6 +92,9 @@ public class JsonUtil {
      * @return List<TreeMap < String, Object>>
      */
     public static List<TreeMap<String, Object>> jsonToMapList(String json) {
+        if (StringUtils.isBlank(json)) {
+            return null;
+        }
         Gson gson = new GsonBuilder()
                 .enableComplexMapKeySerialization()
                 .registerTypeAdapter(
@@ -124,6 +133,9 @@ public class JsonUtil {
     }
 
     public static Map<String, Object> jsonToMap(String json) {
+        if (StringUtils.isBlank(json)) {
+            return null;
+        }
         Gson gson = new GsonBuilder()
                 .enableComplexMapKeySerialization()
                 .registerTypeAdapter(
@@ -170,6 +182,9 @@ public class JsonUtil {
      * @return Pagination<User>
      */
     public static <T> T fromGenericJson(String json, Class<?> clazzType, Class<?> clazz) {
+        if (StringUtils.isBlank(json)) {
+            return null;
+        }
         Type objectType = type(clazzType, clazz);
         return GSON.fromJson(json, objectType);
     }
