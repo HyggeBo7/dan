@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.dan.common.test.entity.TreeNode;
 import com.dan.common.test.entity.TreeNodeImpl;
 import com.dan.common.test.entity.UserInfo;
+import com.dan.common.util.CronUtils;
 import com.dan.common.util.excel.ExcelImage;
 import com.dan.common.util.excel.ExcelWriteUtils;
 import com.dan.common.util.pdf.FreemarkerUtils;
@@ -855,5 +856,13 @@ public class DomeTest {
         System.out.println("string:" + ObjectUtil.isNotEmptyObj("123654"));
         System.out.println("int:" + ObjectUtil.isNotEmptyObj(123));
         System.out.println("defaultIfNull(null,123)" + ObjectUtil.defaultIfNull(null, 123));
+    }
+
+    @Test
+    public void testCron() {
+        String cron = "0 0 11 * * ? ";
+        Date startDate = new Date();
+        Date cronScheduledDate = CronUtils.getCronScheduledDate(cron);
+        System.out.println(DateUtil.parseToString(cronScheduledDate));
     }
 }

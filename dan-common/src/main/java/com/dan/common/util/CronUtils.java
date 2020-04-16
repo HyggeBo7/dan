@@ -6,8 +6,12 @@ import org.quartz.CronExpression;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.CronTrigger;
 import org.quartz.TriggerBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @version 1.0
@@ -18,6 +22,8 @@ import java.util.Date;
  */
 public class CronUtils {
 
+    private static final Logger logger = LoggerFactory.getLogger(CronUtils.class);
+
     /**
      * 下一次运行时间 默认 yyyy-MM-dd HH:mm:ss
      *
@@ -25,7 +31,12 @@ public class CronUtils {
      */
     public static String getCronScheduledString(String cron) {
 
-        return getCronScheduledString(cron, DateUtil.FORMAT_LONG);
+        return getCronScheduledString(cron, DateUtil.FORMAT_LONG, new Date());
+    }
+
+    public static String getCronScheduledString(String cron, Date startDate) {
+
+        return getCronScheduledString(cron, DateUtil.FORMAT_LONG, startDate);
     }
 
     /**
@@ -35,20 +46,17 @@ public class CronUtils {
      * @param pattern 格式
      * @return
      */
-    public static String getCronScheduledString(String cron, String pattern) {
-        String timeScheduled = "";
+    public static String getCronScheduledString(String cron, String pattern, Date startDate) {
         if (!CronExpression.isValidExpression(cron)) {
-            throw new AssertionError("Cron is Illegal!Cron表达式有误，cron：" + cron);
+            logger.error("Cron表达式有误，Cron：{}", cron);
+            return null;
         }
-        try {
-            CronTrigger trigger = TriggerBuilder.newTrigger().withIdentity("Caclulate Date").withSchedule(CronScheduleBuilder.cronSchedule(cron)).build();
-            Date time0 = trigger.getStartTime();
-            Date time1 = trigger.getFireTimeAfter(time0);
-            timeScheduled = DateUtil.parseToString(time1, pattern);
-        } catch (Exception e) {
-            throw new AssertionError("nKnow Time!，cron：" + cron);
+        CronTrigger trigger = TriggerBuilder.newTrigger().withIdentity("Caclulate Date").withSchedule(CronScheduleBuilder.cronSchedule(cron)).build();
+        Date nextDate = trigger.getFireTimeAfter(startDate);
+        if (nextDate != null) {
+            return DateUtil.parseToString(nextDate, pattern);
         }
-        return timeScheduled;
+        return null;
     }
 
     /**
@@ -58,46 +66,48 @@ public class CronUtils {
      * @return
      */
     public static Date getCronScheduledDate(String cron) {
-        Date[] cronScheduledDate = getCronScheduledDate(cron, 1);
-        if (cronScheduledDate != null && cronScheduledDate.length > 0) {
-            return cronScheduledDate[0];
+        List<Date> cronDateList = getCronScheduledDate(cron, 1);
+        if (cronDateList != null && cronDateList.size() > 0) {
+            return cronDateList.get(0);
         }
         return null;
 
     }
 
     /**
-     * 最近n次运行时间 Date[]
+     * 最近n次运行时间 Date
      *
      * @param cron  表达式
      * @param count 运行次数
      */
-    public static Date[] getCronScheduledDate(String cron, Integer count) {
+    public static List<Date> getCronScheduledDate(String cron, Integer count) {
+
+        return getCronScheduledDate(cron, count, new Date());
+    }
+
+    public static List<Date> getCronScheduledDate(String cron, Integer count, Date startDate) {
         if (!CronExpression.isValidExpression(cron)) {
-            //throw new AssertionError("定时任务Cron格式不正确,Cron：" + cron);
-            System.out.println("定时任务Cron格式不正确,Cron：" + cron);
+            logger.error("Cron表达式有误，Cron：{}", cron);
             return null;
         }
         if (count == null || count < 1) {
             count = 1;
         }
-        Date[] dateArray = new Date[count];
+        List<Date> dateList = new ArrayList<>();
         CronTrigger trigger = TriggerBuilder.newTrigger().withIdentity("Caclulate Date").withSchedule(CronScheduleBuilder.cronSchedule(cron)).build();
-        Date time0 = trigger.getStartTime();
-        Date time1 = trigger.getFireTimeAfter(time0);
-        dateArray[0] = time1;
-        if (dateArray.length > 1) {
-            Date timeTemp = time1;
-            for (int i = 1; i < dateArray.length; i++) {
-                timeTemp = trigger.getFireTimeAfter(timeTemp);
-                if (timeTemp != null) {
-                    dateArray[i] = timeTemp;
+        Date nextDate = trigger.getFireTimeAfter(startDate);
+        dateList.add(nextDate);
+        if (count > 1) {
+            for (int i = 1; i < count; i++) {
+                nextDate = trigger.getFireTimeAfter(nextDate);
+                if (nextDate != null) {
+                    dateList.add(nextDate);
                 } else {
                     break;
                 }
             }
         }
-        return dateArray;
+        return dateList;
     }
 
     /**
