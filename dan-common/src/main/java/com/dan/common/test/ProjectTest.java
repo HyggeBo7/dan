@@ -24,15 +24,15 @@ public class ProjectTest {
     @Test
     public void importExcelPackage() throws IOException {
         //导入
-        ExcelWriteUtils excelWriteUtils = ExcelWriteUtils.importExcel("P:/包装-import.xls", "Sheet1");
+        ExcelWriteUtils excelWriteUtils = ExcelWriteUtils.importExcel("P:/实验智能仓储原材料明细表(已编位置码).xlsx", "合計原材注111項");
         //一行数据为null，或者""，不添加
         excelWriteUtils.setEmptyRowFlag(false);
         //显示读取行号
         excelWriteUtils.setDebugNumFlag(true);
         //设置排除行:一.下标以逗号分隔，二：传int集合
-        //excelWriteUtils.setExcludeLineList("1,2");
+        excelWriteUtils.setExcludeLineList("0");
         //excelWriteUtils.setExcludeLineList(Arrays.asList(1, 2));
-        List<List<Map<String, String>>> listList = excelWriteUtils.readExcelWithoutTitle(true, 1, false);
+        List<List<Map<String, String>>> listList = excelWriteUtils.readExcelWithoutTitle(true, 2, false);
         for (List<Map<String, String>> listMap : listList) {
             System.out.println("listMap:" + JsonUtil.toJson(listMap));
             for (Map<String, String> map : listMap) {
