@@ -169,7 +169,7 @@ public class EmailUtilBuilder {
         /**
          * 是否输出异常日志
          */
-        private Boolean logErrorFlag;
+        private boolean logErrorEnable = false;
         /**
          * 邮件发送时间-默认当前
          */
@@ -330,8 +330,8 @@ public class EmailUtilBuilder {
             return this;
         }
 
-        public Builder setLogErrorFlag(Boolean logErrorFlag) {
-            this.logErrorFlag = logErrorFlag == null ? false : logErrorFlag;
+        public Builder setLogErrorEnable(boolean logErrorEnable) {
+            this.logErrorEnable = logErrorEnable;
             return this;
         }
 
@@ -402,7 +402,7 @@ public class EmailUtilBuilder {
             // 在组件上添加邮件文本
             mp.addBodyPart(bp);
         } catch (Exception e) {
-            if (builder.logErrorFlag) {
+            if (builder.logErrorEnable) {
                 LOGGER.error("设置邮件正文时发生错误！error:{}", e.getMessage());
             }
             return false;
@@ -428,7 +428,7 @@ public class EmailUtilBuilder {
                 files.add(fileds);
             }
         } catch (Exception e) {
-            if (builder.logErrorFlag) {
+            if (builder.logErrorEnable) {
                 LOGGER.error("增加邮件附件:{},error:{}", filename, e.getMessage());
             }
             return false;
@@ -512,7 +512,7 @@ public class EmailUtilBuilder {
             try {
                 mimeMsg.setContent(mp);
             } catch (MessagingException e) {
-                if (builder.logErrorFlag) {
+                if (builder.logErrorEnable) {
                     LOGGER.error("【send】==>设置附件失败,error:{}", e.getMessage());
                 }
                 return false;
@@ -521,7 +521,7 @@ public class EmailUtilBuilder {
             try {
                 mimeMsg.saveChanges();
             } catch (MessagingException e) {
-                if (builder.logErrorFlag) {
+                if (builder.logErrorEnable) {
                     LOGGER.error("【send】==>保存设置异常,error:{}", e.getMessage());
                 }
                 return false;
@@ -531,7 +531,7 @@ public class EmailUtilBuilder {
             try {
                 transport.connect(builder.host, builder.sendUserName, builder.sendUserPass);
             } catch (MessagingException e) {
-                if (builder.logErrorFlag) {
+                if (builder.logErrorEnable) {
                     LOGGER.error("【send】==>身份验证失败,error:{}", e.getMessage());
                 }
                 return false;
@@ -541,12 +541,12 @@ public class EmailUtilBuilder {
                 transport.sendMessage(mimeMsg, mimeMsg.getAllRecipients());
                 return true;
             } catch (MessagingException e) {
-                if (builder.logErrorFlag) {
+                if (builder.logErrorEnable) {
                     LOGGER.error("【send】==>发送邮件失败,error:{}", e.getMessage());
                 }
             }
         } catch (Exception e) {
-            if (builder.logErrorFlag) {
+            if (builder.logErrorEnable) {
                 LOGGER.error("【send】==>邮件发送未知异常,error:{}", e.getMessage());
             }
         } finally {
@@ -554,7 +554,7 @@ public class EmailUtilBuilder {
                 try {
                     transport.close();
                 } catch (MessagingException e) {
-                    if (builder.logErrorFlag) {
+                    if (builder.logErrorEnable) {
                         LOGGER.error("【send】==>关闭transport失败,error:{}", e.getMessage());
                     }
                 }
