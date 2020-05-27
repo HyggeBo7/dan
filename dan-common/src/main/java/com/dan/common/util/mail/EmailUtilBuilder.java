@@ -4,6 +4,8 @@ import com.dan.utils.exception.AppException;
 import com.dan.utils.lang.ObjectUtil;
 import com.sun.mail.util.MailSSLSocketFactory;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
@@ -20,6 +22,8 @@ import java.util.*;
  * @description: 建造者模式-邮件
  */
 public class EmailUtilBuilder {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(EmailUtilBuilder.class);
 
     /**
      * 参数构建对象
@@ -44,7 +48,7 @@ public class EmailUtilBuilder {
      * 根据内部建造者的参数来初始化对象
      */
     private EmailUtilBuilder(Builder builder) {
-        if (StringUtils.isBlank(builder.host) || StringUtils.isBlank(builder.sendUserName) || StringUtils.isBlank(builder.sendUserPass) || StringUtils.isBlank(builder.to)) {
+        if (builder == null || StringUtils.isBlank(builder.host) || StringUtils.isBlank(builder.sendUserName) || StringUtils.isBlank(builder.sendUserPass) || StringUtils.isBlank(builder.to)) {
             AppException.throwEx("Mailer sender information [Host,SendUserName,SendUserPass,To] Is Null...");
         }
         this.builder = builder;
@@ -162,6 +166,10 @@ public class EmailUtilBuilder {
          * 设置true可以在控制台（console)上看到发送邮件的过程-默认不显示
          */
         private Boolean deBugFlag;
+        /**
+         * 是否输出异常日志
+         */
+        private Boolean logErrorFlag;
         /**
          * 邮件发送时间-默认当前
          */
@@ -322,6 +330,11 @@ public class EmailUtilBuilder {
             return this;
         }
 
+        public Builder setLogErrorFlag(Boolean logErrorFlag) {
+            this.logErrorFlag = logErrorFlag == null ? false : logErrorFlag;
+            return this;
+        }
+
         public void setCharset(String charset) {
             this.charset = charset;
         }
@@ -389,7 +402,9 @@ public class EmailUtilBuilder {
             // 在组件上添加邮件文本
             mp.addBodyPart(bp);
         } catch (Exception e) {
-            System.err.println("设置邮件正文时发生错误！" + e);
+            if (builder.logErrorFlag) {
+                LOGGER.error("设置邮件正文时发生错误！error:{}", e.getMessage());
+            }
             return false;
         }
         return true;
@@ -413,7 +428,9 @@ public class EmailUtilBuilder {
                 files.add(fileds);
             }
         } catch (Exception e) {
-            System.err.println("增加邮件附件：" + filename + "发生错误！" + e);
+            if (builder.logErrorFlag) {
+                LOGGER.error("增加邮件附件:{},error:{}", filename, e.getMessage());
+            }
             return false;
         }
         return true;
@@ -495,14 +512,18 @@ public class EmailUtilBuilder {
             try {
                 mimeMsg.setContent(mp);
             } catch (MessagingException e) {
-                System.err.println("设置附件失败!" + e.getMessage());
+                if (builder.logErrorFlag) {
+                    LOGGER.error("【send】==>设置附件失败,error:{}", e.getMessage());
+                }
                 return false;
             }
             //保存上面的所有设置
             try {
                 mimeMsg.saveChanges();
             } catch (MessagingException e) {
-                System.err.println("保存设置异常!" + e.getMessage());
+                if (builder.logErrorFlag) {
+                    LOGGER.error("【send】==>保存设置异常,error:{}", e.getMessage());
+                }
                 return false;
             }
             transport = session.getTransport();
@@ -510,25 +531,32 @@ public class EmailUtilBuilder {
             try {
                 transport.connect(builder.host, builder.sendUserName, builder.sendUserPass);
             } catch (MessagingException e) {
-                System.err.println("身份验证失败!" + e.getMessage());
+                if (builder.logErrorFlag) {
+                    LOGGER.error("【send】==>身份验证失败,error:{}", e.getMessage());
+                }
                 return false;
             }
             // 发送邮件
             try {
                 transport.sendMessage(mimeMsg, mimeMsg.getAllRecipients());
-                System.out.println("发送邮件成功！");
                 return true;
             } catch (MessagingException e) {
-                System.err.println("发送邮件失败!" + e.getMessage());
+                if (builder.logErrorFlag) {
+                    LOGGER.error("【send】==>发送邮件失败,error:{}", e.getMessage());
+                }
             }
         } catch (Exception e) {
-            System.err.println("未知异常!" + e.getMessage());
+            if (builder.logErrorFlag) {
+                LOGGER.error("【send】==>邮件发送未知异常,error:{}", e.getMessage());
+            }
         } finally {
             if (transport != null) {
                 try {
                     transport.close();
                 } catch (MessagingException e) {
-                    System.out.println("关闭失败!" + e.getMessage());
+                    if (builder.logErrorFlag) {
+                        LOGGER.error("【send】==>关闭transport失败,error:{}", e.getMessage());
+                    }
                 }
             }
         }
