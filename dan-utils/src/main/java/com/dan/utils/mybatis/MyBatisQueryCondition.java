@@ -1,10 +1,11 @@
-package com.dan.utils.entity;
+package com.dan.utils.mybatis;
 
 import com.dan.utils.exception.AppException;
 import com.dan.utils.lang.StringUtil;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -17,7 +18,7 @@ import java.util.Objects;
  * @createDate: 2019-05-06 9:39.
  * @description: mybatis查询条件构建
  */
-public class MyBatisQueryCondition extends BaseEntity {
+public class MyBatisQueryCondition implements Serializable {
 
     /**
      * EQ类型

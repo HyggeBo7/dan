@@ -1,6 +1,6 @@
 package com.dan.utils.tree;
 
-import com.dan.utils.entity.BaseSerializable;
+import com.dan.utils.constant.BaseSerializable;
 
 import java.util.ArrayList;
 import java.util.List;

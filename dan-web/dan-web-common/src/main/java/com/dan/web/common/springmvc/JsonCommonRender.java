@@ -79,22 +79,8 @@ public class JsonCommonRender {
             }
             return result;
         }
-
-        /*if (obj instanceof cn.xtits.xtf.common.web.AjaxResult) {
-            if (((cn.xtits.xtf.common.web.AjaxResult) obj).getsNulls()) {
-                result = gson.toJson(obj);
-            } else {
-                result = nullGson.toJson(obj);
-            }
-        } else*/
-        if (obj instanceof com.dan.utils.entity.AjaxResult) {
-            if (((com.dan.utils.entity.AjaxResult) obj).getsNulls()) {
-                result = gson.toJson(obj);
-            } else {
-                result = nullGson.toJson(obj);
-            }
-        } else if (obj instanceof com.dan.utils.entity.AjaxResultGeneric) {
-            if (((com.dan.utils.entity.AjaxResultGeneric) obj).getsNulls()) {
+        if (obj instanceof com.dan.utils.constant.BaseSerializable) {
+            if (((com.dan.utils.constant.BaseSerializable) obj).isSerializeNullField()) {
                 result = gson.toJson(obj);
             } else {
                 result = nullGson.toJson(obj);

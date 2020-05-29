@@ -1,6 +1,5 @@
 package com.dan.web.common.springmvc;
 
-import com.dan.utils.entity.AjaxResult;
 import com.dan.utils.exception.ExceptionHandlerService;
 import com.dan.web.common.util.HttpServletRequestUtils;
 import org.apache.commons.lang3.StringUtils;

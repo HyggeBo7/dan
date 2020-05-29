@@ -1,4 +1,4 @@
-package com.dan.utils.entity;
+package com.dan.utils.constant;
 
 import java.io.Serializable;
 
@@ -9,5 +9,11 @@ import java.io.Serializable;
  * @description: 序列化
  */
 public interface BaseSerializable extends Serializable {
+
+    /**
+     * 是否序列化null字段
+     */
+    boolean isSerializeNullField();
+
 
 }

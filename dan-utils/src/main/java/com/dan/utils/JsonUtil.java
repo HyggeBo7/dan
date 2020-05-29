@@ -28,9 +28,18 @@ public class JsonUtil {
             .setDateFormat("yyyy-MM-dd HH:mm:ss")
             .create();
 
+    private static final Gson GSON_SERIALIZE_NULL = new GsonBuilder()
+            .serializeNulls()
+            .disableHtmlEscaping()
+            .setDateFormat("yyyy-MM-dd HH:mm:ss")
+            .create();
 
     public static Gson getGson() {
         return GSON;
+    }
+
+    public static Gson getGsonSerializeNull() {
+        return GSON_SERIALIZE_NULL;
     }
 
     public static <T> T fromJson(final String json, final Class<T> cls) {
@@ -84,6 +93,13 @@ public class JsonUtil {
             return null;
         }
         return GSON.toJson(obj);
+    }
+
+    public static String toJsonSerializeNull(Object obj) {
+        if (obj == null) {
+            return null;
+        }
+        return GSON_SERIALIZE_NULL.toJson(obj);
     }
 
     /**

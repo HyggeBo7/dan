@@ -1,4 +1,4 @@
-package com.dan.utils.entity;
+package com.dan.utils.constant;
 
 import java.io.Serializable;
 

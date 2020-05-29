@@ -3,11 +3,10 @@ package com.dan.utils.exception;
 import java.io.Serializable;
 
 /**
- * Created by dan on 2016/3/2.
+ * @author dan
+ * @date 2016/3/2
  */
 public class AppException extends RuntimeException implements ExceptionHandlerService, Serializable {
-    private static final long serialVersionUID = -416273111872183365L;
-
     public static final Integer PARAM_ERROR = 400;
     public static final Integer COMMON_ERROR = -1;
 
@@ -72,6 +71,10 @@ public class AppException extends RuntimeException implements ExceptionHandlerSe
 
     public static void throwEx(String message, Throwable e) {
         throw new AppException(message, e);
+    }
+
+    public static void throwEx(Integer code, String message, Throwable e) {
+        throw new AppException(code, message, e);
     }
 
 }

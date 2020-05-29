@@ -1,6 +1,6 @@
 package com.dan.utils.network;
 
-import com.dan.utils.entity.BaseSerializable;
+import com.dan.utils.constant.BaseSerializable;
 import com.dan.utils.exception.AppException;
 import com.dan.utils.network.common.HttpStatusCode;
 import com.dan.utils.network.exception.HttpException;

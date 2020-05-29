@@ -1,6 +1,6 @@
 package com.dan.common.test.entity;
 
-import com.dan.utils.entity.BaseEntity;
+import com.dan.utils.constant.BaseEntity;
 
 import java.math.BigDecimal;
 import java.util.Date;
