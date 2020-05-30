@@ -1,7 +1,7 @@
 package com.dan.testdome.set.test;
 
 import com.dan.testdome.set.ext.ExtLinkedList;
-import com.dan.utils.lang.DateUtil;
+import com.dan.util.lang.DateUtil;
 import org.junit.Test;
 
 import java.util.Date;

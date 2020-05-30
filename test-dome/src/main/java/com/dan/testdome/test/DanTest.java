@@ -1,10 +1,10 @@
 package com.dan.testdome.test;
 
-import com.dan.utils.JsonUtil;
-import com.dan.utils.file.FileUtil;
-import com.dan.utils.lang.DateUtil;
-import com.dan.utils.lang.HideDataUtil;
-import com.dan.utils.xt.PinYinUtil;
+import com.dan.util.JsonUtil;
+import com.dan.util.file.FileUtil;
+import com.dan.util.lang.DateUtil;
+import com.dan.util.lang.HideDataUtil;
+import com.dan.util.xt.PinYinUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 

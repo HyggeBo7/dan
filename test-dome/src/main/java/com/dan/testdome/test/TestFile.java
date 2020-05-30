@@ -1,6 +1,6 @@
 package com.dan.testdome.test;
 
-import com.dan.utils.file.FileZipUtil;
+import com.dan.util.file.FileZipUtil;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 

@@ -1,6 +1,6 @@
 package com.dan.web.common.test.redis.service.impl;
 
-import com.dan.utils.exception.AppException;
+import com.dan.util.exception.AppException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;

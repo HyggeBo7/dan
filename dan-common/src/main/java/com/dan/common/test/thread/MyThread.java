@@ -1,7 +1,7 @@
 package com.dan.common.test.thread;
 
-import com.dan.utils.lang.DateUtil;
-import com.dan.utils.lang.RandomUtils;
+import com.dan.util.lang.DateUtil;
+import com.dan.util.lang.RandomUtils;
 
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;

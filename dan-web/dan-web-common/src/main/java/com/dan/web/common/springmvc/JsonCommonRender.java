@@ -1,7 +1,6 @@
 package com.dan.web.common.springmvc;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.dan.util.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.slf4j.Logger;
@@ -12,13 +11,11 @@ import java.util.regex.Pattern;
 
 /**
  * 返回json时使用, 支持json , jsonp, 需配合RequestContext 使用, 注意
- * Created by Dan on 2018/12/4.
+ *
+ * @author Bo
+ * @date 2018/12/4
  */
 public class JsonCommonRender {
-
-    private static Gson gson = new GsonBuilder().serializeNulls().disableHtmlEscaping().setDateFormat("yyyy-MM-dd HH:mm:ss").create();
-
-    private static Gson nullGson = new GsonBuilder().disableHtmlEscaping().setDateFormat("yyyy-MM-dd HH:mm:ss").create();
 
     private static final Logger logger = LoggerFactory.getLogger(JsonCommonRender.class);
 
@@ -27,7 +24,6 @@ public class JsonCommonRender {
     private final static Pattern PATTERN = Pattern.compile(CALLBACK_REGEXP);
     private final static String JSON_HEADER_APPEND = "\r\n\r\n";
     private final static String CHAR_SET = "UTF-8";
-    private final static String dateFormat = "yyyy-MM-dd HH:mm:ss";
 
 
     public String getJsonResult(Object obj) {
@@ -73,22 +69,26 @@ public class JsonCommonRender {
         Boolean aBooleanFlag = customizeGetJson(obj);
         if (aBooleanFlag != null) {
             if (aBooleanFlag) {
-                result = gson.toJson(obj);
+                result = JsonUtil.toJsonSerializeNull(obj);
             } else {
-                result = nullGson.toJson(obj);
+                result = JsonUtil.toJson(obj);
             }
             return result;
         }
-        if (obj instanceof com.dan.utils.constant.BaseSerializable) {
-            if (((com.dan.utils.constant.BaseSerializable) obj).isSerializeNullField()) {
-                result = gson.toJson(obj);
+        if (obj instanceof com.dan.util.constant.BaseSerializable) {
+            if (((com.dan.util.constant.BaseSerializable) obj).isSerializeNullField()) {
+                result = JsonUtil.toJsonSerializeNull(obj);
             } else {
-                result = nullGson.toJson(obj);
+                result = JsonUtil.toJson(obj);
             }
         } else if (obj instanceof String) {
             result = obj.toString();
         } else {
-            result = gson.toJson(obj);
+            try {
+                result = JsonUtil.toJson(obj);
+            } catch (Exception e) {
+                result = obj.toString();
+            }
         }
         return result;
     }

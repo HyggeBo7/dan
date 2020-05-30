@@ -1,7 +1,7 @@
 package com.dan.common.util.mail;
 
-import com.dan.utils.exception.AppException;
-import com.dan.utils.lang.ObjectUtil;
+import com.dan.util.exception.AppException;
+import com.dan.util.lang.ObjectUtil;
 import com.sun.mail.util.MailSSLSocketFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;

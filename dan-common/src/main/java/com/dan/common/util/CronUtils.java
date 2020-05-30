@@ -1,6 +1,6 @@
 package com.dan.common.util;
 
-import com.dan.utils.lang.DateUtil;
+import com.dan.util.lang.DateUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.CronExpression;
 import org.quartz.CronScheduleBuilder;

@@ -1,6 +1,8 @@
 package com.dan.web.common.springmvc;
 
-import com.dan.utils.exception.ExceptionHandlerService;
+import com.dan.util.constant.AjaxResult;
+import com.dan.util.enums.CommonStatusEnum;
+import com.dan.util.exception.ExceptionHandlerService;
 import com.dan.web.common.util.HttpServletRequestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -15,12 +17,13 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
 
 /**
- * Created by Dan on 2018/12/4.
+ * @author Bo
+ * @date 2018/12/4
  */
 public class ExceptionHandlerResolver extends SimpleMappingExceptionResolver {
     private static final Logger logger = LoggerFactory.getLogger(ExceptionHandlerResolver.class);
 
-    private JsonCommonRender jsonCommonRender;
+    private final JsonCommonRender jsonCommonRender;
 
     public ExceptionHandlerResolver() {
         this(new JsonCommonRender());
@@ -33,32 +36,26 @@ public class ExceptionHandlerResolver extends SimpleMappingExceptionResolver {
     @Override
     public ModelAndView doResolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
         if (ex != null) {
-            logger.error("uri={} para={} trace={}", request.getRequestURI(), HttpServletRequestUtils.getStringRequestParam(request), ExceptionUtils.getStackTrace(ex));
-            AjaxResult ajaxResult = customizeException(ex);
-            /*else if (ex instanceof AppWebException) {
-                AppWebException appWebException = (AppWebException) ex;
-                Integer code = appWebException.getCode();
-                String message = appWebException.getMessage();
-                ajaxResult = new AjaxResult(code, message, null);
-            }*/
+            logger.error("【ExceptionHandlerResolver】doResolveException===>uri={} para={} trace={}", request.getRequestURI(), HttpServletRequestUtils.getStringRequestParam(request), ExceptionUtils.getStackTrace(ex));
+            AjaxResult<?> ajaxResult = customizeException(ex);
             if (ajaxResult == null) {
                 if (ex instanceof ExceptionHandlerService) {
                     ExceptionHandlerService appException = (ExceptionHandlerService) ex;
                     Integer code = appException.getCode();
                     String message = appException.getExceptionMsg();
-                    ajaxResult = new AjaxResult(code, message, null);
-                } else if (ex.getClass().getName().equals("org.apache.shiro.authz.UnauthorizedException")) {
+                    ajaxResult = new AjaxResult<Object>(code, message, null);
+                } else if ("org.apache.shiro.authz.UnauthorizedException".equals(ex.getClass().getName())) {
                     //Subject does not have permission [material:update]
-                    ajaxResult = new AjaxResult(AjaxResult.PARAM_ERROR, ex.getMessage().replace("Subject does not have permission", "没有") + "权限", null);
+                    ajaxResult = new AjaxResult<Object>(CommonStatusEnum.NO_PERMISSION.value, ex.getMessage().replace("Subject does not have permission", "没有") + "权限", null);
                 } else {
-                    ajaxResult = new AjaxResult(AjaxResult.PARAM_ERROR, ExceptionUtils.getStackTrace(ex), null);
+                    ajaxResult = new AjaxResult<Object>(CommonStatusEnum.FAIL.value, ExceptionUtils.getStackTrace(ex), null);
                 }
             }
 
             try {
                 String contentType = StringUtils.isNotBlank(response.getContentType()) ? response.getContentType() : MediaType.APPLICATION_JSON_UTF8_VALUE;
-                response.reset();
-                response.addHeader("Access-Control-Allow-Origin", "*");
+                //response.reset();
+                //response.addHeader("Access-Control-Allow-Origin", "*");
                 response.setCharacterEncoding("UTF-8");
                 //response.setHeader("Content-type", "application/json;charset=UTF-8"); 和设置setContentType相等
                 response.setContentType(contentType);
@@ -67,7 +64,7 @@ public class ExceptionHandlerResolver extends SimpleMappingExceptionResolver {
                 printWriter.flush();
                 printWriter.close();
             } catch (Exception e) {
-                logger.error("resolveException eror , e : {}", e);
+                logger.error("【ExceptionHandlerResolver】===>doResolveException-error, e : {}", e.getMessage());
             }
         }
         return null;
@@ -80,7 +77,7 @@ public class ExceptionHandlerResolver extends SimpleMappingExceptionResolver {
      * @param ex 异常
      * @return AjaxResult, 返回null, 使用默认处理
      */
-    protected AjaxResult customizeException(Exception ex) {
+    protected AjaxResult<?> customizeException(Exception ex) {
 
         return null;
     }

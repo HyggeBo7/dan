@@ -6,7 +6,7 @@
         <artifactId>dan</artifactId>
         <groupId>com.dan</groupId>
         <version>1.1.7</version>
-        <relativePath>../pom.xml</relativePath>
+        <relativePath/>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 

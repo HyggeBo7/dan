@@ -1,6 +1,6 @@
 package com.dan.common.test.singleton;
 
-import com.dan.utils.JsonUtil;
+import com.dan.util.JsonUtil;
 
 import java.io.*;
 import java.lang.reflect.Constructor;

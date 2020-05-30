@@ -1,6 +1,6 @@
 package com.dan.common.test.entity;
 
-import com.dan.utils.tree.TreeNodeUtil;
+import com.dan.util.tree.TreeNodeUtil;
 
 import java.util.Date;
 

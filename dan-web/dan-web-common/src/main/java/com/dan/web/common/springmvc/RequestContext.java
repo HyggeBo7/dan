@@ -1,6 +1,6 @@
 package com.dan.web.common.springmvc;
 
-import com.dan.utils.lang.RandomUtils;
+import com.dan.util.lang.RandomUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -13,7 +13,7 @@ import javax.servlet.http.HttpSession;
 /**
  * 封装request response
  *
- * @author dan
+ * @author bo
  */
 public class RequestContext {
 

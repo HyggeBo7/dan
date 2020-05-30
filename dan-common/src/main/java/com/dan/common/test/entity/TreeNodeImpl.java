@@ -1,6 +1,6 @@
 package com.dan.common.test.entity;
 
-import com.dan.utils.tree.TreeNodeUtil;
+import com.dan.util.tree.TreeNodeUtil;
 
 import java.util.Date;
 import java.util.List;
@@ -9,7 +9,7 @@ import java.util.List;
  * @author Dan
  * @date 2017/10/9
  */
-public class TreeNodeImpl implements TreeNodeUtil.AbstractTreeNodeImpl<TreeNodeImpl> {
+public class TreeNodeImpl implements TreeNodeUtil.TreeNodeImpl<TreeNodeImpl> {
     /**
      * 节点id
      */

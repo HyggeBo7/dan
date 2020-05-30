@@ -1,7 +1,7 @@
 package com.dan.common.test.thread;
 
 import com.dan.common.test.thread.impl.ThreadCount;
-import com.dan.utils.lang.RandomUtils;
+import com.dan.util.lang.RandomUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

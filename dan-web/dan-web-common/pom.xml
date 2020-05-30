@@ -6,7 +6,7 @@
         <artifactId>dan-web</artifactId>
         <groupId>com.dan</groupId>
         <version>1.1.7</version>
-        <relativePath>../pom.xml</relativePath>
+        <relativePath/>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <packaging>jar</packaging>
@@ -14,7 +14,7 @@
     <artifactId>dan-web-common</artifactId>
     <properties>
         <hystrix.core.version>1.5.18</hystrix.core.version>
-        <spring.boot.version>1.5.12.RELEASE</spring.boot.version>
+        <spring.boot.version>2.3.0.RELEASE</spring.boot.version>
         <servlet.version>4.0.1</servlet.version>
     </properties>
     <dependencies>

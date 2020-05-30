@@ -1,9 +1,9 @@
 package com.dan.common.test;
 
 import com.dan.common.util.excel.ExcelWriteUtils;
-import com.dan.utils.JsonUtil;
-import com.dan.utils.lang.DateUtil;
-import com.dan.utils.network.HttpUtils;
+import com.dan.util.JsonUtil;
+import com.dan.util.lang.DateUtil;
+import com.dan.util.network.HttpUtils;
 import org.junit.Test;
 
 import java.io.IOException;
