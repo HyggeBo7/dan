@@ -1,7 +1,7 @@
 package com.dan.common.test.thread;
 
 import com.dan.common.test.thread.impl.ThreadCount;
-import com.dan.util.lang.RandomUtils;
+import com.dan.util.lang.RandomUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +45,7 @@ public class TaskRunnable implements Runnable, ThreadCount {
             logger.info("任务:【{}】,完成度:【{}/{}】", name, i, workNum);
             atomicInteger.incrementAndGet();
             try {
-                Thread.sleep(RandomUtils.getRandomInt(800, 3000));
+                Thread.sleep(RandomUtil.getRandomInt(800, 3000));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

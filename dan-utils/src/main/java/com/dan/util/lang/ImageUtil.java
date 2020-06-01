@@ -16,7 +16,7 @@ import java.io.IOException;
  * @createDate: 2019-10-15 09:15.
  * @description: 图片工具类
  */
-public class ImageUtils {
+public class ImageUtil {
 
     public final static String BASE64_PREFIX = "data:image/png;base64,";
 

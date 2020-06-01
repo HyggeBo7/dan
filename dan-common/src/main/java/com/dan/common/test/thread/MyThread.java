@@ -1,7 +1,7 @@
 package com.dan.common.test.thread;
 
 import com.dan.util.lang.DateUtil;
-import com.dan.util.lang.RandomUtils;
+import com.dan.util.lang.RandomUtil;
 
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -30,7 +30,7 @@ public class MyThread implements Runnable {
     public void run() {
         System.out.println("开始执行===>【" + DateUtil.parseToString(new Date()) + "】===>:name:" + name + ",当前线程完成数量:【" + getOnlineCount() + "】");
         try {
-            Thread.sleep(RandomUtils.getRandomInt(3000, 8000));
+            Thread.sleep(RandomUtil.getRandomInt(3000, 8000));
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

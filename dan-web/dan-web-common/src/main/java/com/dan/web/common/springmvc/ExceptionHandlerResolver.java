@@ -37,18 +37,18 @@ public class ExceptionHandlerResolver extends SimpleMappingExceptionResolver {
     public ModelAndView doResolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
         if (ex != null) {
             logger.error("【ExceptionHandlerResolver】doResolveException===>uri={} para={} trace={}", request.getRequestURI(), HttpServletRequestUtils.getStringRequestParam(request), ExceptionUtils.getStackTrace(ex));
-            AjaxResult<?> ajaxResult = customizeException(ex);
+            AjaxResult ajaxResult = customizeException(ex);
             if (ajaxResult == null) {
                 if (ex instanceof ExceptionHandlerService) {
                     ExceptionHandlerService appException = (ExceptionHandlerService) ex;
                     Integer code = appException.getCode();
                     String message = appException.getExceptionMsg();
-                    ajaxResult = new AjaxResult<Object>(code, message, null);
+                    ajaxResult = new AjaxResult(code, message, null);
                 } else if ("org.apache.shiro.authz.UnauthorizedException".equals(ex.getClass().getName())) {
                     //Subject does not have permission [material:update]
-                    ajaxResult = new AjaxResult<Object>(CommonStatusEnum.NO_PERMISSION.value, ex.getMessage().replace("Subject does not have permission", "没有") + "权限", null);
+                    ajaxResult = new AjaxResult(CommonStatusEnum.NO_PERMISSION.value, ex.getMessage().replace("Subject does not have permission", "没有") + "权限", null);
                 } else {
-                    ajaxResult = new AjaxResult<Object>(CommonStatusEnum.FAIL.value, ExceptionUtils.getStackTrace(ex), null);
+                    ajaxResult = new AjaxResult(CommonStatusEnum.FAIL.value, ExceptionUtils.getStackTrace(ex), null);
                 }
             }
 
@@ -77,7 +77,7 @@ public class ExceptionHandlerResolver extends SimpleMappingExceptionResolver {
      * @param ex 异常
      * @return AjaxResult, 返回null, 使用默认处理
      */
-    protected AjaxResult<?> customizeException(Exception ex) {
+    protected AjaxResult customizeException(Exception ex) {
 
         return null;
     }

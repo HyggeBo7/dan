@@ -12,7 +12,7 @@ import java.util.UUID;
  * @createDate: 2018-12-27 9:49.
  * @description: 随机数
  */
-public class RandomUtils {
+public class RandomUtil {
 
     private static Random rand;
 
@@ -20,7 +20,7 @@ public class RandomUtils {
         rand = new Random();
     }
 
-    private RandomUtils() {
+    private RandomUtil() {
 
     }
 

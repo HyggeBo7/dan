@@ -1,6 +1,7 @@
 package com.dan.web.common.springmvc;
 
-import com.dan.util.JsonUtil;
+import com.dan.util.data.JsonUtil;
+import com.dan.util.constant.BaseResult;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.slf4j.Logger;
@@ -75,8 +76,8 @@ public class JsonCommonRender {
             }
             return result;
         }
-        if (obj instanceof com.dan.util.constant.BaseSerializable) {
-            if (((com.dan.util.constant.BaseSerializable) obj).isSerializeNullField()) {
+        if (obj instanceof BaseResult) {
+            if (((BaseResult) obj).isSerializeNullField()) {
                 result = JsonUtil.toJsonSerializeNull(obj);
             } else {
                 result = JsonUtil.toJson(obj);

@@ -3,27 +3,18 @@ package com.dan.util.constant;
 import java.io.Serializable;
 
 /**
- * @version 1.0
- * @author: Bo
- * @fileName: Result
- * @createDate: 2020-04-03 09:44.
- * @description: 通用的处理返回结果
+ * @fileName: BaseSerializable
+ * @author: Dan
+ * @createDate: 2019-01-24 13:06.
+ * @description: 序列化
  */
-public abstract class BaseResult<T> implements Serializable {
+public interface BaseResult extends Serializable {
 
-    private static final long serialVersionUID = -5525734041446252217L;
+    /**
+     * 是否序列化null字段
+     *
+     * @return true:序列化null字段
+     */
+    boolean isSerializeNullField();
 
-    public abstract Integer getCode();
-
-    public abstract void setCode(Integer code);
-
-    public abstract String getMessage();
-
-    public abstract void setMessage(String msg);
-
-    public abstract T getData();
-
-    public abstract void setData(T data);
-
-    public abstract boolean isSuccess();
 }

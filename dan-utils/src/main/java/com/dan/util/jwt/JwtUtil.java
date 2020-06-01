@@ -1,6 +1,9 @@
 package com.dan.util.jwt;
 
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtBuilder;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 
@@ -12,7 +15,7 @@ import java.util.Date;
  * @author: Bo
  * @fileName: JwtUtils
  * @createDate: 2020-01-16 10:32.
- * @description: '
+ * @description: jwt工具类
  */
 public class JwtUtil {
 
@@ -49,11 +52,12 @@ public class JwtUtil {
     }
 
     public static Claims parseToken(String token, SecretKey generalKey) throws Exception {
-        return Jwts.parserBuilder().setSigningKey(generalKey).build().parseClaimsJws(token).getBody();
         /*return Jwts.parser()
                 .setSigningKey(generalKey)
                 .parseClaimsJws(token)
                 .getBody();*/
+        //return Jwts.parserBuilder().setSigningKey(generalKey).build().parseClaimsJws(token).getBody();
+        return null;
     }
 
     /**
@@ -66,7 +70,7 @@ public class JwtUtil {
         return Keys.hmacShaKeyFor(encodedKey);
     }
 
-    public static void main(String[] args) throws Exception {
+    /*public static void main(String[] args) throws Exception {
         String key = DEFAULT_KEY;
         String authToken = "{\"userId\":10,\"userName\":\"管理员\",\"appToken\":\"CJzdWIiOiJ7XCJ1c2VySDkwMTUeyJhbGciOiJI\",\"superFlag\":false}";
         //7天有效期
@@ -76,6 +80,6 @@ public class JwtUtil {
         Claims claims = JwtUtil.parseToken(token, key);
         Date expirationDate = claims.getExpiration();
         System.out.println("claims.getSubject():" + claims.getSubject());
-    }
+    }*/
 
 }

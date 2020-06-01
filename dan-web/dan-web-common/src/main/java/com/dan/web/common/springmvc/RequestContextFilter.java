@@ -1,6 +1,6 @@
 package com.dan.web.common.springmvc;
 
-import com.dan.util.JsonUtil;
+import com.dan.util.data.JsonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

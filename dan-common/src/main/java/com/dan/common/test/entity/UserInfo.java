@@ -13,7 +13,7 @@ import java.util.List;
  * @description:
  */
 public class UserInfo extends BaseEntity {
-    private static final long serialVersionUID = -89185136234268487L;
+    private static final long serialVersionUID = -1898469267004244655L;
     private Integer id;
     private String account;
     private String password;

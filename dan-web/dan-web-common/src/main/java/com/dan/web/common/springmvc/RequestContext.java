@@ -1,6 +1,6 @@
 package com.dan.web.common.springmvc;
 
-import com.dan.util.lang.RandomUtils;
+import com.dan.util.lang.RandomUtil;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -30,7 +30,7 @@ public class RequestContext {
         setResponse(response);
         setController(controller);
         //init request sequence
-        request.setAttribute(REQUEST_SEQ_KEY, RandomUtils.nextSeq());
+        request.setAttribute(REQUEST_SEQ_KEY, RandomUtil.nextSeq());
     }
 
     public static HttpSession getSession() {

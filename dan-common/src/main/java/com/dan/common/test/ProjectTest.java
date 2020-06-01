@@ -1,7 +1,7 @@
 package com.dan.common.test;
 
 import com.dan.common.util.excel.ExcelWriteUtils;
-import com.dan.util.JsonUtil;
+import com.dan.util.data.JsonUtil;
 import com.dan.util.lang.DateUtil;
 import com.dan.util.network.HttpUtils;
 import org.junit.Test;

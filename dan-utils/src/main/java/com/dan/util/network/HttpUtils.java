@@ -406,6 +406,7 @@ public class HttpUtils {
     }
 
     public static class ResultResponse implements Serializable {
+        private static final long serialVersionUID = -3034658025748879983L;
         private int status;
         private String msg;
         private String message;
