@@ -9,7 +9,7 @@ import java.io.Serializable;
  * @date 2016/3/2
  */
 public class AppException extends RuntimeException implements ExceptionHandlerService, Serializable {
-    private static final long serialVersionUID = -1107448809469267939L;
+    private static final long serialVersionUID = 4170955930254775164L;
     private Integer code;
     private Throwable t;
 

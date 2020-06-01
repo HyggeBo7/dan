@@ -11,7 +11,7 @@ import java.io.Serializable;
  * @date 2016/3/2
  */
 public class AppHystrixWebException extends HystrixBadRequestException implements ExceptionHandlerService, Serializable {
-    private static final long serialVersionUID = -122631566212828073L;
+    private static final long serialVersionUID = 8344793464284196017L;
     private Integer code;
     private Throwable t;
 

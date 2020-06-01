@@ -1,11 +1,11 @@
 package top.dearbo.util.network;
 
-import top.dearbo.util.exception.AppException;
-import top.dearbo.util.network.common.HttpStatusCode;
-import top.dearbo.util.network.exception.HttpException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import top.dearbo.util.exception.AppException;
+import top.dearbo.util.network.common.HttpStatusCode;
+import top.dearbo.util.network.exception.HttpException;
 
 import javax.net.ssl.*;
 import java.io.*;
@@ -406,7 +406,7 @@ public class HttpUtils {
     }
 
     public static class ResultResponse implements Serializable {
-        private static final long serialVersionUID = -3034658025748879983L;
+        private static final long serialVersionUID = -884562198636894001L;
         private int status;
         private String msg;
         private String message;

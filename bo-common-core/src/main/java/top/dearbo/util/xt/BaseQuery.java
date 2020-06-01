@@ -4,7 +4,8 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
- * Created by Dan on 2017/8/21.
+ * @author Dan
+ * @date 2017/8/21
  */
 public class BaseQuery {
 
@@ -18,10 +19,9 @@ public class BaseQuery {
         this.isDelete = isDelete;
     }
 
-    private static final long serialVersionUID = 8809142367875458974L;
-    private static final Integer defaultPageSize = new Integer(20);
-    private static final Integer defaultFristPage = new Integer(1);
-    private static final Integer defaultTotalItem = new Integer(0);
+    private static final Integer defaultPageSize = 20;
+    private static final Integer defaultFristPage = 1;
+    private static final Integer defaultTotalItem = 0;
 
     /**
      * 总共多少条

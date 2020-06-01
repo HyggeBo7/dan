@@ -19,7 +19,7 @@ public abstract class AbstractResult<T> implements BaseResult {
      * 失败code
      */
     protected static final int FAIL_CODE = CommonStatusEnum.FAIL.value;
-    private static final long serialVersionUID = -3766826473104683293L;
+    private static final long serialVersionUID = 2992312003770370795L;
 
     abstract Integer getCode();
 

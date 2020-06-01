@@ -11,7 +11,7 @@ import top.dearbo.util.lang.ObjectUtil;
  * @description: 通用的解析返回结果
  */
 public class ResultGeneric<T> extends AbstractResult<T> {
-    private static final long serialVersionUID = -5532590172221388351L;
+    private static final long serialVersionUID = -3766410560609922201L;
     private Integer code;
     private String msg;
     private T data;

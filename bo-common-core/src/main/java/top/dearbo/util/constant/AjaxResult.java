@@ -12,7 +12,7 @@ import top.dearbo.util.lang.ObjectUtil;
  * @description: 返回结果, data为Object
  */
 public class AjaxResult extends AbstractResult<Object> {
-    private static final long serialVersionUID = 5364408400707486129L;
+    private static final long serialVersionUID = -6606450690834407403L;
     private Integer code;
     private String msg;
     private Object data;
