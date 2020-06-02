@@ -56,8 +56,7 @@ public class JwtUtil {
                 .setSigningKey(generalKey)
                 .parseClaimsJws(token)
                 .getBody();*/
-        //return Jwts.parserBuilder().setSigningKey(generalKey).build().parseClaimsJws(token).getBody();
-        return null;
+        return Jwts.parserBuilder().setSigningKey(generalKey).build().parseClaimsJws(token).getBody();
     }
 
     /**
