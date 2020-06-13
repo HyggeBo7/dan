@@ -4,14 +4,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.dearbo.util.exception.AppException;
+import top.dearbo.util.network.common.HttpGlobalConfig;
 import top.dearbo.util.network.common.HttpStatusCode;
 import top.dearbo.util.network.exception.HttpException;
 
 import javax.net.ssl.*;
 import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLEncoder;
+import java.net.*;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
@@ -69,6 +68,15 @@ public class HttpUtils {
     private String defaultHeaderCookieField = "Set-Cookie";
     private Integer connectTimeout;
     private Integer readTimeout;
+
+    /**
+     * 当前代理类
+     */
+    private Proxy proxy;
+    /**
+     * 是否使用全局代理
+     */
+    private boolean globalProxyFlag;
 
     /**
      * 是否设置通用属性
@@ -135,7 +143,7 @@ public class HttpUtils {
 
     public ResultResponse doPostJson(String requestUrl, String paramJson, Map<String, String> headerMap, String encoding) {
         if (headerMap == null) {
-            headerMap = new HashMap<>();
+            headerMap = new HashMap<>(16);
         }
         String contentType = StringUtils.isBlank(headerMap.get(CONTENT_TYPE)) ? headerMap.get(CONTENT_TYPE_1) : headerMap.get(CONTENT_TYPE);
         if (StringUtils.isBlank(contentType)) {
@@ -169,6 +177,10 @@ public class HttpUtils {
         if (requestUrl.startsWith(HTTPS)) {
             httpsFlag = true;
         }
+        //当前是否有开启全局代理
+        if (proxy == null && globalProxyFlag) {
+            proxy = HttpGlobalConfig.getInstance().getProxy();
+        }
         return request(requestUrl, methodPostFlag, paramMap, headerMap, encoding, httpsFlag, paramJson);
     }
 
@@ -187,11 +199,23 @@ public class HttpUtils {
             URL url = new URL(requestUrl);
             // 打开和URL之间的连接
             if (httpsFlag) {
-                connection = (HttpsURLConnection) url.openConnection();
+                if (proxy != null) {
+                    connection = (HttpsURLConnection) url.openConnection(proxy);
+                } else {
+                    connection = (HttpsURLConnection) url.openConnection();
+                }
                 setHttps((HttpsURLConnection) connection);
             } else {
-                connection = (HttpURLConnection) url.openConnection();
+                if (proxy != null) {
+                    connection = (HttpURLConnection) url.openConnection(proxy);
+                } else {
+                    connection = (HttpURLConnection) url.openConnection();
+                }
             }
+            //创建代理
+            Proxy proxy1 = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("", 1111));
+            //设置代理
+            HttpURLConnection httpConn = (HttpURLConnection) url.openConnection(proxy1);
             connection.setConnectTimeout(getConnectTimeout());
             connection.setReadTimeout(getReadTimeout());
 
@@ -402,6 +426,24 @@ public class HttpUtils {
         if (headerCookieField != null && headerCookieField.length() > 0) {
             this.defaultHeaderCookieField = headerCookieField;
         }
+        return this;
+    }
+
+    public Proxy getProxy() {
+        return proxy;
+    }
+
+    public HttpUtils setProxy(Proxy proxy) {
+        this.proxy = proxy;
+        return this;
+    }
+
+    public boolean isGlobalProxyFlag() {
+        return globalProxyFlag;
+    }
+
+    public HttpUtils setGlobalProxyFlag(boolean globalProxyFlag) {
+        this.globalProxyFlag = globalProxyFlag;
         return this;
     }
 

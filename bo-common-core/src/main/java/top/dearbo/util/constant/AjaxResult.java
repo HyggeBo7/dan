@@ -73,8 +73,8 @@ public class AjaxResult extends AbstractResult<Object> {
         return failed(null, msg, true);
     }
 
-    public static AjaxResult failed(Object data) {
-        return failed(data, true);
+    public static AjaxResult failed(Object data, String msg) {
+        return failed(data, msg, true);
     }
 
     public static AjaxResult failed(Object data, boolean serializeNull) {

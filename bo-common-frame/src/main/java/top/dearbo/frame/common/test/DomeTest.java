@@ -1,13 +1,18 @@
 package top.dearbo.frame.common.test;
 
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.primitives.Ints;
+import io.jsonwebtoken.Claims;
+import org.joda.time.DateTime;
+import org.junit.Before;
+import org.junit.Test;
 import top.dearbo.frame.common.test.entity.TreeNode;
 import top.dearbo.frame.common.test.entity.TreeNodeImpl;
 import top.dearbo.frame.common.test.entity.UserInfo;
 import top.dearbo.frame.common.util.CronUtils;
-import top.dearbo.frame.common.util.pdf.FreemarkerUtils;
 import top.dearbo.frame.common.util.excel.ExcelImage;
 import top.dearbo.frame.common.util.excel.ExcelWriteUtils;
+import top.dearbo.frame.common.util.pdf.FreemarkerUtils;
 import top.dearbo.util.data.JsonUtil;
 import top.dearbo.util.file.FileUtil;
 import top.dearbo.util.jwt.AESUtil;
@@ -20,17 +25,15 @@ import top.dearbo.util.network.HttpUtils;
 import top.dearbo.util.tree.TreeNodeUtil;
 import top.dearbo.util.xt.MapperUtil;
 import top.dearbo.util.xt.PinYinUtil;
-import com.google.common.primitives.Ints;
-import io.jsonwebtoken.Claims;
-import org.joda.time.DateTime;
-import org.junit.Before;
-import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.net.Proxy.Type;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -819,5 +822,18 @@ public class DomeTest {
         Date startDate = new Date();
         Date cronScheduledDate = CronUtils.getCronScheduledDate(cron);
         System.out.println(DateUtil.parseToString(cronScheduledDate));
+    }
+
+    @Test
+    public void testHttpProxy() {
+        //183.128.238.72
+        Proxy proxy = new Proxy(Type.HTTP, new InetSocketAddress("58.218.92.148", 4310));
+        String url1 = "http://xfyl.wubo777.top:5555/sign-in-api/test/testIp";
+        String url2 = "http://xfyl.wubo777.top/bo-api-abc/test/testIp";
+        String url3 = "http://httpbin.org/get";
+        HttpUtils httpUtils = HttpUtils.createRequest().setProxy(proxy);
+        System.out.println("url1:" + httpUtils.doGet(url1).toString());
+        System.out.println("url2:" + httpUtils.doGet(url2).toString());
+        System.out.println("url3:" + httpUtils.doGet(url3).toString());
     }
 }
