@@ -50,7 +50,7 @@ public class AjaxResult extends AbstractResult<Object> {
     }
 
     public static AjaxResult ok() {
-        return ok(null);
+        return ok(null, false);
     }
 
     public static AjaxResult ok(Object data) {
@@ -69,19 +69,19 @@ public class AjaxResult extends AbstractResult<Object> {
         return new AjaxResult(SUCCESS_CODE, msg, data, serializeNull);
     }
 
+    public static AjaxResult failed() {
+        return failed("failed");
+    }
+
     public static AjaxResult failed(String msg) {
-        return failed(null, msg, true);
+        return failed(msg, null, false);
     }
 
-    public static AjaxResult failed(Object data, String msg) {
-        return failed(data, msg, true);
+    public static AjaxResult failed(String msg, Object data) {
+        return failed(msg, data, true);
     }
 
-    public static AjaxResult failed(Object data, boolean serializeNull) {
-        return failed(data, "failed", serializeNull);
-    }
-
-    public static AjaxResult failed(Object data, String msg, boolean serializeNull) {
+    public static AjaxResult failed(String msg, Object data, boolean serializeNull) {
         return new AjaxResult(FAIL_CODE, msg, data, serializeNull);
     }
 
