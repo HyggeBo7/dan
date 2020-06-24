@@ -12,7 +12,7 @@ import top.dearbo.util.lang.ObjectUtil;
  * @description: 返回结果, data为Object
  */
 public class AjaxResult extends AbstractResult<Object> {
-    private static final long serialVersionUID = -6606450690834407403L;
+    private static final long serialVersionUID = -6232972962701342565L;
     private Integer code;
     private String msg;
     private Object data;
@@ -23,7 +23,7 @@ public class AjaxResult extends AbstractResult<Object> {
     private static final int NORMAL_ERROR = CommonStatusEnum.NORMAL_ERROR.value;
 
     public AjaxResult() {
-        this(null);
+        this(null, false);
     }
 
     public AjaxResult(Object data) {
@@ -107,11 +107,15 @@ public class AjaxResult extends AbstractResult<Object> {
         return new AjaxResult(row > 0 ? SUCCESS_CODE : NORMAL_ERROR, msg, data, true);
     }
 
-    public static AjaxResult restResult(Object data, int code, String msg) {
-        return restResult(data, code, msg, true);
+    public static AjaxResult restResult(int code, String msg) {
+        return restResult(code, msg, null, false);
     }
 
-    public static AjaxResult restResult(Object data, int code, String msg, Boolean serializeNull) {
+    public static AjaxResult restResult(int code, String msg, Object data) {
+        return restResult(code, msg, data, true);
+    }
+
+    public static AjaxResult restResult(int code, String msg, Object data, Boolean serializeNull) {
         return new AjaxResult(code, msg, data, serializeNull);
     }
 
