@@ -18,7 +18,7 @@ public class ResultGeneric<T> extends AbstractResult<T> {
     private transient Boolean serializeNull;
 
     public ResultGeneric() {
-        this(null);
+        this(null, false);
     }
 
     public ResultGeneric(T data) {

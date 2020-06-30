@@ -12,7 +12,7 @@ import top.dearbo.util.lang.ObjectUtil;
  * @description: 返回结果, data为Object
  */
 public class AjaxResult extends AbstractResult<Object> {
-    private static final long serialVersionUID = -6232972962701342565L;
+    private static final long serialVersionUID = -76956965973295395L;
     private Integer code;
     private String msg;
     private Object data;
@@ -91,19 +91,19 @@ public class AjaxResult extends AbstractResult<Object> {
      * @param row 执行成功行数
      * @return code:大于0返回：1,否则0
      */
-    public static AjaxResult update(int row) {
-        return update(row, null);
+    public static AjaxResult operate(int row) {
+        return operate(row, null);
     }
 
-    public static AjaxResult update(int row, Object data) {
-        return update(row, data, row > 0 ? "操作成功!" : "操作失败!");
+    public static AjaxResult operate(int row, Object data) {
+        return operate(row, data, row > 0 ? "操作成功!" : "操作失败!");
     }
 
-    public static AjaxResult update(int row, Object data, String successMsg, String errorMsg) {
-        return update(row, data, row > 0 ? successMsg : errorMsg);
+    public static AjaxResult operate(int row, Object data, String successMsg, String errorMsg) {
+        return operate(row, data, row > 0 ? successMsg : errorMsg);
     }
 
-    public static AjaxResult update(int row, Object data, String msg) {
+    public static AjaxResult operate(int row, Object data, String msg) {
         return new AjaxResult(row > 0 ? SUCCESS_CODE : NORMAL_ERROR, msg, data, true);
     }
 
