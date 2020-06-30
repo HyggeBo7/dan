@@ -2,7 +2,6 @@ package top.dearbo.util.constant;
 
 import top.dearbo.util.data.JsonUtil;
 import top.dearbo.util.enums.CommonStatusEnum;
-import top.dearbo.util.lang.ObjectUtil;
 
 /**
  * @version 1.0
@@ -12,18 +11,17 @@ import top.dearbo.util.lang.ObjectUtil;
  * @description: 返回结果, data为Object
  */
 public class AjaxResult extends AbstractResult<Object> {
-    private static final long serialVersionUID = -76956965973295395L;
+    private static final long serialVersionUID = -2436668057513117243L;
     private Integer code;
     private String msg;
     private Object data;
-    private transient Boolean serializeNull;
     /**
      * 操作失败
      */
     private static final int NORMAL_ERROR = CommonStatusEnum.NORMAL_ERROR.value;
 
-    public AjaxResult() {
-        this(null, false);
+    private AjaxResult() {
+        //json反序列化时会执行当前构造函数,避免反序列化时会设置默认值
     }
 
     public AjaxResult(Object data) {
@@ -39,15 +37,17 @@ public class AjaxResult extends AbstractResult<Object> {
     }
 
     public AjaxResult(int code, String msg, Object data) {
-        this(code, msg, data, true);
-    }
-
-    public AjaxResult(int code, String msg, Object data, Boolean serializeNull) {
         this.data = data;
         this.code = code;
         this.msg = msg;
-        this.serializeNull = ObjectUtil.booleanIsNotFalse(serializeNull);
     }
+
+    public AjaxResult(int code, String msg, Object data, Boolean serializeNull) {
+        this(code, msg, data);
+        this.serializeNull = serializeNull;
+    }
+
+    //=========成功=========
 
     public static AjaxResult ok() {
         return ok(null, false);
@@ -69,6 +69,8 @@ public class AjaxResult extends AbstractResult<Object> {
         return new AjaxResult(SUCCESS_CODE, msg, data, serializeNull);
     }
 
+    //=========失败=========
+
     public static AjaxResult failed() {
         return failed("failed");
     }
@@ -84,6 +86,8 @@ public class AjaxResult extends AbstractResult<Object> {
     public static AjaxResult failed(String msg, Object data, boolean serializeNull) {
         return new AjaxResult(FAIL_CODE, msg, data, serializeNull);
     }
+
+    //=========操作=========
 
     /**
      * 用于修改、新增操作直接返回
@@ -141,9 +145,9 @@ public class AjaxResult extends AbstractResult<Object> {
         this.code = code;
     }
 
-    public String getMsg() {
+    /*public String getMsg() {
         return msg;
-    }
+    }*/
 
     public void setMsg(String msg) {
         this.msg = msg;
@@ -158,16 +162,4 @@ public class AjaxResult extends AbstractResult<Object> {
         this.data = data;
     }
 
-    public Boolean getSerializeNull() {
-        return serializeNull;
-    }
-
-    public void setSerializeNull(Boolean serializeNull) {
-        this.serializeNull = serializeNull;
-    }
-
-    @Override
-    public boolean isSerializeNullField() {
-        return serializeNull;
-    }
 }

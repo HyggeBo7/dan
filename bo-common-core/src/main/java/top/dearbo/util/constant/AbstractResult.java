@@ -1,6 +1,6 @@
 package top.dearbo.util.constant;
 
-import top.dearbo.util.enums.CommonStatusEnum;
+import top.dearbo.util.lang.ObjectUtil;
 
 /**
  * @version 1.0
@@ -10,26 +10,36 @@ import top.dearbo.util.enums.CommonStatusEnum;
  * @description: 通用的处理返回结果
  */
 public abstract class AbstractResult<T> implements BaseResult {
+    private static final long serialVersionUID = 4747797145523457193L;
+    protected transient Boolean serializeNull;
 
-    /**
-     * 成功code
-     */
-    protected static final int SUCCESS_CODE = CommonStatusEnum.SUCCESS.value;
-    /**
-     * 失败code
-     */
-    protected static final int FAIL_CODE = CommonStatusEnum.FAIL.value;
-    private static final long serialVersionUID = -2947779539302358598L;
-
-    abstract Integer getCode();
-
-    abstract String getMessage();
-
-    abstract T getData();
-
-    public boolean isSuccess() {
-        Integer code = getCode();
-        return code != null && SUCCESS_CODE == code;
+    public Boolean getSerializeNull() {
+        return serializeNull;
     }
 
+    public void setSerializeNull(Boolean serializeNull) {
+        this.serializeNull = serializeNull;
+    }
+
+    /**
+     * 获取默认成功标识code
+     *
+     * @return Integer
+     */
+    public Integer getDefaultSuccessCode() {
+        return SUCCESS_CODE;
+    }
+
+    @Override
+    public boolean isSuccess() {
+        Integer code = getCode();
+        return code != null && code.equals(getDefaultSuccessCode());
+    }
+
+    @Override
+    public boolean isSerializeNullField() {
+        return ObjectUtil.booleanIsNotFalse(serializeNull);
+    }
+
+    abstract T getData();
 }

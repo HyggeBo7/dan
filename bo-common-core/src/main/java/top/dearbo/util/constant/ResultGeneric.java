@@ -1,7 +1,6 @@
 package top.dearbo.util.constant;
 
 import top.dearbo.util.data.JsonUtil;
-import top.dearbo.util.lang.ObjectUtil;
 
 /**
  * @version 1.0
@@ -11,14 +10,13 @@ import top.dearbo.util.lang.ObjectUtil;
  * @description: 通用的解析返回结果
  */
 public class ResultGeneric<T> extends AbstractResult<T> {
-    private static final long serialVersionUID = -3766410560609922201L;
+    private static final long serialVersionUID = -8335931245613540709L;
     private Integer code;
     private String msg;
     private T data;
-    private transient Boolean serializeNull;
 
-    public ResultGeneric() {
-        this(null, false);
+    private ResultGeneric() {
+
     }
 
     public ResultGeneric(T data) {
@@ -34,14 +32,14 @@ public class ResultGeneric<T> extends AbstractResult<T> {
     }
 
     public ResultGeneric(int code, String msg, T data) {
-        this(code, msg, data, true);
-    }
-
-    public ResultGeneric(int code, String msg, T data, Boolean serializeNull) {
         this.data = data;
         this.code = code;
         this.msg = msg;
-        this.serializeNull = ObjectUtil.booleanIsNotFalse(serializeNull);
+    }
+
+    public ResultGeneric(int code, String msg, T data, Boolean serializeNull) {
+        this(code, msg, data);
+        this.serializeNull = serializeNull;
     }
 
     public String toJson() {
@@ -83,16 +81,4 @@ public class ResultGeneric<T> extends AbstractResult<T> {
         this.data = data;
     }
 
-    public Boolean getSerializeNull() {
-        return serializeNull;
-    }
-
-    public void setSerializeNull(Boolean serializeNull) {
-        this.serializeNull = serializeNull;
-    }
-
-    @Override
-    public boolean isSerializeNullField() {
-        return serializeNull;
-    }
 }

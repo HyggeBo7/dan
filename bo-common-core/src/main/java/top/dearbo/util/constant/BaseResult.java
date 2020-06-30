@@ -1,5 +1,7 @@
 package top.dearbo.util.constant;
 
+import top.dearbo.util.enums.CommonStatusEnum;
+
 import java.io.Serializable;
 
 /**
@@ -11,10 +13,40 @@ import java.io.Serializable;
 public interface BaseResult extends Serializable {
 
     /**
+     * 成功code
+     */
+    int SUCCESS_CODE = CommonStatusEnum.SUCCESS.value;
+    /**
+     * 失败code
+     */
+    int FAIL_CODE = CommonStatusEnum.FAIL.value;
+
+    /**
      * 是否序列化null字段
      *
      * @return true:序列化null字段
      */
     boolean isSerializeNullField();
+
+    /**
+     * 结果标识是否成功
+     *
+     * @return boolean
+     */
+    boolean isSuccess();
+
+    /**
+     * 获取编码
+     *
+     * @return Integer
+     */
+    Integer getCode();
+
+    /**
+     * 获取提示内容
+     *
+     * @return String
+     */
+    String getMessage();
 
 }

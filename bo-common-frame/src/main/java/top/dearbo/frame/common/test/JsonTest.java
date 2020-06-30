@@ -1,5 +1,7 @@
 package top.dearbo.frame.common.test;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import org.junit.Test;
 import top.dearbo.frame.common.test.entity.UserInfo;
 import top.dearbo.util.constant.AjaxResult;
 import top.dearbo.util.constant.ResultGeneric;
@@ -7,8 +9,6 @@ import top.dearbo.util.data.JacksonUtils;
 import top.dearbo.util.data.JsonUtil;
 import top.dearbo.util.network.HttpUtils;
 import top.dearbo.util.xt.Pagination;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import org.junit.Test;
 
 import java.util.LinkedHashMap;
 import java.util.List;
