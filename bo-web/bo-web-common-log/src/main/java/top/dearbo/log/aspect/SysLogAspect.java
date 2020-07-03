@@ -28,6 +28,7 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import top.dearbo.log.annotation.SysLog;
@@ -46,6 +47,7 @@ import java.util.Objects;
 
 /**
  * 操作日志使用spring event异步入库
+ * 可通过 web.config.aopLog.enabled 配置是否开启Aop 日志收集
  *
  * @author Bo
  */
@@ -54,11 +56,18 @@ public class SysLogAspect {
 
     private static final Logger logger = LoggerFactory.getLogger(SysLogAspect.class);
 
-    private volatile SysLogConfig sysLogConfig;
+    private final SysLogConfig sysLogConfig;
+
+    public SysLogAspect(@Autowired(required = false) SysLogConfig sysLogConfig) {
+        if (sysLogConfig == null) {
+            this.sysLogConfig = new DefaultSysLogConfig();
+        } else {
+            this.sysLogConfig = sysLogConfig;
+        }
+    }
 
     @Around("@annotation(sysLog)")
     public Object around(ProceedingJoinPoint point, SysLog sysLog) throws Throwable {
-        checkSysLogConfig();
         String strClassName = point.getTarget().getClass().getName();
         String strMethodName = point.getSignature().getName();
         logger.debug("[类名]:{},[方法]:{}", strClassName, strMethodName);
@@ -107,7 +116,7 @@ public class SysLogAspect {
         return SpringContextHolder.getApplicationContext().getEnvironment().getProperty("spring.application.name");
     }
 
-    private void checkSysLogConfig() {
+    /*private void checkSysLogConfig() {
         if (sysLogConfig == null) {
             try {
                 sysLogConfig = SpringContextHolder.getBean(SysLogConfig.class);
@@ -115,7 +124,7 @@ public class SysLogAspect {
                 sysLogConfig = new DefaultSysLogConfig();
             }
         }
-    }
+    }*/
 
     private String clientIp(HttpServletRequest request) {
         String clientIp = ServletUtil.getClientIP(request);

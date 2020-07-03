@@ -1,5 +1,7 @@
 package top.dearbo.log.config;
 
+import org.apache.commons.lang3.StringUtils;
+
 import javax.servlet.http.HttpServletRequest;
 import java.util.Collections;
 import java.util.HashMap;
@@ -15,19 +17,20 @@ import java.util.Map;
  */
 public class DefaultSysLogConfig implements SysLogConfig {
 
-    private static final Map<String, String> OPERATE_MAP = new HashMap<>(16);
+    protected static final Map<String, String> OPERATE_MAP = new HashMap<>(16);
 
     private static final List<String> EXCLUDE_PARAM_KEY_LIST = Collections.singletonList("oauth");
 
     static {
         OPERATE_MAP.put("audit", "审核");
         OPERATE_MAP.put("add", "新增");
-        OPERATE_MAP.put("save", "操作");
         OPERATE_MAP.put("insert", "新增");
+        OPERATE_MAP.put("save", "操作");
         OPERATE_MAP.put("update", "修改");
         OPERATE_MAP.put("delete", "删除");
-        OPERATE_MAP.put("get", "查询");
-        OPERATE_MAP.put("query", "查询");
+        OPERATE_MAP.put("remove", "删除");
+        OPERATE_MAP.put("query", "获取");
+        OPERATE_MAP.put("get", "获取");
         OPERATE_MAP.put("list", "查询");
     }
 
@@ -56,7 +59,13 @@ public class DefaultSysLogConfig implements SysLogConfig {
         return split.length > 0 ? split[1] : "";
     }
 
-    public void addOperateType(Map<String, String> operateMap) {
+    public Map<String, String> getOperateTypeMap() {
+        return OPERATE_MAP;
+    }
 
+    public void addOperateType(String key, String value) {
+        if (StringUtils.isNotBlank(key)) {
+            OPERATE_MAP.put(key, value);
+        }
     }
 }
