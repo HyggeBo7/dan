@@ -44,6 +44,13 @@ public class ServletUtils {
                 }
             }
         }
+        // 对于通过多个代理的情况，第一个IP为客户端真实IP,多个IP按照','分割
+        if (!checkIpEmptyOrUnknown(ip)) {
+            int index = ip.indexOf(",");
+            if (index > 0) {
+                ip = ip.substring(0, index);
+            }
+        }
         return ip;
     }
 
