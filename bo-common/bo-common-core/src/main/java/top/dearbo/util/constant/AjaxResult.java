@@ -11,7 +11,7 @@ import top.dearbo.util.enums.CommonStatusEnum;
  * @description: 返回结果, data为Object
  */
 public class AjaxResult extends AbstractResult<Object> {
-    private static final long serialVersionUID = -2436668057513117243L;
+    private static final long serialVersionUID = -8671465413534424639L;
     private Integer code;
     private String msg;
     private Object data;
@@ -145,9 +145,9 @@ public class AjaxResult extends AbstractResult<Object> {
         this.code = code;
     }
 
-    /*public String getMsg() {
+    public String getMsg() {
         return msg;
-    }*/
+    }
 
     public void setMsg(String msg) {
         this.msg = msg;
