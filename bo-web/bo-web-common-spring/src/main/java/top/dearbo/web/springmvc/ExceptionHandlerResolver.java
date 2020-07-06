@@ -14,6 +14,7 @@ import top.dearbo.web.core.util.ServletUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
  * @author Bo
@@ -51,17 +52,7 @@ public class ExceptionHandlerResolver extends SimpleMappingExceptionResolver {
                 }
             }
             try {
-                String contentType = StringUtils.isNotBlank(response.getContentType()) ? response.getContentType() : MediaType.APPLICATION_JSON_VALUE;
-                //response.reset();
-                //response.addHeader("Access-Control-Allow-Origin", "*");
-                response.setCharacterEncoding("UTF-8");
-                //response.setHeader("Content-type", "application/json;charset=UTF-8"); 和设置setContentType相等
-                response.setContentType(contentType);
-                String json = jsonCommonRender.getJson(ajaxResult);
-                if (json != null) {
-                    response.getWriter().write(json);
-                }
-                return getExceptionModelAndView(request, response, ex);
+                return getExceptionModelAndView(request, response, ajaxResult, ex);
             } catch (Exception e) {
                 logger.error("【ExceptionHandlerResolver】===>doResolveException-error, e : {}", getErrorMsg(e));
             }
@@ -89,7 +80,16 @@ public class ExceptionHandlerResolver extends SimpleMappingExceptionResolver {
      *
      * @return ModelAndView
      */
-    protected ModelAndView getExceptionModelAndView(HttpServletRequest request, HttpServletResponse response, Exception ex) {
+    protected ModelAndView getExceptionModelAndView(HttpServletRequest request, HttpServletResponse response, AjaxResult ajaxResult, Exception ex) throws IOException {
+        String contentType = StringUtils.isNotBlank(response.getContentType()) ? response.getContentType() : MediaType.APPLICATION_JSON_VALUE;
+        //response.reset();
+        //response.addHeader("Access-Control-Allow-Origin", "*");
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType(contentType);
+        String jsonContent = jsonCommonRender.getJson(ajaxResult);
+        if (jsonContent != null) {
+            response.getWriter().write(jsonContent);
+        }
         return defaultModelAndView;
     }
 
