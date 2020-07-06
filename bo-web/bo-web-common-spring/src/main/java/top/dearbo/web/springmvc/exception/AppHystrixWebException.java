@@ -16,7 +16,7 @@ public class AppHystrixWebException extends HystrixBadRequestException implement
     private Throwable t;
 
     public AppHystrixWebException(String msg) {
-        this(CommonStatusEnum.FAIL.value, msg);
+        this(CommonStatusEnum.SERVER_ERROR.value, msg);
     }
 
     public AppHystrixWebException(Integer code, String msg) {
@@ -25,7 +25,7 @@ public class AppHystrixWebException extends HystrixBadRequestException implement
     }
 
     public AppHystrixWebException(String msg, Throwable t) {
-        this(CommonStatusEnum.FAIL.value, msg, t);
+        this(CommonStatusEnum.SERVER_ERROR.value, msg, t);
     }
 
     public AppHystrixWebException(Integer code, Throwable t) {

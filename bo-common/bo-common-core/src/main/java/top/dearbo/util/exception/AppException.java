@@ -14,7 +14,7 @@ public class AppException extends RuntimeException implements ExceptionHandlerSe
     private Throwable t;
 
     public AppException(String msg) {
-        this(CommonStatusEnum.FAIL.value, msg);
+        this(CommonStatusEnum.SERVER_ERROR.value, msg);
     }
 
     public AppException(Integer code, String msg) {
@@ -28,7 +28,7 @@ public class AppException extends RuntimeException implements ExceptionHandlerSe
     }
 
     public AppException(String msg, Throwable t) {
-        this(CommonStatusEnum.FAIL.value, msg, t);
+        this(CommonStatusEnum.SERVER_ERROR.value, msg, t);
     }
 
     public AppException(Integer code, String msg, Throwable t) {
