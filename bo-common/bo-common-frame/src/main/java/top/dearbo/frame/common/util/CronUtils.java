@@ -63,15 +63,25 @@ public class CronUtils {
      * 下一次运行时间 Date
      *
      * @param cron cron表达式
-     * @return
+     * @return Date
      */
-    public static Date getCronScheduledDate(String cron) {
-        List<Date> cronDateList = getCronScheduledDate(cron, 1);
+    public static Date getCronScheduledNextDate(String cron) {
+        return getCronScheduledNextDate(cron, new Date());
+    }
+
+    /**
+     * 获取下一次运行时间
+     *
+     * @param cron      cron表达式
+     * @param startDate 开始日期
+     * @return Date
+     */
+    public static Date getCronScheduledNextDate(String cron, Date startDate) {
+        List<Date> cronDateList = getCronScheduledDate(cron, 1, startDate);
         if (cronDateList != null && cronDateList.size() > 0) {
             return cronDateList.get(0);
         }
         return null;
-
     }
 
     /**
@@ -127,6 +137,6 @@ public class CronUtils {
      * @return 有:true
      */
     public static boolean cronNextFlag(String cron) {
-        return getCronScheduledDate(cron) != null;
+        return getCronScheduledNextDate(cron) != null;
     }
 }

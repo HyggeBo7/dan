@@ -7,9 +7,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
+import top.dearbo.base.bean.ExceptionHandlerService;
+import top.dearbo.base.enums.CommonStatusEnum;
 import top.dearbo.util.constant.AjaxResult;
-import top.dearbo.util.enums.CommonStatusEnum;
-import top.dearbo.util.exception.ExceptionHandlerService;
 import top.dearbo.web.core.util.ServletUtils;
 
 import javax.servlet.http.HttpServletRequest;

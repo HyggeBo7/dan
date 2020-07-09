@@ -1,6 +1,6 @@
 package top.dearbo.frame.common.test.entity;
 
-import top.dearbo.util.constant.BaseEntity;
+import top.dearbo.base.bean.BaseEntity;
 
 import java.math.BigDecimal;
 import java.util.Date;

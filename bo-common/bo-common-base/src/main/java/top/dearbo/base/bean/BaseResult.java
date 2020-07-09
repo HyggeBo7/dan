@@ -1,6 +1,7 @@
-package top.dearbo.util.constant;
+package top.dearbo.base.bean;
 
-import top.dearbo.util.enums.CommonStatusEnum;
+
+import top.dearbo.base.enums.CommonStatusEnum;
 
 import java.io.Serializable;
 

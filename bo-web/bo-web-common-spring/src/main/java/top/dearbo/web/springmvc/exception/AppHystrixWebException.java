@@ -1,8 +1,7 @@
 package top.dearbo.web.springmvc.exception;
 
 import com.netflix.hystrix.exception.HystrixBadRequestException;
-import top.dearbo.util.enums.CommonStatusEnum;
-import top.dearbo.util.exception.ExceptionHandlerService;
+import top.dearbo.base.bean.ExceptionHandlerService;
 
 import java.io.Serializable;
 
@@ -11,12 +10,12 @@ import java.io.Serializable;
  * @date 2016/3/2
  */
 public class AppHystrixWebException extends HystrixBadRequestException implements ExceptionHandlerService, Serializable {
-    private static final long serialVersionUID = -5396750217145749510L;
+    private static final long serialVersionUID = -3470296198787284756L;
     private Integer code;
     private Throwable t;
 
     public AppHystrixWebException(String msg) {
-        this(CommonStatusEnum.SERVER_ERROR.value, msg);
+        this(DEFAULT_SERVER_ERROR, msg);
     }
 
     public AppHystrixWebException(Integer code, String msg) {
@@ -25,7 +24,7 @@ public class AppHystrixWebException extends HystrixBadRequestException implement
     }
 
     public AppHystrixWebException(String msg, Throwable t) {
-        this(CommonStatusEnum.SERVER_ERROR.value, msg, t);
+        this(DEFAULT_SERVER_ERROR, msg, t);
     }
 
     public AppHystrixWebException(Integer code, Throwable t) {

@@ -1,4 +1,4 @@
-package top.dearbo.util.enums;
+package top.dearbo.base.enums;
 
 /**
  * @author Bo

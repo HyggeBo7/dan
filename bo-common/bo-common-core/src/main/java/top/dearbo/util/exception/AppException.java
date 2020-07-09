@@ -1,6 +1,6 @@
 package top.dearbo.util.exception;
 
-import top.dearbo.util.enums.CommonStatusEnum;
+import top.dearbo.base.bean.ExceptionHandlerService;
 
 import java.io.Serializable;
 
@@ -9,12 +9,12 @@ import java.io.Serializable;
  * @date 2016/3/2
  */
 public class AppException extends RuntimeException implements ExceptionHandlerService, Serializable {
-    private static final long serialVersionUID = 2290453220291258000L;
+    private static final long serialVersionUID = -5623228050921084559L;
     private Integer code;
     private Throwable t;
 
     public AppException(String msg) {
-        this(CommonStatusEnum.SERVER_ERROR.value, msg);
+        this(DEFAULT_SERVER_ERROR, msg);
     }
 
     public AppException(Integer code, String msg) {
@@ -28,7 +28,7 @@ public class AppException extends RuntimeException implements ExceptionHandlerSe
     }
 
     public AppException(String msg, Throwable t) {
-        this(CommonStatusEnum.SERVER_ERROR.value, msg, t);
+        this(DEFAULT_SERVER_ERROR, msg, t);
     }
 
     public AppException(Integer code, String msg, Throwable t) {

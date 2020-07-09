@@ -65,6 +65,11 @@
         <dependencies>
             <dependency>
                 <groupId>top.dearbo</groupId>
+                <artifactId>common-base</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>top.dearbo</groupId>
                 <artifactId>common-frame</artifactId>
                 <version>${project.version}</version>
             </dependency>

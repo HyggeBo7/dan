@@ -1,7 +1,7 @@
 package top.dearbo.util.constant;
 
+import top.dearbo.base.enums.CommonStatusEnum;
 import top.dearbo.util.data.JsonUtil;
-import top.dearbo.util.enums.CommonStatusEnum;
 
 /**
  * @version 1.0

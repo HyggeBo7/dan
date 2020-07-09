@@ -1,4 +1,6 @@
-package top.dearbo.util.exception;
+package top.dearbo.base.bean;
+
+import top.dearbo.base.enums.CommonStatusEnum;
 
 /**
  * @version 1.0
@@ -8,6 +10,11 @@ package top.dearbo.util.exception;
  * @description: 异常处理
  */
 public interface ExceptionHandlerService {
+
+    /**
+     * 异常code
+     */
+    int DEFAULT_SERVER_ERROR = CommonStatusEnum.SERVER_ERROR.value;
 
     Throwable getThrowable();
 

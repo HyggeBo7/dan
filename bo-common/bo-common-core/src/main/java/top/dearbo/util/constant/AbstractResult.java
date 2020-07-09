@@ -1,5 +1,6 @@
 package top.dearbo.util.constant;
 
+import top.dearbo.base.bean.BaseResult;
 import top.dearbo.util.lang.ObjectUtil;
 
 /**
@@ -10,7 +11,7 @@ import top.dearbo.util.lang.ObjectUtil;
  * @description: 通用的处理返回结果
  */
 public abstract class AbstractResult<T> implements BaseResult {
-    private static final long serialVersionUID = 4747797145523457193L;
+    private static final long serialVersionUID = -1620945809386169396L;
     protected transient Boolean serializeNull;
 
     public Boolean getSerializeNull() {

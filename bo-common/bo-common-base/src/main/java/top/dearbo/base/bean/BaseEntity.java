@@ -1,4 +1,4 @@
-package top.dearbo.util.constant;
+package top.dearbo.base.bean;
 
 import java.io.Serializable;
 

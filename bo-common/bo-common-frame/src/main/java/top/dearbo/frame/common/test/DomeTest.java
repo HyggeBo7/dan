@@ -820,7 +820,7 @@ public class DomeTest {
     public void testCron() {
         String cron = "0 0 11 * * ? ";
         Date startDate = new Date();
-        Date cronScheduledDate = CronUtils.getCronScheduledDate(cron);
+        Date cronScheduledDate = CronUtils.getCronScheduledNextDate(cron);
         System.out.println(DateUtil.parseToString(cronScheduledDate));
     }
 
