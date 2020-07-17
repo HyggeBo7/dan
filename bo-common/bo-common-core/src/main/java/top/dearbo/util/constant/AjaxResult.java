@@ -50,7 +50,7 @@ public class AjaxResult extends AbstractResult<Object> {
     //=========成功=========
 
     public static AjaxResult ok() {
-        return ok(null, false);
+        return ok(null, true);
     }
 
     public static AjaxResult ok(Object data) {
@@ -112,7 +112,7 @@ public class AjaxResult extends AbstractResult<Object> {
     }
 
     public static AjaxResult restResult(int code, String msg) {
-        return restResult(code, msg, null, false);
+        return restResult(code, msg, null, true);
     }
 
     public static AjaxResult restResult(int code, String msg, Object data) {
