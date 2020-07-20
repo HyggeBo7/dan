@@ -1,10 +1,9 @@
 package top.dearbo.util.xt;
 
-import top.dearbo.util.exception.AppException;
 import net.sf.cglib.beans.BeanCopier;
-import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import top.dearbo.util.exception.AppException;
 
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
@@ -99,7 +98,7 @@ public class MapperUtil {
     @SuppressWarnings("unchecked")
     public static <K, V> Map<K, V> mapByKey(String key, List<? extends Object> list) {
         Map<K, V> map = new HashMap<K, V>();
-        if (CollectionUtils.isEmpty(list)) {
+        if (list == null || list.isEmpty()) {
             return map;
         }
         try {
@@ -130,7 +129,7 @@ public class MapperUtil {
     public static <K, V> Map<K, List<V>> aggByKeyToList(String key, List<? extends Object> list) {
         Map<K, List<V>> map = new HashMap<K, List<V>>();
         // 防止外面传入空list
-        if (CollectionUtils.isEmpty(list)) {
+        if (list == null || list.isEmpty()) {
             return map;
         }
         try {
@@ -165,13 +164,15 @@ public class MapperUtil {
     public static <K> Set<K> toPropertySet(String key, List<? extends Object> list) {
         Set<K> set = new HashSet<K>();
         // 防止外面传入空list
-        if (CollectionUtils.isEmpty(list)) {
+        if (list == null || list.isEmpty()) {
             return set;
         }
         try {
             Class<? extends Object> clazz = list.get(0).getClass();
             Field field = deepFindField(clazz, key);
-            if (field == null) throw new IllegalArgumentException("Could not find the key");
+            if (field == null) {
+                throw new IllegalArgumentException("Could not find the key");
+            }
             field.setAccessible(true);
             for (Object o : list) {
                 set.add((K) field.get(o));
