@@ -38,17 +38,18 @@ public class ExceptionHandlerResolver extends SimpleMappingExceptionResolver {
     @Override
     public ModelAndView doResolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
         if (ex != null) {
-            logger.error("【ExceptionHandlerResolver】doResolveException===>uri={} para={} trace={}", request.getRequestURI(), ServletUtils.toRequestParams(request), ExceptionUtils.getStackTrace(ex));
+            String stackTrace = ExceptionUtils.getStackTrace(ex);
+            logger.error("【ExceptionHandlerResolver】doResolveException===>uri={} para={} trace={}", request.getRequestURI(), ServletUtils.toRequestParams(request), stackTrace);
             AjaxResult ajaxResult = customizeException(ex);
             if (ajaxResult == null) {
                 if (ex instanceof ExceptionHandlerService) {
                     ExceptionHandlerService appException = (ExceptionHandlerService) ex;
-                    ajaxResult = new AjaxResult(appException.getCode(), getErrorMsg(ex));
+                    ajaxResult = new AjaxResult(appException.getCode(), getErrorMsg(ex), stackTrace);
                 } else if ("org.apache.shiro.authz.UnauthorizedException".equals(ex.getClass().getName())) {
                     //Subject does not have permission [material:update]
-                    ajaxResult = new AjaxResult(CommonStatusEnum.NO_PERMISSION.value, ex.getMessage().replace("Subject does not have permission", "没有") + "权限", null);
+                    ajaxResult = new AjaxResult(CommonStatusEnum.NO_PERMISSION.value, ex.getMessage().replace("Subject does not have permission", "没有") + "权限");
                 } else {
-                    ajaxResult = new AjaxResult(CommonStatusEnum.FAIL.value, getErrorMsg(ex), ExceptionUtils.getStackTrace(ex));
+                    ajaxResult = new AjaxResult(CommonStatusEnum.SERVER_ERROR.value, getErrorMsg(ex), stackTrace);
                 }
             }
             try {

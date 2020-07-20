@@ -37,7 +37,7 @@ public enum CommonStatusEnum {
     /**
      * 服务器内部错误
      */
-    SERVER_ERROR(-500, "非预期异常"),
+    SERVER_ERROR(-500, "服务器错误"),
     /**
      * 无权限
      */
