@@ -46,7 +46,7 @@ public class EnableAopLogImportSelector implements ImportSelector, EnvironmentAw
                 List<String> importsList = new ArrayList<>();
                 importsList.add(SysLogAspect.class.getName());
                 //是否开启异步执行
-                boolean async = annotationAttributes.getBoolean("async");
+                boolean async = annotationAttributes.getBoolean("importAsync");
                 if (async) {
                     importsList.add(LogConfiguration.class.getName());
                 }

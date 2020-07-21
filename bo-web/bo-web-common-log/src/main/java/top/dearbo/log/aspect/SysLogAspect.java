@@ -87,6 +87,7 @@ public class SysLogAspect {
                 logVo.setException(localizedMessage == null ? ExceptionUtils.getMessage(throwable) : localizedMessage);
             }
             logVo.setTime(System.currentTimeMillis() - startTime);
+            logVo.setResultData(obj);
             SpringContextHolder.publishEvent(new SysLogEvent(logVo));
             if (currentThrowable != null) {
                 throw currentThrowable;

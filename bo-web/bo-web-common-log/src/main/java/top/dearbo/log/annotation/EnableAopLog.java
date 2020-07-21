@@ -28,11 +28,12 @@ public @interface EnableAopLog {
     boolean value() default true;
 
     /**
-     * 是否异步执行
+     * 是否导入异步执行依赖
+     * false:需要手动开启spring异步执行
      *
      * @return boolean
      */
-    boolean async() default true;
+    boolean importAsync() default true;
 
     /**
      * 是否开启日志-从配置资源文件里面获取值

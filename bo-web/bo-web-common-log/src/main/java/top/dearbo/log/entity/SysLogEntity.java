@@ -84,6 +84,11 @@ public class SysLogEntity implements Serializable {
      */
     private String remark;
 
+    /**
+     * 执行返回结果
+     */
+    private Object resultData;
+
     public String getType() {
         return type;
     }
@@ -194,5 +199,13 @@ public class SysLogEntity implements Serializable {
 
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+
+    public Object getResultData() {
+        return resultData;
+    }
+
+    public void setResultData(Object resultData) {
+        this.resultData = resultData;
     }
 }
