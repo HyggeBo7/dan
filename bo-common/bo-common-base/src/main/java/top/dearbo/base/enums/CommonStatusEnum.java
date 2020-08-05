@@ -54,4 +54,51 @@ public enum CommonStatusEnum {
 
     public int value;
     public String msg;
+
+    /**
+     * 根据name获取code
+     *
+     * @param name 如：SUCCESS
+     * @return code
+     */
+    public static Integer getCode(String name) {
+        for (CommonStatusEnum item : values()) {
+            if (item.name().equals(name)) {
+                return item.value;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 根据name获取msg
+     *
+     * @param name name
+     * @return msg
+     */
+    public static String getMessage(String name) {
+        for (CommonStatusEnum item : values()) {
+            if (item.name().equals(name)) {
+                return item.msg;
+            }
+        }
+        return name;
+    }
+
+    /**
+     * 根据code获取msg
+     *
+     * @param code code
+     * @return msg
+     */
+    public static String getMessage(Integer code) {
+        if (code != null) {
+            for (CommonStatusEnum item : values()) {
+                if (code.equals(item.value)) {
+                    return item.msg;
+                }
+            }
+        }
+        return null;
+    }
 }

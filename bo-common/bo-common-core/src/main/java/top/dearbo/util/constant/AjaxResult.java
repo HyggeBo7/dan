@@ -12,7 +12,7 @@ import top.dearbo.util.data.JsonUtil;
  * @description: 返回结果, data为Object
  */
 public class AjaxResult extends AbstractResult<Object> {
-    private static final long serialVersionUID = 528612894374679600L;
+    private static final long serialVersionUID = -8459064716012212751L;
     private Integer code;
     private String msg;
     private Object data;
@@ -101,16 +101,27 @@ public class AjaxResult extends AbstractResult<Object> {
     }
 
     public static AjaxResult operate(int row, Object data) {
-        return operate(row, data, row > 0 ? "操作成功!" : "操作失败!");
+        return operate(row, data, true);
+    }
+
+    public static AjaxResult operate(int row, Object data, Boolean serializeNull) {
+        return operate(row, data, "操作成功!", "操作失败!", serializeNull);
     }
 
     public static AjaxResult operate(int row, Object data, String successMsg, String errorMsg) {
-        return operate(row, data, row > 0 ? successMsg : errorMsg);
+        return operate(row, data, successMsg, errorMsg, true);
     }
 
-    public static AjaxResult operate(int row, Object data, String msg) {
-        return new AjaxResult(row > 0 ? SUCCESS_CODE : NORMAL_ERROR, msg, data, true);
+    public static AjaxResult operate(int row, String successMsg, String errorMsg) {
+        return operate(row, null, successMsg, errorMsg, false);
     }
+
+    public static AjaxResult operate(int row, Object data, String successMsg, String errorMsg, Boolean serializeNull) {
+        boolean success = row > 0;
+        return new AjaxResult(success ? SUCCESS_CODE : NORMAL_ERROR, success ? successMsg : errorMsg, data, serializeNull);
+    }
+
+    //===========自定义操作===========
 
     public static AjaxResult restResult(int code, String msg) {
         return restResult(code, msg, null, true);
