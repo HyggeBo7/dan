@@ -3,6 +3,7 @@ package top.dearbo.base.bean;
 
 import top.dearbo.base.enums.CommonStatusEnum;
 
+import java.beans.Transient;
 import java.io.Serializable;
 
 /**
@@ -10,6 +11,7 @@ import java.io.Serializable;
  * @author: Dan
  * @createDate: 2019-01-24 13:06.
  * @description: 序列化
+ * ps:自定义方法不要加is、get等前缀
  */
 public interface BaseResult extends Serializable {
 
@@ -27,27 +29,31 @@ public interface BaseResult extends Serializable {
      *
      * @return true:序列化null字段
      */
-    boolean isSerializeNullField();
+    @Transient
+    boolean resultSerializeNullField();
 
     /**
      * 结果标识是否成功
      *
      * @return boolean
      */
-    boolean isSuccess();
+    @Transient
+    boolean resultSuccess();
 
     /**
      * 获取编码
      *
      * @return Integer
      */
-    Integer getCode();
+    @Transient
+    Integer resultCode();
 
     /**
      * 获取提示内容
      *
      * @return String
      */
-    String getMessage();
+    @Transient
+    String resultMessage();
 
 }

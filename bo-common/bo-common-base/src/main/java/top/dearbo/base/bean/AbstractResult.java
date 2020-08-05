@@ -1,7 +1,4 @@
-package top.dearbo.util.constant;
-
-import top.dearbo.base.bean.BaseResult;
-import top.dearbo.util.lang.ObjectUtil;
+package top.dearbo.base.bean;
 
 /**
  * @version 1.0
@@ -11,7 +8,7 @@ import top.dearbo.util.lang.ObjectUtil;
  * @description: 通用的处理返回结果
  */
 public abstract class AbstractResult<T> implements BaseResult {
-    private static final long serialVersionUID = -1620945809386169396L;
+    private static final long serialVersionUID = 535712466918126917L;
     protected transient Boolean serializeNull;
 
     public Boolean getSerializeNull() {
@@ -22,25 +19,34 @@ public abstract class AbstractResult<T> implements BaseResult {
         this.serializeNull = serializeNull;
     }
 
+    @Override
+    public boolean resultSuccess() {
+        Integer code = resultCode();
+        return code != null && code.equals(defaultSuccessCode());
+    }
+
+    @Override
+    public boolean resultSerializeNullField() {
+        return serializeNull == null || serializeNull;
+    }
+
     /**
      * 获取默认成功标识code
      *
      * @return Integer
      */
-    public Integer getDefaultSuccessCode() {
+    public Integer defaultSuccessCode() {
         return SUCCESS_CODE;
     }
 
-    @Override
     public boolean isSuccess() {
-        Integer code = getCode();
-        return code != null && code.equals(getDefaultSuccessCode());
+        return resultSuccess();
     }
 
-    @Override
-    public boolean isSerializeNullField() {
-        return ObjectUtil.booleanIsNotFalse(serializeNull);
-    }
-
-    abstract T getData();
+    /**
+     * 参数data
+     *
+     * @return t
+     */
+    protected abstract T getData();
 }

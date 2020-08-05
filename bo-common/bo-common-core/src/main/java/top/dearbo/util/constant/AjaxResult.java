@@ -1,5 +1,6 @@
 package top.dearbo.util.constant;
 
+import top.dearbo.base.bean.AbstractResult;
 import top.dearbo.base.enums.CommonStatusEnum;
 import top.dearbo.util.data.JsonUtil;
 
@@ -11,7 +12,7 @@ import top.dearbo.util.data.JsonUtil;
  * @description: 返回结果, data为Object
  */
 public class AjaxResult extends AbstractResult<Object> {
-    private static final long serialVersionUID = -8671465413534424639L;
+    private static final long serialVersionUID = 528612894374679600L;
     private Integer code;
     private String msg;
     private Object data;
@@ -131,14 +132,8 @@ public class AjaxResult extends AbstractResult<Object> {
         return this.data == null ? null : JsonUtil.toJson(this.data);
     }
 
-    @Override
     public Integer getCode() {
         return code;
-    }
-
-    @Override
-    public String getMessage() {
-        return msg;
     }
 
     public void setCode(Integer code) {
@@ -162,4 +157,13 @@ public class AjaxResult extends AbstractResult<Object> {
         this.data = data;
     }
 
+    @Override
+    public Integer resultCode() {
+        return code;
+    }
+
+    @Override
+    public String resultMessage() {
+        return msg;
+    }
 }

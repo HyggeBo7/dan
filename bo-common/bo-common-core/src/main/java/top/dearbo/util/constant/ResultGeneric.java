@@ -1,5 +1,6 @@
 package top.dearbo.util.constant;
 
+import top.dearbo.base.bean.AbstractResult;
 import top.dearbo.util.data.JsonUtil;
 
 /**
@@ -10,7 +11,7 @@ import top.dearbo.util.data.JsonUtil;
  * @description: 通用的解析返回结果
  */
 public class ResultGeneric<T> extends AbstractResult<T> {
-    private static final long serialVersionUID = -8335931245613540709L;
+    private static final long serialVersionUID = -1457841739429972979L;
     private Integer code;
     private String msg;
     private T data;
@@ -50,14 +51,8 @@ public class ResultGeneric<T> extends AbstractResult<T> {
         return this.data == null ? null : JsonUtil.toJson(this.data);
     }
 
-    @Override
     public Integer getCode() {
         return code;
-    }
-
-    @Override
-    public String getMessage() {
-        return msg;
     }
 
     public void setCode(Integer code) {
@@ -81,4 +76,13 @@ public class ResultGeneric<T> extends AbstractResult<T> {
         this.data = data;
     }
 
+    @Override
+    public Integer resultCode() {
+        return code;
+    }
+
+    @Override
+    public String resultMessage() {
+        return msg;
+    }
 }

@@ -77,7 +77,7 @@ public class JsonCommonRender {
             return result;
         }
         if (obj instanceof BaseResult) {
-            if (((BaseResult) obj).isSerializeNullField()) {
+            if (((BaseResult) obj).resultSerializeNullField()) {
                 result = JsonUtil.toJsonSerializeNull(obj);
             } else {
                 result = JsonUtil.toJson(obj);
