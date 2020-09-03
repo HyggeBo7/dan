@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -201,13 +202,19 @@ public class JsonUtil {
 
                 case STRING:
                     return in.nextString();
-
                 case NUMBER:
                     //将其作为一个字符串读取出来
                     String numberStr = in.nextString();
                     //返回的numberStr不会为null
-                    if (numberStr.contains(".") || numberStr.contains("e") || numberStr.contains("E")) {
+                    if (numberStr.contains("e") || numberStr.contains("E")) {
                         return Double.parseDouble(numberStr);
+                    }
+                    if (numberStr.contains(".")) {
+                        BigDecimal bigDecimal = new BigDecimal(numberStr);
+                        if (numberStr.endsWith(".0")) {
+                            return bigDecimal.longValue();
+                        }
+                        return bigDecimal.doubleValue();
                     }
                     return Long.parseLong(numberStr);
                 case BOOLEAN:
