@@ -10,7 +10,10 @@ import top.dearbo.util.network.exception.HttpException;
 
 import javax.net.ssl.*;
 import java.io.*;
-import java.net.*;
+import java.net.HttpURLConnection;
+import java.net.Proxy;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
@@ -212,10 +215,6 @@ public class HttpUtils {
                     connection = (HttpURLConnection) url.openConnection();
                 }
             }
-            //创建代理
-            Proxy proxy1 = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("", 1111));
-            //设置代理
-            HttpURLConnection httpConn = (HttpURLConnection) url.openConnection(proxy1);
             connection.setConnectTimeout(getConnectTimeout());
             connection.setReadTimeout(getReadTimeout());
 
@@ -368,7 +367,7 @@ public class HttpUtils {
             sb.append(item.getValue());
             sb.append("&");
         }
-        return sb.toString().substring(0, sb.length() - 1);
+        return sb.substring(0, sb.length() - 1);
     }
 
     /**
