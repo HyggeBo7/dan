@@ -1,9 +1,9 @@
 package top.dearbo.util.file;
 
-import top.dearbo.util.exception.AppException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import top.dearbo.util.exception.AppException;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -129,9 +129,9 @@ public class FileUtil {
         int indexOf = fileName.lastIndexOf(suffix);
         if (indexOf != -1) {
             if (suffixFlag) {
-                return fileName.substring(indexOf, fileName.length());
+                return fileName.substring(indexOf);
             } else {
-                return fileName.substring(indexOf + 1, fileName.length());
+                return fileName.substring(indexOf + 1);
             }
         }
         return "";
@@ -268,7 +268,7 @@ public class FileUtil {
                     if (value.length() < 2) {
                         continue;
                     }
-                    value = value.substring(1, value.length());
+                    value = value.substring(1);
                 }
                 stringBuffer.append(value);
             } else {
@@ -279,7 +279,7 @@ public class FileUtil {
                     if (value.length() < 2) {
                         continue;
                     }
-                    value = value.substring(1, value.length());
+                    value = value.substring(1);
                 }
                 if (oldValueFlag) {
                     stringBuffer.append(value);
@@ -341,9 +341,8 @@ public class FileUtil {
      * @param file         文件名称
      * @param fileName     文件名称
      * @param renameToFlag 文件重复重命名-加 1 2 3
-     * @return
-     * @author 々Dan
-     * @created 2017年6月5日
+     * @return boolean
+     * @author Bo
      */
     public static boolean setFileRenameTo(File file, String fileName, boolean renameToFlag, String splice) {
         if (file.exists() && file.isFile()) {
@@ -354,15 +353,14 @@ public class FileUtil {
                 String fileSuffix = getFileSuffix(fileName, true);
 
                 //文件名称，除后缀
-                String fileSuffixFileName = getFileSuffixFileName(fileName);
-
+                String fileSuffixFileName = getFileSuffixFileName(fileName) + splice;
                 int i = 1;
                 while (true) {
                     File newFile = new File(newPath);
                     if (!newFile.exists()) {
                         return file.renameTo(newFile);
                     }
-                    newPath = getSpliceSuffix(path, fileSuffixFileName + splice + (++i) + fileSuffix);
+                    newPath = getSpliceSuffix(path, fileSuffixFileName + (++i) + fileSuffix);
                 }
             } else {
                 return file.renameTo(new File(newPath));
@@ -372,45 +370,63 @@ public class FileUtil {
     }
 
     /**
-     * 判断当前路径是否存在该文件，返回新文件名称
+     * 判断当前路径是否存在该文件/路径(文件名称为null当成文件夹处理)
+     * 文件：返回新文件名称
+     * 文件夹：返回新文件夹路径(带/)
      *
-     * @param path
-     * @param fileName
-     * @return
+     * @param path     路径
+     * @param fileName 文件名称
+     * @return path / fileName
      */
-    public static String fileExistsRenameFlag(String path, String fileName, String splice) {
-        if (StringUtils.isBlank(path) || StringUtils.isBlank(fileName)) {
+    public static String getNotExistFilePath(String path, String fileName, String splice) {
+        if (StringUtils.isBlank(path)) {
             logger.error("文件路径或者文件名称不能为空!");
-            return path + fileName;
+            return path;
         }
         splice = splice == null ? "" : splice;
-        //完整的文件url
-        String fileUrl = getSpliceSuffix(path, fileName);
-
-        //后缀
-        String fileSuffix = getFileSuffix(fileName, true);
-
-        //文件名称，除后缀
-        String fileSuffixFileName = getFileSuffixFileName(fileName);
-
-        File file = new File(fileUrl);
-        if (file.exists() && file.isFile()) {
-            int i = 1;
-            String newPath = getSpliceSuffix(path, fileSuffixFileName + splice + i + fileSuffix);
-            while (true) {
-                File newFile = new File(newPath);
-                if (!newFile.exists()) {
-                    return newFile.getName();
+        //处理文件重复
+        if (StringUtils.isNotBlank(fileName)) {
+            //完整的文件url
+            String fileUrl = getSpliceSuffix(path, fileName);
+            File file = new File(fileUrl);
+            if (file.exists() && file.isFile()) {
+                int i = 1;
+                //后缀
+                String fileSuffix = getFileSuffix(fileName, true);
+                //文件名称，除后缀
+                String fileSuffixFileName = getFileSuffixFileName(fileName) + splice;
+                String newPath = getSpliceSuffix(path, fileSuffixFileName + i + fileSuffix);
+                while (true) {
+                    file = new File(newPath);
+                    if (!file.exists()) {
+                        return file.getName();
+                    }
+                    newPath = getSpliceSuffix(path, fileSuffixFileName + (++i) + fileSuffix);
                 }
-                newPath = getSpliceSuffix(path, fileSuffixFileName + splice + (++i) + fileSuffix);
             }
+            return fileName;
+        } else {
+            //处理文件夹
+            File file = new File(path);
+            String absolutePath = file.getAbsolutePath();
+            if (file.exists() && file.isDirectory()) {
+                int i = 1;
+                //通过getAbsolutePath获取路径,如果传的path末尾带/,会自动去掉
+                String newPath = absolutePath + splice;
+                while (true) {
+                    file = new File(newPath + i);
+                    if (!file.exists()) {
+                        return file.getAbsolutePath() + "\\";
+                    }
+                    i++;
+                }
+            }
+            return absolutePath + "\\";
         }
-        return fileName;
     }
 
-    public static String fileExistsRenameFlag(String path, String fileName) {
-
-        return fileExistsRenameFlag(path, fileName, "-");
+    public static String getNotExistFilePath(String path, String fileName) {
+        return getNotExistFilePath(path, fileName, "-");
     }
 
     /**
@@ -499,8 +515,7 @@ public class FileUtil {
      * @param in
      * @throws IOException
      */
-    private static byte[] inputStreamByteArray(InputStream in) throws IOException {
-
+    public static byte[] inputStreamByteArray(InputStream in) throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         byte[] buffer = new byte[1024 * 4];
         int n = 0;

@@ -52,8 +52,8 @@ public enum CommonStatusEnum {
         this.msg = msg;
     }
 
-    public int value;
-    public String msg;
+    private final int value;
+    private final String msg;
 
     /**
      * 根据name获取code
@@ -100,5 +100,13 @@ public enum CommonStatusEnum {
             }
         }
         return null;
+    }
+
+    public int getValue() {
+        return value;
+    }
+
+    public String getMsg() {
+        return msg;
     }
 }

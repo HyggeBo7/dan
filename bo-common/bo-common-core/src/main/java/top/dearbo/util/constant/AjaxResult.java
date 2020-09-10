@@ -19,7 +19,7 @@ public class AjaxResult extends AbstractResult<Object> {
     /**
      * 操作失败
      */
-    private static final int NORMAL_ERROR = CommonStatusEnum.NORMAL_ERROR.value;
+    private static final int NORMAL_ERROR = CommonStatusEnum.NORMAL_ERROR.getValue();
 
     private AjaxResult() {
         //json反序列化时会执行当前构造函数,避免反序列化时会设置默认值

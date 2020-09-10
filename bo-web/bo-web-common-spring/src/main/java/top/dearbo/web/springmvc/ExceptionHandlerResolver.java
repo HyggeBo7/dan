@@ -47,9 +47,9 @@ public class ExceptionHandlerResolver extends SimpleMappingExceptionResolver {
                     ajaxResult = new AjaxResult(appException.getCode(), getErrorMsg(ex), stackTrace);
                 } else if ("org.apache.shiro.authz.UnauthorizedException".equals(ex.getClass().getName())) {
                     //Subject does not have permission [material:update]
-                    ajaxResult = new AjaxResult(CommonStatusEnum.NO_PERMISSION.value, ex.getMessage().replace("Subject does not have permission", "没有") + "权限");
+                    ajaxResult = new AjaxResult(CommonStatusEnum.NO_PERMISSION.getValue(), ex.getMessage().replace("Subject does not have permission", "没有") + "权限");
                 } else {
-                    ajaxResult = new AjaxResult(CommonStatusEnum.SERVER_ERROR.value, getErrorMsg(ex), stackTrace);
+                    ajaxResult = new AjaxResult(CommonStatusEnum.SERVER_ERROR.getValue(), getErrorMsg(ex), stackTrace);
                 }
             }
             try {

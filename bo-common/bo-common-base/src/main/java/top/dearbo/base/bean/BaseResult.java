@@ -18,11 +18,11 @@ public interface BaseResult extends Serializable {
     /**
      * 成功code
      */
-    int SUCCESS_CODE = CommonStatusEnum.SUCCESS.value;
+    int SUCCESS_CODE = CommonStatusEnum.SUCCESS.getValue();
     /**
      * 失败code
      */
-    int FAIL_CODE = CommonStatusEnum.FAIL.value;
+    int FAIL_CODE = CommonStatusEnum.FAIL.getValue();
 
     /**
      * 是否序列化null字段
