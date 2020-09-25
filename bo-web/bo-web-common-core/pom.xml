@@ -19,6 +19,28 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>top.dearbo</groupId>
+            <artifactId>common-core</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>fastjson</artifactId>
+                    <groupId>com.alibaba</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>jackson-databind</artifactId>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>joda-time</artifactId>
+                    <groupId>joda-time</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>jackson-datatype-jsr310</artifactId>
+                    <groupId>com.fasterxml.jackson.datatype</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
         </dependency>

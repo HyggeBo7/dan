@@ -368,15 +368,15 @@ public class DomeTest {
     @Test
     public void importExcel() throws IOException {
         //导入
-        ExcelWriteUtils excelWriteUtils = ExcelWriteUtils.importExcel("A:/ax1201-31.xlsx", 1, 1);
+        ExcelWriteUtils excelWriteUtils = ExcelWriteUtils.importExcel("A:/全自动半自动刀模尺寸明细表.xlsx", 1, 1);
         //一行数据为null，或者""，不添加
         excelWriteUtils.setEmptyRowFlag(false);
         //显示读取行号
-        excelWriteUtils.setDebugNumFlag(true);
+        excelWriteUtils.setDebugNumFlag(false);
         //设置排除行:一.下标以逗号分隔，二：传int集合
         //excelWriteUtils.setExcludeLineList("1,2");
-        //excelWriteUtils.setExcludeLineList(Arrays.asList(1, 2));
-        List<List<Map<String, String>>> listList = excelWriteUtils.readExcelWithoutTitle(true, 1, false);
+        excelWriteUtils.setExcludeLineList(Arrays.asList(0,1));
+        List<List<Map<String, String>>> listList = excelWriteUtils.readExcelWithoutTitle(false, 2, false);
         for (List<Map<String, String>> listMap : listList) {
             for (Map<String, String> map : listMap) {
 
