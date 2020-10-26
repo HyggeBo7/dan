@@ -1,8 +1,6 @@
 package top.dearbo.util.lang;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.util.Map;
@@ -11,11 +9,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Created by Dan on 2017/10/23.
+ * Created by Bo on 2017/10/23.
  */
 public class StringUtil {
 
-    private static final Logger logger = LoggerFactory.getLogger(StringUtil.class);
+    //private static final Logger logger = LoggerFactory.getLogger(StringUtil.class);
 
     /**
      * 转换字符 1-9，A-I
@@ -134,8 +132,12 @@ public class StringUtil {
         return stringBuffer.insert(position, dec).toString();
     }
 
+    public static String removeStrBlank(String str) {
+        return removeStrBlank(str, "");
+    }
+
     public static String removeStrBlank(String str, String replacement) {
-        String regex = "\\s*|\t|\n";
+        String regex = "\\s*|\t|\r|\n";
         return removeStrBlank(str, replacement, regex);
     }
 
