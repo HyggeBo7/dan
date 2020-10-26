@@ -28,6 +28,9 @@ public class JsonCommonRender {
 
 
     public String getJsonResult(Object obj) {
+        if (obj == null) {
+            return null;
+        }
         String callback = RequestContext.getStr("callback");
         RequestContext.getResponse().setCharacterEncoding(CHAR_SET);
         RequestContext.getResponse().setHeader("Cache-Control", "no-cache");
@@ -35,12 +38,13 @@ public class JsonCommonRender {
         if (StringUtils.isNotBlank(callback)) {
             callback = StringEscapeUtils.escapeHtml4(callbackFilter(callback));
             RequestContext.getResponse().setHeader("Content-Type", "application/javascript");
-            text = JSON_HEADER_APPEND + callback + "(" + getJson(obj) + ");";
+            text = callback + "(" + getJson(obj) + ");";
         } else {
             RequestContext.getResponse().setHeader("Content-Type", "application/json");
-            text = JSON_HEADER_APPEND + getJson(obj);
+            text = getJson(obj);
         }
-        return text;
+        //返回值是String 类型不需要加
+        return obj instanceof String ? text : JSON_HEADER_APPEND + text;
     }
 
     public String callbackFilter(String callback) {

@@ -368,7 +368,7 @@ public class DomeTest {
     @Test
     public void importExcel() throws IOException {
         //导入
-        ExcelWriteUtils excelWriteUtils = ExcelWriteUtils.importExcel("A:/全自动半自动刀模尺寸明细表.xlsx", 1, 1);
+        ExcelWriteUtils excelWriteUtils = ExcelWriteUtils.importExcel("A:/刀片柜明细表(贤二调整).xlsx", 1, 2);
         //一行数据为null，或者""，不添加
         excelWriteUtils.setEmptyRowFlag(false);
         //显示读取行号
