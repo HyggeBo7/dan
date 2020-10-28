@@ -375,7 +375,7 @@ public class DomeTest {
         excelWriteUtils.setDebugNumFlag(false);
         //设置排除行:一.下标以逗号分隔，二：传int集合
         //excelWriteUtils.setExcludeLineList("1,2");
-        excelWriteUtils.setExcludeLineList(Arrays.asList(0,1));
+        excelWriteUtils.setExcludeLineList(Arrays.asList(0, 1));
         List<List<Map<String, String>>> listList = excelWriteUtils.readExcelWithoutTitle(false, 2, false);
         for (List<Map<String, String>> listMap : listList) {
             for (Map<String, String> map : listMap) {
@@ -835,6 +835,15 @@ public class DomeTest {
         System.out.println("url1:" + httpUtils.doGet(url1).toString());
         System.out.println("url2:" + httpUtils.doGet(url2).toString());
         System.out.println("url3:" + httpUtils.doGet(url3).toString());
+    }
+
+    @Test
+    public void testHttpCode() {
+        Map<String, Object> paramMap = new HashMap<>(2);
+        paramMap.put("data", "{\"makeClassName\":\"制一课\",\"autoFlag\":true,\"groupName\":\"1A2\",\"useDate\":\"2020-10-28 17:12:55\",\"moldsId\":4290,\"groupId\":1,\"useName\":\"test\",\"makeClassId\":1,\"useType\":\"生产订单\",\"outMoldFlag\":true}");
+        paramMap.put("oauth", "whosyourdaddy");
+        HttpUtils.ResultResponse resultResponse = HttpUtils.createRequest().doPost("http://192.168.2.202:8031/hc-imolds-api/moldsUse/insertMoldsUseToAutoBack", paramMap);
+        System.out.println("resultResponse:" + resultResponse.toString());
     }
 
 }

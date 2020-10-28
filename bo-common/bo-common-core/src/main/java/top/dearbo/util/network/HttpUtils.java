@@ -221,7 +221,9 @@ public class HttpUtils {
             // 设置请求方式（GET/POST）
             if (methodPostFlag) {
                 // 发送POST请求必须设置如下两行
+                //是否输入参数
                 connection.setDoOutput(true);
+                //是否读取参数
                 connection.setDoInput(true);
                 connection.setRequestMethod(METHOD_POST);
             } else {
@@ -253,7 +255,8 @@ public class HttpUtils {
                 boolean paramFlag = null != paramMap && paramMap.size() > 0 || StringUtils.isNotBlank(paramJson);
                 if (paramFlag) {
                     // 获取URLConnection对象对应的输出流
-                    out = new PrintWriter(connection.getOutputStream());
+                    //new OutputStreamWriter(connection.getOutputStream(), encoding):解决中文乱码问题
+                    out = new PrintWriter(new OutputStreamWriter(connection.getOutputStream(), encoding));
                     // 发送请求参数
                     if (StringUtils.isNotBlank(paramJson)) {
                         out.print(paramJson);
