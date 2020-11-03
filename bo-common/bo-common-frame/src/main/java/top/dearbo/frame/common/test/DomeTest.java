@@ -846,4 +846,11 @@ public class DomeTest {
         System.out.println("resultResponse:" + resultResponse.toString());
     }
 
+    @Test
+    public void testDate() {
+        Date date = new Date();
+        System.out.println(DateUtil.parseToString(DateUtil.getStartOfDay(date), DateUtil.FORMAT_FULL_CN));
+        System.out.println(DateUtil.parseToString(DateUtil.getEndOfDay(date, false), DateUtil.FORMAT_FULL_CN));
+    }
+
 }

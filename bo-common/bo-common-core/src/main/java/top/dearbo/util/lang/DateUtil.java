@@ -5,13 +5,11 @@ import org.apache.commons.lang3.StringUtils;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.*;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
- * Created by Dan on 2017/7/21.
+ * @author Bo
+ * @date 2017/7/21
  */
 public class DateUtil {
 
@@ -382,7 +380,7 @@ public class DateUtil {
      */
     public static Long getMistiming(String strStartDate, String strEndDate, String pattern) {
 
-        return getMistiming(parseToDate(strStartDate, pattern), parseToDate(strEndDate, pattern));
+        return getMistiming(Objects.requireNonNull(parseToDate(strStartDate, pattern)), Objects.requireNonNull(parseToDate(strEndDate, pattern)));
     }
 
     /**
@@ -629,23 +627,43 @@ public class DateUtil {
     }
 
     /**
-     * 获得当前最大时间 23:59:59
+     * 获得当前最大时间 23:59:59.000
      *
-     * @param date
+     * @param date 日期
+     * @return 最大日期
      */
     public static Date getEndOfDay(Date date) {
+        return getEndOfDay(date, true);
+    }
+
+    /**
+     * 获得当前最大时间 23:59:59
+     * ps:如果毫秒是999,添加会是第二天的00:00:00
+     *
+     * @param date         日期
+     * @param withZeroNano true:23:59:59.000,false:23:59:59.999
+     * @return 最大时间
+     */
+    public static Date getEndOfDay(Date date, boolean withZeroNano) {
         if (date == null) {
             return date;
         }
         LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(date.getTime()), ZoneId.systemDefault());
-        LocalDateTime endOfDay = localDateTime.with(LocalTime.MAX);
+        LocalTime localTime;
+        if (withZeroNano) {
+            localTime = LocalTime.of(23, 59, 59);
+        } else {
+            localTime = LocalTime.MAX;
+        }
+        LocalDateTime endOfDay = localDateTime.with(localTime);
         return Date.from(endOfDay.atZone(ZoneId.systemDefault()).toInstant());
     }
 
     /**
-     * 获得当前最小时间 00:00:00
+     * 获得当前最小时间 00:00:00.000
      *
-     * @param date
+     * @param date 日期
+     * @return 最小时间
      */
     public static Date getStartOfDay(Date date) {
         if (date == null) {
