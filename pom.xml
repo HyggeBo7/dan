@@ -281,12 +281,12 @@
         </dependencies>
     </dependencyManagement>
 
-<!--    <dependencies>
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>druid</artifactId>
-        </dependency>
-    </dependencies>-->
+    <!--    <dependencies>
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>druid</artifactId>
+            </dependency>
+        </dependencies>-->
 
     <!--jdk8 打包javadoc文档，符合W3C HTML 4.01标准规范的HTML文档，参考：https://blog.csdn.net/zcl111/article/details/78086066-->
     <!--<profiles>

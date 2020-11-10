@@ -1,8 +1,5 @@
 package top.dearbo.frame.common.util.excel;
 
-import top.dearbo.util.exception.AppException;
-import top.dearbo.util.lang.DateUtil;
-import top.dearbo.util.lang.StringUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.hssf.util.CellReference;
@@ -13,6 +10,9 @@ import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import top.dearbo.util.exception.AppException;
+import top.dearbo.util.lang.DateUtil;
+import top.dearbo.util.lang.StringUtil;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
@@ -511,7 +511,15 @@ public class ExcelWriteUtils {
         return importExcel(file.getName(), new FileInputStream(file), startSheet, endSheet);
     }
 
-    /*public static ExcelWriteUtils importExcelByMultipartFile(MultipartFile multipartFile, int startSheet, int endSheet) throws IOException {
+    public static ExcelWriteUtils importExcelAllSheet(String fileName, InputStream is) throws IOException {
+        return importExcel(fileName, is, 0, 0, null, true);
+    }
+
+    /*public static ExcelWriteUtils importExcelByMultipartFile(MultipartFile multipartFile) throws IOException {
+        return importExcel(multipartFile.getOriginalFilename(), multipartFile.getInputStream(), 0, 0, null, true);
+    }
+
+    public static ExcelWriteUtils importExcelByMultipartFile(MultipartFile multipartFile, int startSheet, int endSheet) throws IOException {
         return importExcel(multipartFile.getOriginalFilename(), multipartFile.getInputStream(), startSheet, endSheet);
     }
 
@@ -531,6 +539,10 @@ public class ExcelWriteUtils {
     }
 
     private static ExcelWriteUtils importExcel(String fileName, InputStream is, int startSheet, int endSheet, String sheetName) throws IOException {
+        return importExcel(fileName, is, startSheet, endSheet, sheetName, false);
+    }
+
+    private static ExcelWriteUtils importExcel(String fileName, InputStream is, int startSheet, int endSheet, String sheetName, boolean allSheetFlag) throws IOException {
         ExcelWriteUtils excelWriteUtils = new ExcelWriteUtils(false);
         if (StringUtils.isBlank(fileName)) {
             AppException.throwEx("导入文档名称为空!");
@@ -545,6 +557,9 @@ public class ExcelWriteUtils {
             excelWriteUtils.startSheet = 1;
             excelWriteUtils.endSheet = excelWriteUtils.readWorkBook.getNumberOfSheets();
             excelWriteUtils.sheetName = sheetName;
+        } else if (allSheetFlag) {
+            excelWriteUtils.startSheet = 1;
+            excelWriteUtils.endSheet = excelWriteUtils.readWorkBook.getNumberOfSheets();
         } else {
             if (startSheet > endSheet) {
                 AppException.throwEx("开始页不能大于结束页!");
