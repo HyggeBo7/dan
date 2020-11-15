@@ -562,6 +562,97 @@ public class FileUtil {
     }
 
     /**
+     * 保存内容到指定文件(覆盖)
+     *
+     * @param file    文件
+     * @param content 内容
+     * @return boolean
+     */
+    public static boolean saveAsFileWriter(File file, String content) {
+        return saveAsFileWriter(file, content, false);
+    }
+
+    /**
+     * 保存内容到指定文件
+     *
+     * @param file    文件
+     * @param content 内容
+     * @param append  true:追加,false:覆盖
+     * @return boolean
+     */
+    public static boolean saveAsFileWriter(File file, String content, boolean append) {
+        if (!file.exists()) {
+            file.getParentFile().mkdirs();
+        }
+        FileWriter fileWriter = null;
+        try {
+            // true表示不覆盖原来的内容，而是加到文件的后面。若要覆盖原来的内容，直接省略这个参数就好
+            fileWriter = new FileWriter(file, append);
+            fileWriter.write(content);
+            return true;
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return false;
+        } finally {
+            if (fileWriter != null) {
+                try {
+                    fileWriter.flush();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    fileWriter.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    /**
+     * 读取文件内容
+     *
+     * @param fileUrl 文件地址
+     * @return String
+     */
+    public static String readFileContent(String fileUrl) {
+        return readFileContent(new File(fileUrl));
+    }
+
+    /**
+     * 读取文件内容
+     *
+     * @param file 文件
+     * @return String
+     */
+    public static String readFileContent(File file) {
+        if (!file.exists() || !file.isFile()) {
+            return null;
+        }
+        BufferedReader reader = null;
+        StringBuilder sbf = new StringBuilder();
+        try {
+            reader = new BufferedReader(new FileReader(file));
+            String tempStr;
+            while ((tempStr = reader.readLine()) != null) {
+                sbf.append(tempStr);
+            }
+            return sbf.toString();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+            }
+        }
+        return sbf.toString();
+    }
+
+    /**
      * 上传文件
      *
      * @param file 文件
