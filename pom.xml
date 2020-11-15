@@ -14,7 +14,7 @@
     <modules>
         <module>bo-common</module>
         <module>bo-web</module>
-        <module>bo-plugin</module>
+        <!--<module>bo-plugin</module>-->
         <!--<module>test-dome</module>-->
     </modules>
 
