@@ -1293,6 +1293,7 @@ public class ExcelWriteUtils {
         // 对不同格式的日期类型做不同的输出，与单元格格式保持一致
         switch (style) {
             case 14:
+            case 176:
                 value = new SimpleDateFormat("yyyy/MM/dd").format(date);
                 break;
             case 22:
