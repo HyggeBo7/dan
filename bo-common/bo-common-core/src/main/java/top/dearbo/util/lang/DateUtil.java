@@ -100,6 +100,39 @@ public class DateUtil {
     }
 
     /**
+     * 获取时间戳是上午还是下午
+     *
+     * @param time 毫秒
+     * @return true:下午,false:上午
+     */
+    public static boolean getDayTimeToAmPm(long time) {
+        return getDayToAmPm(new Date(time));
+    }
+
+    /**
+     * 获取日期是上午还是下午
+     *
+     * @param date 日期
+     * @return true:下午,false:上午
+     */
+    public static boolean getDayToAmPm(Date date) {
+        GregorianCalendar ca = new GregorianCalendar();
+        ca.setTime(date);
+        //结果为0是上午     结果为1是下午
+        return ca.get(GregorianCalendar.AM_PM) == Calendar.PM;
+    }
+
+    /**
+     * 获取日期是上午还是下午
+     *
+     * @param date 日期
+     * @return 下午/上午
+     */
+    public static String getDayToAmPmString(Date date) {
+        return getDayToAmPm(date) ? "下午" : "上午";
+    }
+
+    /**
      * 日期换为短日期 时分秒 00:00:00
      *
      * @param date 时间
