@@ -3,6 +3,8 @@ package top.dearbo.web.core.util;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Enumeration;
@@ -88,6 +90,26 @@ public class ServletUtils {
             dataSb.append(key).append("=").append(request.getParameter(key));
         }
         return dataSb.toString();
+    }
+
+    public static String readReader(BufferedReader reader) throws IOException {
+        if (reader != null) {
+            StringBuilder requestBuilder = new StringBuilder();
+            String inputStr;
+            try {
+                while ((inputStr = reader.readLine()) != null) {
+                    requestBuilder.append(inputStr);
+                }
+            } finally {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            return requestBuilder.toString();
+        }
+        return null;
     }
 
     private static boolean checkIpEmptyOrUnknown(String ip) {

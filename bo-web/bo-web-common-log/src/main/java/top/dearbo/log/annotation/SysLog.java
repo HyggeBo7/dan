@@ -57,4 +57,12 @@ public @interface SysLog {
      */
     String applicationName() default "";
 
+    /**
+     * 是否保存参数
+     * 默认保存
+     *
+     * @return {boolean}
+     */
+    boolean saveParam() default true;
+
 }

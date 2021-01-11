@@ -62,7 +62,7 @@ public class ExceptionHandlerResolver extends SimpleMappingExceptionResolver {
     }
 
     private String getErrorMsg(Throwable ex) {
-        return ex.getMessage() != null ? ex.getMessage() : ex.getLocalizedMessage() != null ? ex.getLocalizedMessage() : ExceptionUtils.getMessage(ex);
+        return ex.getLocalizedMessage() != null ? ex.getLocalizedMessage() : ex.getMessage() != null ? ex.getMessage() : ExceptionUtils.getMessage(ex);
     }
 
     /**

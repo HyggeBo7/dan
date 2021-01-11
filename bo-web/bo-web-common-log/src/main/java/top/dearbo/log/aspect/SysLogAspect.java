@@ -29,16 +29,21 @@ import org.aspectj.lang.annotation.Aspect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.multipart.MultipartFile;
 import top.dearbo.log.annotation.SysLog;
 import top.dearbo.log.config.DefaultSysLogConfig;
 import top.dearbo.log.config.SysLogConfig;
 import top.dearbo.log.entity.SysLogEntity;
 import top.dearbo.log.event.SysLogEvent;
+import top.dearbo.util.data.JsonUtil;
 import top.dearbo.web.core.util.ServletUtils;
 import top.dearbo.web.core.util.SpringContextHolder;
 
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -73,7 +78,7 @@ public class SysLogAspect {
         logger.debug("[类名]:{},[方法]:{}", strClassName, strMethodName);
         HttpServletRequest request = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
         if (sysLogConfig != null && sysLogConfig.checkLog(request)) {
-            SysLogEntity logVo = getSysLog(request, sysLog, sysLogConfig);
+            SysLogEntity logVo = getSysLog(request, sysLog, sysLogConfig, point);
             // 发送异步日志事件
             long startTime = System.currentTimeMillis();
             logVo.setRequestDate(new Date(startTime));
@@ -97,7 +102,7 @@ public class SysLogAspect {
         return point.proceed();
     }
 
-    public SysLogEntity getSysLog(HttpServletRequest request, SysLog sysLog, SysLogConfig sysLogConfig) {
+    public SysLogEntity getSysLog(HttpServletRequest request, SysLog sysLog, SysLogConfig sysLogConfig, ProceedingJoinPoint point) {
         SysLogEntity sysLogEntity = new SysLogEntity();
         sysLogEntity.setOperator(sysLogConfig.getUserName(request));
         sysLogEntity.setOperatorId(sysLogConfig.getUserId(request));
@@ -109,12 +114,49 @@ public class SysLogAspect {
         sysLogEntity.setRequestUri(URLUtil.getPath(request.getRequestURI()));
         sysLogEntity.setMethod(request.getMethod());
         sysLogEntity.setUserAgent(request.getHeader("user-agent"));
-        sysLogEntity.setParams(ServletUtils.toRequestParams(request, sysLogConfig.excludeParamKey()));
+        String contentType = request.getContentType();
+        sysLogEntity.setContentType(contentType);
+        sysLogEntity.setArgBody(getArgBody(point, false));
+        if (sysLog.saveParam()) {
+            //处理json数据
+            if (contentType != null && contentType.contains(MediaType.APPLICATION_JSON_VALUE)) {
+                sysLogEntity.setParams(getArgBody(point, true));
+            } else {
+                sysLogEntity.setParams(ServletUtils.toRequestParams(request, sysLogConfig.excludeParamKey()));
+            }
+        }
         return sysLogEntity;
     }
 
     private String getApplicationName() {
         return SpringContextHolder.getApplicationContext().getEnvironment().getProperty("spring.application.name");
+    }
+
+    private String getArgBody(ProceedingJoinPoint point, boolean serializeNull) {
+        Object[] pointArgs = point.getArgs();
+        if (pointArgs != null && pointArgs.length > 0) {
+            StringBuilder dataSb = new StringBuilder();
+            int i = 0;
+            for (Object argObj : pointArgs) {
+                if (argObj != null) {
+                    if (argObj instanceof MultipartFile || argObj instanceof ServletRequest || argObj instanceof ServletResponse) {
+                        continue;
+                    }
+                    if (i > 0) {
+                        dataSb.append("&");
+                    } else {
+                        i++;
+                    }
+                    if (serializeNull) {
+                        dataSb.append(JsonUtil.toJsonSerializeNull(argObj));
+                    } else {
+                        dataSb.append(JsonUtil.toJson(argObj));
+                    }
+                }
+            }
+            return dataSb.toString();
+        }
+        return null;
     }
 
     /*private void checkSysLogConfig() {

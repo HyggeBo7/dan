@@ -55,6 +55,11 @@ public class SysLogEntity implements Serializable {
     private String requestUri;
 
     /**
+     * 接口参数
+     */
+    private String argBody;
+
+    /**
      * 请求方式
      */
     private String method;
@@ -68,6 +73,11 @@ public class SysLogEntity implements Serializable {
      * 请求时间
      */
     private Date requestDate;
+
+    /**
+     * 请求类型
+     */
+    private String contentType;
 
     /**
      * 执行时间(耗时)
@@ -153,6 +163,14 @@ public class SysLogEntity implements Serializable {
         this.requestUri = requestUri;
     }
 
+    public String getArgBody() {
+        return argBody;
+    }
+
+    public void setArgBody(String argBody) {
+        this.argBody = argBody;
+    }
+
     public String getMethod() {
         return method;
     }
@@ -175,6 +193,14 @@ public class SysLogEntity implements Serializable {
 
     public void setRequestDate(Date requestDate) {
         this.requestDate = requestDate;
+    }
+
+    public String getContentType() {
+        return contentType;
+    }
+
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
     }
 
     public Long getTime() {
