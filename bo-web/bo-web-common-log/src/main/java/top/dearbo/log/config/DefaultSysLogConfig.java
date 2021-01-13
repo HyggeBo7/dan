@@ -3,7 +3,7 @@ package top.dearbo.log.config;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +19,7 @@ public class DefaultSysLogConfig implements SysLogConfig {
 
     protected static final Map<String, String> OPERATE_MAP = new HashMap<>(16);
 
-    private static final List<String> EXCLUDE_PARAM_KEY_LIST = Collections.singletonList("oauth");
+    private static final List<String> EXCLUDE_PARAM_KEY_LIST = Arrays.asList("oauth", "token");
 
     static {
         OPERATE_MAP.put("audit", "审核");
@@ -29,7 +29,7 @@ public class DefaultSysLogConfig implements SysLogConfig {
         OPERATE_MAP.put("update", "修改");
         OPERATE_MAP.put("delete", "删除");
         OPERATE_MAP.put("remove", "删除");
-        OPERATE_MAP.put("query", "获取");
+        OPERATE_MAP.put("query", "查询");
         OPERATE_MAP.put("get", "获取");
         OPERATE_MAP.put("list", "查询");
     }

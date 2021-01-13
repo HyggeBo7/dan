@@ -97,7 +97,7 @@ public class SysLogEntity implements Serializable {
     /**
      * 执行返回结果
      */
-    private Object resultData;
+    private String resultData;
 
     public String getType() {
         return type;
@@ -227,11 +227,11 @@ public class SysLogEntity implements Serializable {
         this.remark = remark;
     }
 
-    public Object getResultData() {
+    public String getResultData() {
         return resultData;
     }
 
-    public void setResultData(Object resultData) {
+    public void setResultData(String resultData) {
         this.resultData = resultData;
     }
 }

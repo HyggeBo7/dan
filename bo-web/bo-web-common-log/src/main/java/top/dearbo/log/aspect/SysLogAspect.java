@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
@@ -48,7 +49,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Date;
-import java.util.Objects;
 
 /**
  * 操作日志使用spring event异步入库
@@ -76,8 +76,8 @@ public class SysLogAspect {
         String strClassName = point.getTarget().getClass().getName();
         String strMethodName = point.getSignature().getName();
         logger.debug("[类名]:{},[方法]:{}", strClassName, strMethodName);
-        HttpServletRequest request = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
-        if (sysLogConfig != null && sysLogConfig.checkLog(request)) {
+        HttpServletRequest request = getHttpRequest();
+        if (request != null && sysLogConfig != null && sysLogConfig.checkLog(request)) {
             SysLogEntity logVo = getSysLog(request, sysLog, sysLogConfig, point);
             // 发送异步日志事件
             long startTime = System.currentTimeMillis();
@@ -92,7 +92,7 @@ public class SysLogAspect {
                 logVo.setException(localizedMessage == null ? ExceptionUtils.getMessage(throwable) : localizedMessage);
             }
             logVo.setTime(System.currentTimeMillis() - startTime);
-            logVo.setResultData(obj);
+            logVo.setResultData(sysLogConfig.getResultData(obj));
             SpringContextHolder.publishEvent(new SysLogEvent(logVo));
             if (currentThrowable != null) {
                 throw currentThrowable;
@@ -155,6 +155,18 @@ public class SysLogAspect {
                 }
             }
             return dataSb.toString();
+        }
+        return null;
+    }
+
+    private HttpServletRequest getHttpRequest() {
+        try {
+            RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+            if (requestAttributes != null && requestAttributes instanceof ServletRequestAttributes) {
+                return ((ServletRequestAttributes) requestAttributes).getRequest();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return null;
     }

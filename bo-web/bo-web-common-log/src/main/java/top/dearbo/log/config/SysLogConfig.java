@@ -1,5 +1,7 @@
 package top.dearbo.log.config;
 
+import top.dearbo.util.data.JsonUtil;
+
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
@@ -42,6 +44,19 @@ public interface SysLogConfig {
      */
     default boolean checkLog(HttpServletRequest request) {
         return request.getAttribute("userName") != null;
+    }
+
+    /**
+     * 获取返回结果
+     *
+     * @param resultData 返回结果
+     * @return string
+     */
+    default String getResultData(Object resultData) {
+        if (resultData == null) {
+            return null;
+        }
+        return resultData instanceof String ? resultData.toString() : JsonUtil.toJson(resultData);
     }
 
     /**
