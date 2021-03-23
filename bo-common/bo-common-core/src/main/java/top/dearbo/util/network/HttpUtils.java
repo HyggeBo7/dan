@@ -47,7 +47,7 @@ public class HttpUtils {
     private static final String HTTP = "http";
     private static final String METHOD_GET = "GET";
     private static final String METHOD_POST = "POST";
-    private static final int SUCCESS_CODE = 200;
+    private static final int DEFAULT_SUCCESS_CODE = 200;
     private static final String ACCEPT = "Accept";
     private static final String USER_AGENT = "User-Agent";
     private static final String ACCEPT_CONTENT_TYPE = "application/json, text/plain, */*";
@@ -65,6 +65,10 @@ public class HttpUtils {
      * 是否自动关闭
      */
     private boolean disconnectFlag = true;
+    /**
+     * 表示成功的编码
+     */
+    private int successCode = DEFAULT_SUCCESS_CODE;
     /**
      * 默认cookie字段
      */
@@ -272,7 +276,7 @@ public class HttpUtils {
             ResultResponse resultResponse = new ResultResponse(responseCode, connection.getResponseMessage());
             resultResponse.setHeaderCookieField(defaultHeaderCookieField);
             resultResponse.setResultResponse(connection);
-            if (responseCode == SUCCESS_CODE) {
+            if (responseCode == getSuccessCode()) {
                 if (resultToStringFlag) {
                     // 从输入流读取返回内容
                     inputStream = connection.getInputStream();
@@ -449,6 +453,15 @@ public class HttpUtils {
         return this;
     }
 
+    public int getSuccessCode() {
+        return successCode;
+    }
+
+    public HttpUtils setSuccessCode(int successCode) {
+        this.successCode = successCode;
+        return this;
+    }
+
     public static class ResultResponse implements Serializable {
         private static final long serialVersionUID = -884562198636894001L;
         private int status;
@@ -489,7 +502,7 @@ public class HttpUtils {
         }
 
         public boolean isSuccess() {
-            return status == SUCCESS_CODE;
+            return status == DEFAULT_SUCCESS_CODE;
         }
 
         public int getStatus() {
