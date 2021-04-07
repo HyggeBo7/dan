@@ -70,6 +70,14 @@ public class HttpUtils {
      */
     private int successCode = DEFAULT_SUCCESS_CODE;
     /**
+     * 是否对请求参数key进行编码(默认需要)
+     */
+    private boolean encodeParamKeyFlag = true;
+    /**
+     * 是否对请求参数value进行编码(默认需要)
+     */
+    private boolean encodeParamValueFlag = true;
+    /**
      * 默认cookie字段
      */
     private String defaultHeaderCookieField = "Set-Cookie";
@@ -201,7 +209,7 @@ public class HttpUtils {
                 if (requestUrl.indexOf(spliceChar) > -1) {
                     spliceChar = '&';
                 }
-                requestUrl += spliceChar + genUrlParam(paramMap);
+                requestUrl = requestUrl + spliceChar + genUrlParam(paramMap, encoding, isEncodeParamKeyFlag(), isEncodeParamValueFlag());
             }
             URL url = new URL(requestUrl);
             // 打开和URL之间的连接
@@ -266,7 +274,7 @@ public class HttpUtils {
                         out.print(paramJson);
                     }
                     if (paramMap != null && paramMap.size() > 0) {
-                        out.print(genUrlParam(paramMap));
+                        out.print(genUrlParam(paramMap, encoding, isEncodeParamKeyFlag(), isEncodeParamValueFlag()));
                     }
                     // flush输出流的缓冲
                     out.flush();
@@ -358,20 +366,36 @@ public class HttpUtils {
 
     }
 
+    private String genUrlParam(Map<String, Object> paramMap) {
+        return genUrlParam(paramMap, null, false, false);
+    }
+
     /**
      * 拼接Url
      *
-     * @param paramMap 查询参数
+     * @param paramMap       参数
+     * @param encoderCharset 编码字符
+     * @param keyEncoder     是否对key编码
+     * @param valueEncoder   是否对value编码
+     * @return String
      */
-    private String genUrlParam(Map<String, Object> paramMap) {
+    private String genUrlParam(Map<String, Object> paramMap, String encoderCharset, boolean keyEncoder, boolean valueEncoder) {
         if (paramMap == null || paramMap.size() == 0) {
             return "";
         }
         StringBuilder sb = new StringBuilder();
         for (Map.Entry<String, Object> item : paramMap.entrySet()) {
-            sb.append(item.getKey());
+            if (keyEncoder && StringUtils.isNotBlank(encoderCharset)) {
+                sb.append(urlEncoder(item.getKey(), encoderCharset));
+            } else {
+                sb.append(item.getKey());
+            }
             sb.append("=");
-            sb.append(item.getValue());
+            if (valueEncoder && StringUtils.isNotBlank(encoderCharset)) {
+                sb.append(urlEncoder(item.getValue().toString(), encoderCharset));
+            } else {
+                sb.append(item.getValue());
+            }
             sb.append("&");
         }
         return sb.substring(0, sb.length() - 1);
@@ -382,13 +406,18 @@ public class HttpUtils {
      *
      * @param str     字符串
      * @param charset 编码
-     * @throws UnsupportedEncodingException
      */
-    public String urlEncoder(String str, String charset) throws UnsupportedEncodingException {
+    public String urlEncoder(String str, String charset) {
         if (StringUtils.isBlank(str)) {
-            str = "";
+            return "";
         }
-        return URLEncoder.encode(str, charset);
+        try {
+            return URLEncoder.encode(str, charset);
+        } catch (UnsupportedEncodingException e) {
+            logger.error("value:【{}】 to charset:【{}】 error:【{}】", str, charset, e.getMessage());
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public boolean isUsePropertyFlag() {
@@ -459,6 +488,24 @@ public class HttpUtils {
 
     public HttpUtils setSuccessCode(int successCode) {
         this.successCode = successCode;
+        return this;
+    }
+
+    public boolean isEncodeParamKeyFlag() {
+        return encodeParamKeyFlag;
+    }
+
+    public HttpUtils setEncodeParamKeyFlag(boolean encodeParamKeyFlag) {
+        this.encodeParamKeyFlag = encodeParamKeyFlag;
+        return this;
+    }
+
+    public boolean isEncodeParamValueFlag() {
+        return encodeParamValueFlag;
+    }
+
+    public HttpUtils setEncodeParamValueFlag(boolean encodeParamValueFlag) {
+        this.encodeParamValueFlag = encodeParamValueFlag;
         return this;
     }
 

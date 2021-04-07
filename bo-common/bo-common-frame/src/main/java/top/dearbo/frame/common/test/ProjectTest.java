@@ -1,16 +1,13 @@
 package top.dearbo.frame.common.test;
 
+import org.junit.Test;
 import top.dearbo.frame.common.util.excel.ExcelWriteUtils;
 import top.dearbo.util.data.JsonUtil;
 import top.dearbo.util.lang.DateUtil;
 import top.dearbo.util.network.HttpUtils;
-import org.junit.Test;
 
 import java.io.IOException;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @version 1.0
@@ -105,6 +102,20 @@ public class ProjectTest {
         Map<String, String> cookies = resultResponse.getCookies();
         String cookiesToString = resultResponse.getCookiesToString();
         System.out.println("resultResponse:" + resultResponse);
+    }
+
+
+    @Test
+    public void testHttpParam() {
+        Map<String, Object> paramMap = new HashMap<>(4);
+        paramMap.put("娃娃", "你好啊 aaa");
+        paramMap.put("name", "你好啊 aaa");
+        paramMap.put("startProduceDate", "2021-04-07 00:00:00");
+        paramMap.put("endProduceDate", "2021-04-13 23:59:59");
+        paramMap.put("workOrderNo", "%0901%");
+        String url = "http://117.41.37.22:808/javso/plan/listProductPlanToDrawingNoByProduceDate.do";
+        HttpUtils.ResultResponse response = HttpUtils.createRequest().doPost(url, paramMap);
+        System.out.println(response.getData());
     }
 
 }
