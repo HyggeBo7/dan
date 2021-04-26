@@ -1,5 +1,7 @@
 package top.dearbo.base.bean;
 
+import java.beans.Transient;
+
 /**
  * @version 1.0
  * @author: Bo
@@ -11,6 +13,7 @@ public abstract class AbstractResult<T> implements BaseResult {
     private static final long serialVersionUID = 535712466918126917L;
     protected transient Boolean serializeNull;
 
+    @Transient
     public Boolean getSerializeNull() {
         return serializeNull;
     }

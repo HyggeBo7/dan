@@ -59,7 +59,7 @@ public class AjaxResult extends AbstractResult<Object> {
     }
 
     public static AjaxResult ok(Object data, boolean serializeNull) {
-        return ok(data, "success", serializeNull);
+        return ok(data, "成功", serializeNull);
     }
 
     public static AjaxResult ok(Object data, String msg) {
@@ -73,7 +73,7 @@ public class AjaxResult extends AbstractResult<Object> {
     //=========失败=========
 
     public static AjaxResult failed() {
-        return failed("failed");
+        return failed("失败");
     }
 
     public static AjaxResult failed(String msg) {
