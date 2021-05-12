@@ -626,6 +626,56 @@ public class DateUtil {
     }
 
     /**
+     * 获取当年的第一天
+     *
+     * @return Date
+     */
+    public static Date getCurrYearFirst() {
+        return getYearFirst(Calendar.getInstance().get(Calendar.YEAR));
+    }
+
+    /**
+     * 获取当年的最后一天
+     *
+     * @return Date
+     */
+    public static Date getCurrYearLast() {
+        return getYearLast(Calendar.getInstance().get(Calendar.YEAR));
+    }
+
+    /**
+     * 获取某年第一天日期 [2021-01-01 00:00:00.0]
+     *
+     * @param year 年份
+     * @return Date
+     */
+    public static Date getYearFirst(int year) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.clear();
+        calendar.set(Calendar.YEAR, year);
+        return calendar.getTime();
+    }
+
+    /**
+     * 获取某年最后一天日期 [2021-12-31 23:59:59.999]
+     *
+     * @param year 年份
+     * @return Date
+     */
+    public static Date getYearLast(int year) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.clear();
+        calendar.set(Calendar.YEAR, year);
+        calendar.roll(Calendar.DAY_OF_YEAR, -1);
+        //HOUR_OF_DAY是24小时制,HOUR是12小时制
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 59);
+        calendar.set(Calendar.SECOND, 59);
+        calendar.set(Calendar.MILLISECOND, 999);
+        return calendar.getTime();
+    }
+
+    /**
      * 增加减少 N月,获取第一天
      *
      * @param date 当前时间
