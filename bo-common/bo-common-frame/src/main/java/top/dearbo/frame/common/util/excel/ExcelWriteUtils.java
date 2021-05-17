@@ -3,7 +3,6 @@ package top.dearbo.frame.common.util.excel;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.hssf.util.CellReference;
-import org.apache.poi.ss.formula.FormulaParseException;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFCell;
@@ -509,6 +508,14 @@ public class ExcelWriteUtils {
 
     public static ExcelWriteUtils importExcelByFile(File file, int startSheet, int endSheet) throws IOException {
         return importExcel(file.getName(), new FileInputStream(file), startSheet, endSheet);
+    }
+
+    public static ExcelWriteUtils importExcelAllSheet(String filePath) throws IOException {
+        return importExcelAllSheet(new File(filePath));
+    }
+
+    public static ExcelWriteUtils importExcelAllSheet(File file) throws IOException {
+        return importExcel(file.getName(), new FileInputStream(file), 0, 0, null, true);
     }
 
     public static ExcelWriteUtils importExcelAllSheet(String fileName, InputStream is) throws IOException {
@@ -1232,6 +1239,15 @@ public class ExcelWriteUtils {
         return false;
     }
 
+    private FormulaEvaluator formulaEvaluator = null;
+
+    private FormulaEvaluator createFormulaEvaluator() {
+        if (formulaEvaluator == null) {
+            formulaEvaluator = readWorkBook.getCreationHelper().createFormulaEvaluator();
+        }
+        return formulaEvaluator;
+    }
+
     /**
      * 获取单元格的值
      *
@@ -1249,10 +1265,12 @@ public class ExcelWriteUtils {
         } else if (cell.getCellType() == Cell.CELL_TYPE_FORMULA) {
             CellValue evaluate = null;
             try {
-                evaluate = readWorkBook.getCreationHelper().createFormulaEvaluator().evaluate(cell);
-            } catch (FormulaParseException e) {
+                //evaluate = readWorkBook.getCreationHelper().createFormulaEvaluator().evaluate(cell);
+                evaluate = createFormulaEvaluator().evaluate(cell);
+            } catch (Exception e) {
+                // todo FormulaParseException | NotImplementedException | ArrayPtg 解析不了公式异常
                 String rawValue = ((XSSFCell) cell).getRawValue();
-                logger.error("((XSSFCell) cell).getRawValue():【{}】,cell.toString():【{}】,readWorkBook.getCreationHelper().createFormulaEvaluator().evaluate(cell):", rawValue, cell.toString(), e);
+                //logger.error("((XSSFCell) cell).getRawValue():【{}】,readWorkBook.getCreationHelper().createFormulaEvaluator().evaluate(cell):", rawValue, e);
                 return rawValue;
             }
             if (evaluate.getCellType() == Cell.CELL_TYPE_NUMERIC) {

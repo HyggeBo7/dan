@@ -367,8 +367,9 @@ public class DomeTest {
 
     @Test
     public void importExcel() throws IOException {
+        long start = System.currentTimeMillis();
         //导入
-        ExcelWriteUtils excelWriteUtils = ExcelWriteUtils.importExcel("A:/刀片柜明细表(贤二调整).xlsx", 1, 2);
+        ExcelWriteUtils excelWriteUtils = ExcelWriteUtils.importExcelAllSheet("P:/导出全套申报表.xlsx");
         //一行数据为null，或者""，不添加
         excelWriteUtils.setEmptyRowFlag(false);
         //显示读取行号
@@ -377,6 +378,7 @@ public class DomeTest {
         //excelWriteUtils.setExcludeLineList("1,2");
         excelWriteUtils.setExcludeLineList(Arrays.asList(0, 1));
         List<List<Map<String, String>>> listList = excelWriteUtils.readExcelWithoutTitle(false, 2, false);
+        long s1 = System.currentTimeMillis() - start;
         for (List<Map<String, String>> listMap : listList) {
             for (Map<String, String> map : listMap) {
 
@@ -386,6 +388,7 @@ public class DomeTest {
                 System.out.println("\n++++++++++++++++++++++++++++++++++++++++++++++++++\n");
             }
         }
+        System.out.println("总耗时：" + (System.currentTimeMillis() - start) + ",读取耗时：" + s1);
     }
 
     @Test
