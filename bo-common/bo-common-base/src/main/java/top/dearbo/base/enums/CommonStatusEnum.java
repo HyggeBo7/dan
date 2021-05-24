@@ -5,7 +5,6 @@ package top.dearbo.base.enums;
  * @date 2020/5/28
  */
 public enum CommonStatusEnum {
-
     /**
      * 成功
      */
@@ -35,6 +34,14 @@ public enum CommonStatusEnum {
      */
     UNEXPECTED_FAIL(-11, "非预期异常"),
     /**
+     * 非法请求
+     */
+    REQUEST_ILLEGAL(-12, "非法请求"),
+    /**
+     * 临时限制访问
+     */
+    REQUEST_PROHIBIT(-13, "禁止访问"),
+    /**
      * 服务器内部错误
      */
     SERVER_ERROR(-500, "服务器错误"),
@@ -45,7 +52,11 @@ public enum CommonStatusEnum {
     /**
      * 登录过期
      */
-    LOGIN_EXPIRED(-401, "认证过期");
+    LOGIN_EXPIRED(-401, "认证过期"),
+    /**
+     * 认证失败
+     */
+    LOGIN_FAIL(-402, "认证失败");
 
     CommonStatusEnum(int value, String msg) {
         this.value = value;
