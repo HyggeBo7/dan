@@ -7,8 +7,7 @@ import org.slf4j.LoggerFactory;
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.spec.SecretKeySpec;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 
 /**
@@ -19,9 +18,9 @@ public class AESUtil {
     private static Logger logger = LoggerFactory.getLogger(AESUtil.class);
     private static final String DEFAULT_KEY = "AESDearBoKey";
 
-    private static String DEFAULT_CHARSET = "UTF-8";
-    private static String AES = "AES";
-    private static String SECURE_TYPE = "SHA1PRNG";
+    private static final String DEFAULT_CHARSET = "UTF-8";
+    private static final String AES = "AES";
+    private static final String SECURE_TYPE = "SHA1PRNG";
 
     /**
      * 加密
@@ -34,11 +33,12 @@ public class AESUtil {
     }
 
     /**
-     * 加密, 顺序是 AES BASE64 URLEncoder
+     * 加密, 顺序是 AES BASE64
+     * 去掉 URLEncoder
      *
      * @param content    内容
      * @param encryptKey key
-     * @return
+     * @return 加密结果
      */
     public static String encryptAES(String content, String encryptKey) throws Exception {
         KeyGenerator keyGen = KeyGenerator.getInstance(AES);
@@ -48,8 +48,11 @@ public class AESUtil {
 
         Cipher cipher = Cipher.getInstance(AES);
         cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(keyGen.generateKey().getEncoded(), AES));
-        byte[] data = cipher.doFinal(content.getBytes(DEFAULT_CHARSET));
-        return URLEncoder.encode(new String(Base64.encodeBase64(data), DEFAULT_CHARSET), DEFAULT_CHARSET);
+        //byte[] data = cipher.doFinal(content.getBytes(DEFAULT_CHARSET));
+        //使用压缩
+        byte[] data = cipher.doFinal(GZIPUtil.compressByte(content.getBytes(StandardCharsets.UTF_8)));
+        //return URLEncoder.encode(new String(Base64.encodeBase64(data), DEFAULT_CHARSET), DEFAULT_CHARSET);
+        return Base64.encodeBase64String(data);
     }
 
     /**
@@ -69,7 +72,8 @@ public class AESUtil {
      * @param decryptKey key
      */
     public static String decryptAES(String content, String decryptKey) throws Exception {
-        byte[] encryptBytes = Base64.decodeBase64(URLDecoder.decode(content, DEFAULT_CHARSET).getBytes(DEFAULT_CHARSET));
+        //byte[] encryptBytes = Base64.decodeBase64(URLDecoder.decode(content, DEFAULT_CHARSET).getBytes(DEFAULT_CHARSET));
+        byte[] encryptBytes = Base64.decodeBase64(content);
         KeyGenerator keyGen = KeyGenerator.getInstance(AES);
         SecureRandom secureRandom = SecureRandom.getInstance(SECURE_TYPE);
         secureRandom.setSeed(decryptKey.getBytes(DEFAULT_CHARSET));
@@ -78,8 +82,7 @@ public class AESUtil {
         Cipher cipher = Cipher.getInstance(AES);
         cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(keyGen.generateKey().getEncoded(), AES));
         byte[] data = cipher.doFinal(encryptBytes);
-
-        return new String(data, DEFAULT_CHARSET);
+        return GZIPUtil.unCompressToString(data);
     }
 
     /*public static void main(String[] args) throws Exception {

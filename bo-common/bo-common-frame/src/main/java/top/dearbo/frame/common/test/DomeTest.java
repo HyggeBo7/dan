@@ -113,13 +113,12 @@ public class DomeTest {
 
     @Test
     public void testJwtAndAes() throws Exception {
-
-        String authToken = "{\"userId\":10,\"userName\":\"管理员\",\"appToken\":\"CJzdWIiOiJ7XCJ1c2VySDkwMTUeyJhbGciOiJI\",\"superFlag\":false}";
+        String authToken = "{\"userId\":2,\"userName\":\"DearBo\",\"appToken\":\"CJzdWIiOiJ7XCJ1c2VySDkwMTUeyJhbGciOiJI\",\"superFlag\":true,\"loginIp\":\"172.18.248.40\"}";
         //7天有效期
         String token = JwtUtil.createToken("10", authToken, 24 * 60 * 60 * 1000 * 7);
         System.out.println("===========token:" + token);
         String encryptToken = AESUtil.encryptAES(token);
-
+        System.out.println("encryptToken:" + encryptToken);
         String decryptToken = AESUtil.decryptAES(encryptToken);
         Claims claims = JwtUtil.parseToken(decryptToken);
         Date expirationDate = claims.getExpiration();

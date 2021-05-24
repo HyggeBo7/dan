@@ -3,6 +3,7 @@ package top.dearbo.util.jwt;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -53,9 +54,8 @@ public class GZIPUtil {
         try {
             in = new ByteArrayInputStream(unCompressedByte);
             ginzip = new GZIPInputStream(in);
-
             byte[] buffer = new byte[1024];
-            int offset = -1;
+            int offset;
             while ((offset = ginzip.read(buffer)) != -1) {
                 out.write(buffer, 0, offset);
             }
@@ -67,20 +67,47 @@ public class GZIPUtil {
                 try {
                     ginzip.close();
                 } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
             if (in != null) {
                 try {
                     in.close();
                 } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
             try {
                 out.close();
             } catch (IOException e) {
+                e.printStackTrace();
             }
         }
         return null;
+    }
+
+    public static String unCompressToString(byte[] bytes, String encoding) {
+        if (bytes == null || bytes.length == 0) {
+            return null;
+        }
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        ByteArrayInputStream in = new ByteArrayInputStream(bytes);
+        try {
+            GZIPInputStream unGzip = new GZIPInputStream(in);
+            byte[] buffer = new byte[256];
+            int n;
+            while ((n = unGzip.read(buffer)) >= 0) {
+                out.write(buffer, 0, n);
+            }
+            return out.toString(encoding);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static String unCompressToString(byte[] bytes) {
+        return unCompressToString(bytes, StandardCharsets.UTF_8.name());
     }
 
 }
