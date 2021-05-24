@@ -123,8 +123,16 @@ public class AjaxResult extends AbstractResult<Object> {
 
     //===========自定义操作===========
 
+    public static AjaxResult restResult(CommonStatusEnum commonStatusEnum) {
+        return restResult(commonStatusEnum.getValue(), commonStatusEnum.getMsg(), null, false);
+    }
+
+    public static AjaxResult restResult(CommonStatusEnum commonStatusEnum, Object data) {
+        return restResult(commonStatusEnum.getValue(), commonStatusEnum.getMsg(), data, true);
+    }
+
     public static AjaxResult restResult(int code, String msg) {
-        return restResult(code, msg, null, true);
+        return restResult(code, msg, null, false);
     }
 
     public static AjaxResult restResult(int code, String msg, Object data) {
