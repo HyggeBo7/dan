@@ -1,5 +1,7 @@
 package top.dearbo.frame.common.test;
 
+import com.alibaba.fastjson.JSON;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import top.dearbo.frame.common.util.excel.ExcelWriteUtils;
 import top.dearbo.util.data.JsonUtil;
@@ -116,6 +118,18 @@ public class ProjectTest {
         String url = "http://117.41.37.22:808/javso/plan/listProductPlanToDrawingNoByProduceDate.do";
         HttpUtils.ResultResponse response = HttpUtils.createRequest().doPost(url, paramMap);
         System.out.println(response.getData());
+    }
+
+    @Test
+    public void testHttpResultCharset() {
+        String url = "https://passport.jd.com/user/petName/getUserInfoForMiniJd.action";
+        String headerJson = "{\"Content-Type\":\"application/json\",\"Cookie\":\"_pst=%E5%B7%B4%E6%8B%89%E6%8B%89%E5%A4%A7%E9%AD%94%E4%BB%99%E5%85%A8%E8%BA%AB%E5%8F%98;logining=1;_tp=HlpQZFlXZJ6%2BWXEcfuTeeErwo0DMbwd%2FGPbcq%2B7eE0txy4fhYtnLysRQ61XpE5Qh7Vj4B%2BBeFXoUSrBViNMaVxh0TF7snCFqA1NdFcqov1Rr%2B9PBh70UNt4%2B3TYZfmNM;ceshi3.com=103;unick=%E5%B7%B4%E6%8B%89%E6%8B%89%E5%A4%A7%E9%AD%94%E4%BB%99%E5%85%A8%E8%BA%AB%E5%8F%98;pin=%E5%B7%B4%E6%8B%89%E6%8B%89%E5%A4%A7%E9%AD%94%E4%BB%99%E5%85%A8%E8%BA%AB%E5%8F%98;pinId=EOa3aEon90prBgOWLPrO0mFVGk0CAeR7MMLt5T2GPTU;thor=9103C8AF25C1218C1A2A1725C7C96FCCEC7119F4F2C819893C8983B95A83A466ECB961A6B29BE44BE2FA1FADE7EA6CEA7BA0DB81CDBC9FB47D2FA6A18A7D0834ED84BEED7C3AAAA84E2C84C0239D40D6F9ED9EE1F35C1A6BC2DFE069C549515BC74F8DD67255348EBCA964A5629299B7EB207AA71504E1F2DA3000895D6484E1675B4488C31FD0A572445ED71CB33168;TrackID=1mfig1Wkon3j_0CjaP0lGZjYB4LBs7uI44xp4-GsnHcxNRO8_cti8IBDajehw22nTvPiXD1gSsRXaA_7f80cjVvh7BM1ncWd19D61dRG2uudJwd8DworclyIEzTcaK2Dc;DeviceSeq=878580db9e3244ffbb12c967b3dcaeb2;\",\"Referer\":\"https://wqs.jd.com/\"}";
+        Map<String, String> headerMap = null;
+        if (StringUtils.isNotBlank(headerJson)) {
+            headerMap = JsonUtil.fromJson(headerJson, LinkedHashMap.class);
+        }
+        HttpUtils.ResultResponse resultResponse = HttpUtils.createRequest().doPost(url, null, headerMap);
+        System.out.println(JSON.parseObject(resultResponse.getData()));
     }
 
 }

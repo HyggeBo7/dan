@@ -4,7 +4,7 @@
     <parent>
         <groupId>top.dearbo</groupId>
         <artifactId>tools-all</artifactId>
-        <version>1.2.0</version>
+        <version>1.2.2</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -18,12 +18,13 @@
     <properties>
         <!--<excel.version>4.0.1</excel.version>
         <excel.version>3.9</excel.version>-->
+        <excel.version>5.0.0</excel.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>top.dearbo</groupId>
-            <artifactId>frame-common</artifactId>
+            <artifactId>bo-common</artifactId>
         </dependency>
         <dependency>
             <groupId>top.dearbo</groupId>
@@ -33,7 +34,7 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
         </dependency>
-        <!--<dependency>
+        <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
             <version>${excel.version}</version>
@@ -43,11 +44,17 @@
             <artifactId>poi-ooxml</artifactId>
             <version>${excel.version}</version>
         </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml-schemas</artifactId>
-            <version>${excel.version}</version>
+            <version>4.1.2</version>
         </dependency>-->
+        <!-- 基于poi的excel反射插件 -->
+        <dependency>
+            <groupId>com.github.crab2died</groupId>
+            <artifactId>Excel4J</artifactId>
+            <version>3.0.0</version>
+        </dependency>
     </dependencies>
 
     <!--<build>
