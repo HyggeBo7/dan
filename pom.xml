@@ -7,14 +7,14 @@
     <groupId>top.dearbo</groupId>
     <artifactId>tools-all</artifactId>
     <packaging>pom</packaging>
-    <version>1.2.2</version>
+    <version>1.2.3</version>
     <name>tools-all</name>
     <description>Demo project for Util</description>
 
     <modules>
         <module>bo-common</module>
         <module>bo-web</module>
-        <!--<module>bo-plugin</module>-->
+        <module>bo-plugin</module>
         <!--<module>test-dome</module>-->
     </modules>
 
