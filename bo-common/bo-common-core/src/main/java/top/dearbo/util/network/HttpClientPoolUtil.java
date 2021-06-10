@@ -1,6 +1,22 @@
 package top.dearbo.util.network;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.*;
+import org.apache.http.client.HttpRequestRetryHandler;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.client.StandardHttpRequestRetryHandler;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.apache.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.dearbo.util.exception.AppException;
@@ -9,29 +25,25 @@ import top.dearbo.util.network.common.HttpGlobalConfig;
 import top.dearbo.util.network.common.HttpStatusCode;
 import top.dearbo.util.network.exception.HttpException;
 
-import javax.net.ssl.*;
-import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.Proxy;
-import java.net.URL;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.net.URISyntaxException;
 import java.net.URLEncoder;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.SecureRandom;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
+import java.nio.charset.Charset;
 import java.util.*;
 
-/**
- * @fileName: HttpClientUtil
- * @author: Dan
- * @createDate: 2019-01-24 8:47.
- * @description: https、http(get,post)
- */
-public class HttpUtils {
 
-	private static final Logger logger = LoggerFactory.getLogger(HttpUtils.class);
+/**
+ * HttpClient 工具类,带线程池
+ *
+ * @author wb
+ * @date 2021/06/09 20:16:49.
+ */
+public class HttpClientPoolUtil {
+
+	private static final Logger logger = LoggerFactory.getLogger(HttpClientPoolUtil.class);
 
 	/**
 	 * 默认编码
@@ -58,6 +70,7 @@ public class HttpUtils {
 	//private static final String DEFAULT_CONTENT_TYPE = "application/x-www-form-urlencoded";
 	private static final int DEFAULT_CONNECT_TIMEOUT = 1000 * 10;
 	private static final int DEFAULT_READ_TIMEOUT = 1000 * 10;
+	private static final int DEFAULT_SOCKET_TIMEOUT = 1000 * 10 * 2;
 	/**
 	 * 结果转String类型
 	 */
@@ -90,13 +103,15 @@ public class HttpUtils {
 	 * 默认cookie字段
 	 */
 	private String defaultHeaderCookieField = "Set-Cookie";
-	private Integer connectTimeout;
-	private Integer readTimeout;
+
+	private RequestConfig requestConfig = null;
+
+	private CloseableHttpClient httpClient = null;
 
 	/**
 	 * 当前代理类
 	 */
-	private Proxy proxy;
+	private HttpHost proxy;
 	/**
 	 * 是否使用全局代理
 	 */
@@ -107,12 +122,34 @@ public class HttpUtils {
 	 */
 	private boolean usePropertyFlag = true;
 
-	private HttpUtils() {
+	private volatile static CloseableHttpClient defaultHttpClient = null;
+
+	static {
+		PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
+		// 总连接池数量
+		connectionManager.setMaxTotal(300);
+		// 可为每个域名设置单独的连接池数量
+		connectionManager.setDefaultMaxPerRoute(100);
+		// setConnectTimeout：设置建立连接的超时时间
+		// setConnectionRequestTimeout：从连接池中拿连接的等待超时时间
+		// setSocketTimeout：发出请求后等待对端应答的超时时间
+		RequestConfig requestConfig = RequestConfig.custom()
+				.setConnectTimeout(DEFAULT_CONNECT_TIMEOUT)
+				.setConnectionRequestTimeout(DEFAULT_READ_TIMEOUT)
+				.setSocketTimeout(DEFAULT_SOCKET_TIMEOUT)
+				.build();
+		// 重试处理器，StandardHttpRequestRetryHandler
+		HttpRequestRetryHandler retryHandler = new StandardHttpRequestRetryHandler();
+		defaultHttpClient = HttpClients.custom().setConnectionManager(connectionManager).setDefaultRequestConfig(requestConfig)
+				.setRetryHandler(retryHandler).build();
+	}
+
+	private HttpClientPoolUtil() {
 
 	}
 
-	public static HttpUtils createRequest() {
-		return new HttpUtils();
+	public static HttpClientPoolUtil createRequest() {
+		return new HttpClientPoolUtil();
 	}
 
 	public ResultResponse doPost(String requestUrl) {
@@ -193,173 +230,137 @@ public class HttpUtils {
 		}
 		//当前是否有开启全局代理
 		if (proxy == null && globalProxyFlag) {
-			proxy = HttpGlobalConfig.getInstance().getProxy();
+			proxy = HttpGlobalConfig.getInstance().getHttpHostProxy();
 		}
 		return request(requestUrl, methodPostFlag, paramMap, headerMap, httpsFlag, paramJson);
 	}
 
 	private ResultResponse request(String requestUrl, boolean methodPostFlag, Map<String, Object> paramMap, Map<String, String> headerMap, boolean httpsFlag, String paramJson) {
-		InputStream inputStream = null;
-		PrintWriter out = null;
-		HttpURLConnection connection = null;
+		CloseableHttpResponse response = null;
 		String paramCharset = getParamCharset();
 		String resultEncoding = getResultCharset();
 		try {
-			if (!methodPostFlag && paramMap != null) {
-				char spliceChar = '?';
-				if (requestUrl.indexOf(spliceChar) > -1) {
-					spliceChar = '&';
-				}
-				requestUrl = requestUrl + spliceChar + genUrlParam(paramMap, paramCharset, isEncodeParamKeyFlag(), isEncodeParamValueFlag());
-			}
-			URL url = new URL(requestUrl);
-			// 打开和URL之间的连接
-			if (httpsFlag) {
-				if (proxy != null) {
-					connection = (HttpsURLConnection) url.openConnection(proxy);
-				} else {
-					connection = (HttpsURLConnection) url.openConnection();
-				}
-				setHttps((HttpsURLConnection) connection);
-			} else {
-				if (proxy != null) {
-					connection = (HttpURLConnection) url.openConnection(proxy);
-				} else {
-					connection = (HttpURLConnection) url.openConnection();
+			HttpUriRequest httpRequest;
+			List<NameValuePair> paramList = null;
+			if (null != paramMap && !paramMap.isEmpty()) {
+				paramList = new ArrayList<>();
+				for (Map.Entry<String, Object> param : paramMap.entrySet()) {
+					paramList.add(new BasicNameValuePair(param.getKey(), param.getValue().toString()));
 				}
 			}
-			connection.setConnectTimeout(getConnectTimeout());
-			connection.setReadTimeout(getReadTimeout());
-			// 设置请求方式（GET/POST）
 			if (methodPostFlag) {
-				// 发送POST请求必须设置如下两行
-				//是否输入参数
-				connection.setDoOutput(true);
-				//是否读取参数
-				connection.setDoInput(true);
-				connection.setRequestMethod(METHOD_POST);
-			} else {
-				connection.setRequestMethod(METHOD_GET);
-			}
-			connection.setUseCaches(false);
-			//设置头部
-			if (headerMap != null && headerMap.size() > 0) {
-				for (Map.Entry<String, String> headerItem : headerMap.entrySet()) {
-					connection.setRequestProperty(headerItem.getKey(), headerItem.getValue());
+				HttpPost httpPost = new HttpPost(requestUrl);
+				if (null != paramList) {
+					HttpEntity httpEntity = new UrlEncodedFormEntity(paramList, paramCharset);
+					httpPost.setEntity(httpEntity);
 				}
+				if (StringUtils.isNotEmpty(paramJson)) {
+					StringEntity httpEntity = new StringEntity(paramJson, paramCharset);
+					httpEntity.setContentEncoding(paramCharset);
+					httpEntity.setContentType("text/json");
+					httpPost.setEntity(httpEntity);
+				}
+				if (requestConfig != null) {
+					httpPost.setConfig(requestConfig);
+				}
+				httpRequest = httpPost;
+			} else {
+				URIBuilder uriBuilder = new URIBuilder(requestUrl, Charset.forName(paramCharset));
+				if (null != paramList) {
+					uriBuilder.setParameters(paramList);
+				}
+				HttpGet httpGet = new HttpGet(uriBuilder.build());
+				if (requestConfig != null) {
+					httpGet.setConfig(requestConfig);
+				}
+				httpRequest = httpGet;
 			}
 			// 设置通用的请求属性
 			if (usePropertyFlag) {
-				if (headerMap == null || headerMap.get(ACCEPT) == null) {
-					connection.addRequestProperty(ACCEPT, "*/*");
+				if (headerMap == null) {
+					headerMap = new HashMap<>(2);
 				}
-				if (headerMap == null || headerMap.get(USER_AGENT) == null) {
-					//  Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)
-					connection.addRequestProperty(USER_AGENT, "Mozilla/5.0 (Windows NT 6.1; Win64; x64)");
-				}
-				connection.addRequestProperty("Connection", "keep-alive");
+				headerMap.putIfAbsent(ACCEPT, "*/*");
+				headerMap.putIfAbsent(USER_AGENT, "Mozilla/5.0 (Windows NT 6.1; Win64; x64)");
 			}
-
-			// 当paramMap不为null时向输出流写数据
-			if (methodPostFlag) {
-				boolean paramFlag = null != paramMap && paramMap.size() > 0 || StringUtils.isNotBlank(paramJson);
-				if (paramFlag) {
-					// 获取URLConnection对象对应的输出流
-					//new OutputStreamWriter(connection.getOutputStream(), encoding):解决中文乱码问题
-					out = new PrintWriter(new OutputStreamWriter(connection.getOutputStream(), paramCharset));
-					// 发送请求参数
-					if (StringUtils.isNotBlank(paramJson)) {
-						out.print(paramJson);
-					}
-					if (paramMap != null && paramMap.size() > 0) {
-						out.print(genUrlParam(paramMap, paramCharset, isEncodeParamKeyFlag(), isEncodeParamValueFlag()));
-					}
-					// flush输出流的缓冲
-					out.flush();
+			//设置头部
+			if (headerMap != null && headerMap.size() > 0) {
+				for (Map.Entry<String, String> headerItem : headerMap.entrySet()) {
+					httpRequest.setHeader(headerItem.getKey(), headerItem.getValue());
 				}
 			}
-			int responseCode = connection.getResponseCode();
-			ResultResponse resultResponse = new ResultResponse(responseCode, connection.getResponseMessage());
+			if (proxy != null) {
+				if (httpClient != null) {
+					response = httpClient.execute(proxy, httpRequest);
+				} else {
+					response = defaultHttpClient.execute(proxy, httpRequest);
+				}
+			} else {
+				if (httpClient != null) {
+					response = httpClient.execute(httpRequest);
+				} else {
+					response = defaultHttpClient.execute(httpRequest);
+				}
+			}
+			StatusLine statusLine = response.getStatusLine();
+			int statusCode = statusLine.getStatusCode();
+			ResultResponse resultResponse = new ResultResponse(statusCode, statusLine.getReasonPhrase());
 			resultResponse.setHeaderCookieField(defaultHeaderCookieField);
-			resultResponse.setResultResponse(connection);
-			if (responseCode == getSuccessCode()) {
+			resultResponse.setResultResponse(response);
+			if (statusCode == getSuccessCode()) {
+				HttpEntity entity = response.getEntity();
 				if (resultToStringFlag) {
 					// 从输入流读取返回内容
-					inputStream = connection.getInputStream();
-					resultResponse.setData(toInputStreamConvertString(inputStream, connection, resultEncoding));
+					resultResponse.setData(toInputStreamConvertString(entity, resultEncoding));
 				}
-			} else if (connection.getErrorStream() != null) {
-				inputStream = connection.getErrorStream();
-				resultResponse.setErrorData(toInputStreamConvertString(inputStream, connection, resultEncoding));
+			} else {
+				resultResponse.setErrorData(toInputStreamConvertString(response.getEntity(), resultEncoding));
 			}
 			return resultResponse;
-		} catch (IOException ce) {
-			//ce.printStackTrace();
+		} catch (IOException | URISyntaxException ce) {
 			logger.error("url:【{}】,msg:【{}】", requestUrl, ce.getMessage(), ce);
-			//AppException.throwEx(ce);
-			return HttpException.httpHandleException(ce);
+			return HttpException.httpClientHandleException(ce);
 		} finally {
-			if (out != null) {
-				out.close();
-			}
-			try {
-				if (inputStream != null) {
-					inputStream.close();
+			if (disconnectFlag && response != null) {
+				try {
+					response.close();
+				} catch (IOException e) {
+					e.printStackTrace();
 				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			if (disconnectFlag && connection != null) {
-				connection.disconnect();
 			}
 		}
 	}
 
-	private String toInputStreamConvertString(InputStream inputStream, HttpURLConnection connection, String encoding) throws IOException {
+	private String toInputStreamConvertString(HttpEntity entity, String encoding) throws IOException {
+		if (entity == null) {
+			return null;
+		}
+		InputStream inputStream = entity.getContent();
 		if (inputStream == null) {
 			return null;
 		}
-		if (StringUtils.isNotBlank(encoding)) {
-			return StreamUtil.inputStreamToReaderString(inputStream, encoding);
-		}
-		String contentEncoding = connection.getContentEncoding();
-		if (StringUtils.isNotBlank(contentEncoding)) {
-			return StreamUtil.inputStreamToReaderString(inputStream, contentEncoding);
-		}
-		String contentType = connection.getContentType();
-		if (StringUtils.isNotBlank(contentType) && contentType.contains("charset")) {
-			String[] splitContentType = contentType.split("[;]");
-			String charsetName = null;
-			for (String str : splitContentType) {
-				if (str.contains("charset")) {
-					charsetName = StringUtils.substringAfter(str, "charset=");
-					break;
+		try {
+			//如果指定编码使用指定编码
+			if (StringUtils.isNotBlank(encoding)) {
+				return StreamUtil.inputStreamToReaderString(inputStream, encoding);
+			}
+			//没有指定编码先从请求头获取
+			ContentType contentType = ContentType.get(entity);
+			if (contentType != null) {
+				Charset charset = contentType.getCharset();
+				if (charset != null) {
+					return StreamUtil.inputStreamToReaderString(inputStream, charset.name());
 				}
 			}
-			if (StringUtils.isNotBlank(charsetName)) {
-				return StreamUtil.inputStreamToReaderString(inputStream, charsetName.toUpperCase());
-			} else {
-				logger.info("获取默认编码错误：contentType:【{}】", contentType);
+			//根据流获取编码
+			return StreamUtil.inputStreamToArrayString(inputStream, encoding);
+		} finally {
+			try {
+				inputStream.close();
+			} catch (Exception ignored) {
+
 			}
 		}
-		return StreamUtil.inputStreamToArrayString(inputStream, encoding);
-	}
-
-	private void setHttps(HttpsURLConnection connection) {
-		// 创建SSLContext对象，并使用我们指定的信任管理器初始化
-		TrustManager[] tm = {new MyX509TrustManager()};
-		try {
-			SSLContext sslContext = SSLContext.getInstance("SSL", "SunJSSE");
-			sslContext.init(null, tm, new SecureRandom());
-			// 从上述SSLContext对象中得到SSLSocketFactory对象
-			SSLSocketFactory ssf = sslContext.getSocketFactory();
-			connection.setSSLSocketFactory(ssf);
-		} catch (NoSuchAlgorithmException | KeyManagementException | NoSuchProviderException e) {
-			e.printStackTrace();
-			logger.error("https设置异常!msg:【{}】", e.getMessage(), e);
-			AppException.throwEx(e);
-		}
-
 	}
 
 	private String genUrlParam(Map<String, Object> paramMap) {
@@ -420,24 +421,16 @@ public class HttpUtils {
 		return usePropertyFlag;
 	}
 
-	public HttpUtils setUsePropertyFlag(boolean usePropertyFlag) {
+	public HttpClientPoolUtil setUsePropertyFlag(boolean usePropertyFlag) {
 		this.usePropertyFlag = usePropertyFlag;
 		return this;
-	}
-
-	public int getConnectTimeout() {
-		return connectTimeout == null ? DEFAULT_CONNECT_TIMEOUT : connectTimeout;
-	}
-
-	public int getReadTimeout() {
-		return readTimeout == null ? DEFAULT_READ_TIMEOUT : readTimeout;
 	}
 
 	public String getParamCharset() {
 		return StringUtils.isNotBlank(paramCharset) ? paramCharset : DEFAULT_ENCODING;
 	}
 
-	public HttpUtils setParamCharset(String paramCharset) {
+	public HttpClientPoolUtil setParamCharset(String paramCharset) {
 		if (StringUtils.isNotBlank(paramCharset)) {
 			this.paramCharset = paramCharset;
 		}
@@ -448,45 +441,35 @@ public class HttpUtils {
 		return resultCharset;
 	}
 
-	public HttpUtils setResultCharset(String resultCharset) {
+	public HttpClientPoolUtil setResultCharset(String resultCharset) {
 		if (resultCharset != null) {
 			this.resultCharset = resultCharset;
 		}
 		return this;
 	}
 
-	public HttpUtils setConnectTimeout(int connectTimeout) {
-		this.connectTimeout = connectTimeout < 1 ? DEFAULT_CONNECT_TIMEOUT : connectTimeout;
-		return this;
-	}
-
-	public HttpUtils setReadTimeout(int readTimeout) {
-		this.readTimeout = readTimeout < 0 ? DEFAULT_READ_TIMEOUT : readTimeout;
-		return this;
-	}
-
-	public HttpUtils setResultToString(boolean flag) {
+	public HttpClientPoolUtil setResultToString(boolean flag) {
 		this.resultToStringFlag = flag;
 		return this;
 	}
 
-	public HttpUtils setDisconnectFlag(boolean disconnectFlag) {
+	public HttpClientPoolUtil setDisconnectFlag(boolean disconnectFlag) {
 		this.disconnectFlag = disconnectFlag;
 		return this;
 	}
 
-	public HttpUtils setHeaderCookieField(String headerCookieField) {
+	public HttpClientPoolUtil setHeaderCookieField(String headerCookieField) {
 		if (headerCookieField != null && headerCookieField.length() > 0) {
 			this.defaultHeaderCookieField = headerCookieField;
 		}
 		return this;
 	}
 
-	public Proxy getProxy() {
+	public HttpHost getProxy() {
 		return proxy;
 	}
 
-	public HttpUtils setProxy(Proxy proxy) {
+	public HttpClientPoolUtil setProxy(HttpHost proxy) {
 		this.proxy = proxy;
 		return this;
 	}
@@ -495,7 +478,7 @@ public class HttpUtils {
 		return globalProxyFlag;
 	}
 
-	public HttpUtils setGlobalProxyFlag(boolean globalProxyFlag) {
+	public HttpClientPoolUtil setGlobalProxyFlag(boolean globalProxyFlag) {
 		this.globalProxyFlag = globalProxyFlag;
 		return this;
 	}
@@ -504,7 +487,7 @@ public class HttpUtils {
 		return successCode;
 	}
 
-	public HttpUtils setSuccessCode(int successCode) {
+	public HttpClientPoolUtil setSuccessCode(int successCode) {
 		this.successCode = successCode;
 		return this;
 	}
@@ -513,7 +496,7 @@ public class HttpUtils {
 		return encodeParamKeyFlag;
 	}
 
-	public HttpUtils setEncodeParamKeyFlag(boolean encodeParamKeyFlag) {
+	public HttpClientPoolUtil setEncodeParamKeyFlag(boolean encodeParamKeyFlag) {
 		this.encodeParamKeyFlag = encodeParamKeyFlag;
 		return this;
 	}
@@ -522,8 +505,26 @@ public class HttpUtils {
 		return encodeParamValueFlag;
 	}
 
-	public HttpUtils setEncodeParamValueFlag(boolean encodeParamValueFlag) {
+	public HttpClientPoolUtil setEncodeParamValueFlag(boolean encodeParamValueFlag) {
 		this.encodeParamValueFlag = encodeParamValueFlag;
+		return this;
+	}
+
+	public RequestConfig getRequestConfig() {
+		return requestConfig;
+	}
+
+	public HttpClientPoolUtil setRequestConfig(RequestConfig requestConfig) {
+		this.requestConfig = requestConfig;
+		return this;
+	}
+
+	public CloseableHttpClient getHttpClient() {
+		return httpClient;
+	}
+
+	public HttpClientPoolUtil setHttpClient(CloseableHttpClient httpClient) {
+		this.httpClient = httpClient;
 		return this;
 	}
 
@@ -535,7 +536,7 @@ public class HttpUtils {
 		private String data;
 		private transient String errorData;
 		private transient String headerCookieField;
-		private transient HttpURLConnection resultResponse;
+		private transient CloseableHttpResponse resultResponse;
 
 		private ResultResponse() {
 
@@ -607,20 +608,28 @@ public class HttpUtils {
 			this.errorData = errorData;
 		}
 
-		public HttpURLConnection getResultResponse() {
+		public CloseableHttpResponse getResultResponse() {
 			return resultResponse;
 		}
 
-		public void setResultResponse(HttpURLConnection resultResponse) {
+		public void setResultResponse(CloseableHttpResponse resultResponse) {
 			this.resultResponse = resultResponse;
 		}
 
-		public Map<String, List<String>> getHeaders() {
+		public Map<String, Header> getHeaders() {
 			if (resultResponse == null) {
-				return Collections.emptyMap();
+				return new LinkedHashMap<>(2);
 			}
-			Map<String, List<String>> headerFields = resultResponse.getHeaderFields();
-			return headerFields != null ? headerFields : Collections.emptyMap();
+			Header[] allHeaders = resultResponse.getAllHeaders();
+			if (allHeaders != null && allHeaders.length > 0) {
+				// 请求头待处理
+				Map<String, Header> headerFields = new LinkedHashMap<>(allHeaders.length);
+				for (Header header : allHeaders) {
+					headerFields.put(header.getName(), header);
+				}
+				return headerFields;
+			}
+			return new LinkedHashMap<>(2);
 		}
 
 		/**
@@ -631,37 +640,31 @@ public class HttpUtils {
 		 *
 		 * @return List
 		 */
-		public List<String> getHeaderCookies() {
+		public Header getHeaderCookies() {
 			return getHeaderCookies(getHeaderCookieField());
 		}
 
-		public List<String> getHeaderCookies(String headerCookieField) {
+		public Header getHeaderCookies(String headerCookieField) {
 			if (headerCookieField == null || headerCookieField.isEmpty() || resultResponse == null) {
-				return Collections.emptyList();
+				return null;
 			}
-			List<String> cookieList = getHeaders().get(headerCookieField);
-			return cookieList != null ? cookieList : Collections.emptyList();
+			return getHeaders().get(headerCookieField);
 		}
 
 		/**
-		 * 获取cookie,在原cookie基础上,截取第一个 ; 前
+		 * 获取cookie,Header:name,value
 		 *
 		 * @return map(key, value)
 		 */
 		public Map<String, String> getCookies() {
-			List<String> cookies = getHeaderCookies();
-			if (cookies.size() < 1) {
+			Header headerCookie = getHeaderCookies();
+			if (headerCookie == null) {
 				return Collections.emptyMap();
 			}
-			Map<String, String> cookieMap = new LinkedHashMap<>(cookies.size());
-			for (String cookie : cookies) {
-				String subCookie = StringUtils.substring(cookie, 0, cookie.indexOf(";"));
-				int indexOf = subCookie.indexOf('=');
-				if (indexOf > -1) {
-					String key = StringUtils.substring(subCookie, 0, indexOf);
-					String value = StringUtils.substring(subCookie, indexOf + 1);
-					cookieMap.put(key, value);
-				}
+			HeaderElement[] cookies = headerCookie.getElements();
+			Map<String, String> cookieMap = new LinkedHashMap<>(cookies.length);
+			for (HeaderElement cookieData : cookies) {
+				cookieMap.put(cookieData.getName(), cookieData.getValue());
 			}
 			return cookieMap;
 		}
@@ -672,16 +675,15 @@ public class HttpUtils {
 		 * @return String
 		 */
 		public String getCookiesToString() {
-			List<String> cookies = getHeaderCookies();
-			if (cookies.size() < 1) {
+			Header headerCookie = getHeaderCookies();
+			if (headerCookie == null) {
 				return null;
 			}
 			StringBuilder stringBuilder = new StringBuilder();
-			for (String cookie : cookies) {
-				String subCookie = StringUtils.substring(cookie, 0, cookie.indexOf(";"));
-				int indexOf = subCookie.indexOf('=');
-				if (indexOf > -1) {
-					stringBuilder.append(subCookie).append(';');
+			HeaderElement[] cookies = headerCookie.getElements();
+			if (cookies != null && cookies.length > 0) {
+				for (HeaderElement cookieData : cookies) {
+					stringBuilder.append(cookieData.getName()).append("=").append(cookieData.getValue()).append(';');
 				}
 			}
 			return stringBuilder.toString();
@@ -689,7 +691,11 @@ public class HttpUtils {
 
 		public void close() {
 			if (resultResponse != null) {
-				resultResponse.disconnect();
+				try {
+					resultResponse.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 
@@ -701,38 +707,6 @@ public class HttpUtils {
 			if (StringUtils.isNotBlank(headerCookieField)) {
 				this.headerCookieField = headerCookieField;
 			}
-		}
-	}
-
-	/**
-	 * 信任管理器
-	 */
-	class MyX509TrustManager implements X509TrustManager {
-
-
-		/**
-		 * 检查客户端证书
-		 */
-		@Override
-		public void checkClientTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
-
-		}
-
-		/**
-		 * 检查服务器端证书
-		 */
-		@Override
-		public void checkServerTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
-
-		}
-
-		/**
-		 * 返回受信任的X509证书数组
-		 */
-		@Override
-		public X509Certificate[] getAcceptedIssuers() {
-			//return new X509Certificate[0];
-			return null;
 		}
 	}
 

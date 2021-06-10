@@ -1,14 +1,9 @@
 package top.dearbo.frame.common.test;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.Test;
 import top.dearbo.frame.common.test.entity.UserInfo;
-import top.dearbo.util.constant.AjaxResult;
-import top.dearbo.util.constant.ResultGeneric;
 import top.dearbo.util.data.JacksonUtils;
 import top.dearbo.util.data.JsonUtil;
-import top.dearbo.util.network.HttpUtils;
-import top.dearbo.util.xt.Pagination;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -48,38 +43,5 @@ public class JsonTest {
 		}
 	}
 
-	@Test
-	public void testHttpListUser() throws JsonProcessingException {
-		String url = "http://119.37.194.4:5555/xtp-api/user/listUserByRoleId?roleId=12&oauth=whosyourdaddy";
-		HttpUtils.ResultResponse resultResponse = HttpUtils.createRequest().doGet(url);
-		if (resultResponse.isSuccess()) {
-			String data = resultResponse.getData();
-			//System.out.println("value:" + data);
-			AjaxResult ajaxResult = JsonUtil.fromJson(data, AjaxResult.class);
-			ResultGeneric resultGeneric = JsonUtil.fromJson(data, ResultGeneric.class);
-			AjaxResult ajaxResult1 = JacksonUtils.jsonToBean(data, AjaxResult.class);
-			Pagination<UserInfo> pagination = JsonUtil.fromGenericJson(JsonUtil.toJson(ajaxResult.getData()), Pagination.class, UserInfo.class);
-			List<UserInfo> userInfoList = pagination.getData();
-			System.out.println("userInfoList:" + userInfoList);
-		} else {
-			System.out.println(resultResponse.toString());
-		}
-	}
 
-	@Test
-	public void testHttp() {
-		String url = "https://xfyl.wubo777.top/bo-api-abc/test/testJson";
-		//String url = "https://mpapi.xtits.cn/ihaj-api/housing/listHousing";
-		//String url = "https://api.weixin.qq.com/sns/jscode2session";
-		String data = "{\"grant_type\":\"authorization_code\",\"appid\":\"wxc6f17db215ae62a0\",\"secret\":\"25dd7249f0675bfbf18ee06ff797c087\",\"js_code\":\"061TqdSc1rzeKx0eJYVc1j2YRc1TqdSI\"}";
-		Map<String, Object> dataMap = JsonUtil.fromJson(data, LinkedHashMap.class);
-		dataMap.put("oauth", "whosyourdaddy");
-		LinkedHashMap jsonToBean = JacksonUtils.jsonToBean(data, LinkedHashMap.class);
-		Map<String, Object> stringObjectMap = JsonUtil.toMap(data);
-		String header = "{\"content-type\":\"application/json\"}";
-		Map<String, String> headerMap = JsonUtil.fromJson(header, LinkedHashMap.class);
-
-		HttpUtils.ResultResponse resultResponse = HttpUtils.createRequest().doGet(url, dataMap, headerMap);
-		System.out.println("value:" + resultResponse.toString());
-	}
 }
