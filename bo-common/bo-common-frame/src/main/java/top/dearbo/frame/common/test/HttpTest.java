@@ -14,7 +14,6 @@ import top.dearbo.util.network.HttpClientPoolUtil;
 import top.dearbo.util.network.HttpUtils;
 import top.dearbo.util.xt.Pagination;
 
-import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.util.HashMap;
@@ -169,4 +168,6 @@ public class HttpTest {
 		HttpClientPoolUtil.ResultResponse response = HttpClientPoolUtil.createRequest().doPost(url, paramMap);
 		System.out.println(response.getData());
 	}
+
+
 }
