@@ -27,7 +27,7 @@
 
         <xtp.version>2.2.0</xtp.version>
         <junit.version>4.13.1</junit.version>
-        <logback.version>1.2.3</logback.version>
+        <logback.version>1.2.9</logback.version>
         <slf4j.version>1.7.30</slf4j.version>
 
         <hutool.version>5.4.7</hutool.version>
