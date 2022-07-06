@@ -1,8 +1,5 @@
 package top.dearbo.util.constant;
 
-import top.dearbo.base.bean.AbstractResult;
-import top.dearbo.util.data.JsonUtil;
-
 /**
  * @version 1.0
  * @author: Bo
@@ -11,78 +8,69 @@ import top.dearbo.util.data.JsonUtil;
  * @description: 通用的解析返回结果
  */
 public class ResultGeneric<T> extends AbstractResult<T> {
-    private static final long serialVersionUID = -1457841739429972979L;
-    private Integer code;
-    private String msg;
-    private T data;
+	private Integer code;
+	private String msg;
+	private T data;
 
-    private ResultGeneric() {
+	private ResultGeneric() {
 
-    }
+	}
 
-    public ResultGeneric(T data) {
-        this(data, true);
-    }
+	public ResultGeneric(T data) {
+		this(data, true);
+	}
 
-    public ResultGeneric(T data, boolean serializeNull) {
-        this(SUCCESS_CODE, null, data, serializeNull);
-    }
+	public ResultGeneric(T data, boolean serializeNull) {
+		this(SUCCESS_CODE, null, data, serializeNull);
+	}
 
-    public ResultGeneric(int code, String msg) {
-        this(code, msg, null);
-    }
+	public ResultGeneric(int code, String msg) {
+		this(code, msg, null);
+	}
 
-    public ResultGeneric(int code, String msg, T data) {
-        this.data = data;
-        this.code = code;
-        this.msg = msg;
-    }
+	public ResultGeneric(int code, String msg, T data) {
+		this.data = data;
+		this.code = code;
+		this.msg = msg;
+	}
 
-    public ResultGeneric(int code, String msg, T data, Boolean serializeNull) {
-        this(code, msg, data);
-        this.serializeNull = serializeNull;
-    }
+	public ResultGeneric(int code, String msg, T data, Boolean serializeNull) {
+		this(code, msg, data);
+		this.serializeNull = serializeNull;
+	}
 
-    public String toJson() {
-        return JsonUtil.toJson(this);
-    }
+	public Integer getCode() {
+		return code;
+	}
 
-    public String toDataJson() {
-        return this.data == null ? null : JsonUtil.toJson(this.data);
-    }
+	public void setCode(Integer code) {
+		this.code = code;
+	}
 
-    public Integer getCode() {
-        return code;
-    }
+	public String getMsg() {
+		return msg;
+	}
 
-    public void setCode(Integer code) {
-        this.code = code;
-    }
+	public void setMsg(String msg) {
+		this.msg = msg;
+	}
 
-    public String getMsg() {
-        return msg;
-    }
+	@Override
+	public T getData() {
+		return data;
+	}
 
-    public void setMsg(String msg) {
-        this.msg = msg;
-    }
+	public void setData(T data) {
+		this.data = data;
+	}
 
-    @Override
-    public T getData() {
-        return data;
-    }
+	@Override
+	public Integer resultCode() {
+		return code;
+	}
 
-    public void setData(T data) {
-        this.data = data;
-    }
-
-    @Override
-    public Integer resultCode() {
-        return code;
-    }
-
-    @Override
-    public String resultMessage() {
-        return msg;
-    }
+	@Override
+	public String resultMessage() {
+		return msg;
+	}
 }

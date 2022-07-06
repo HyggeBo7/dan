@@ -4,7 +4,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
- * @author Dan
+ * @author: bo
  * @date 2017/8/21
  */
 public class BaseQuery {

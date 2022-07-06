@@ -8,7 +8,7 @@ import java.io.*;
 
 /**
  * @fileName: StreamUtil
- * @author: Dan
+ * @author: bo
  * @createDate: 2019-06-11 10:34.
  * @description: 流
  */

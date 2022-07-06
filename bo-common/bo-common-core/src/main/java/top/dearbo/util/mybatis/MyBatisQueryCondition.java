@@ -14,7 +14,7 @@ import java.util.Objects;
 
 /**
  * @fileName: QueryCondition
- * @author: Dan
+ * @author: bo
  * @createDate: 2019-05-06 9:39.
  * @description: mybatis查询条件构建
  */

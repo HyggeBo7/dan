@@ -25,7 +25,7 @@ import java.util.*;
 
 /**
  * @fileName: HttpClientUtil
- * @author: Dan
+ * @author: bo
  * @createDate: 2019-01-24 8:47.
  * @description: https、http(get,post)
  */

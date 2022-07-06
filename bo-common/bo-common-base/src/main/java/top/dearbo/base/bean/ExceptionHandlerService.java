@@ -14,7 +14,7 @@ public interface ExceptionHandlerService {
     /**
      * 异常code
      */
-    int DEFAULT_SERVER_ERROR = CommonStatusEnum.SERVER_ERROR.getValue();
+    Integer DEFAULT_SERVER_ERROR = CommonStatusEnum.SERVER_ERROR.getKey();
 
     Throwable getThrowable();
 

@@ -11,7 +11,7 @@ import java.security.GeneralSecurityException;
 import java.util.*;
 
 /**
- * Created by Dan on 2017/10/30.
+ * Created by bo on 2017/10/30.
  */
 public class EmailUtil {
     /**

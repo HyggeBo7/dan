@@ -6,7 +6,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * @author Dan
+ * @author: bo
  * @date 2017/10/9
  */
 public class TreeNodeImpl implements TreeNodeUtil.TreeNodeImpl<Integer, TreeNodeImpl> {

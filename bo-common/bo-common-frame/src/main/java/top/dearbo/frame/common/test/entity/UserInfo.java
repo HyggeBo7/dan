@@ -8,7 +8,7 @@ import java.util.List;
 
 /**
  * @fileName: UserInfo
- * @author: Dan
+ * @author: bo
  * @createDate: 2018-12-20 10:09.
  * @description:
  */

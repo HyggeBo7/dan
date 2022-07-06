@@ -2,7 +2,7 @@ package top.dearbo.testdome.set.ext;
 
 /**
  * @fileName: ExtLinkedList
- * @author: Dan
+ * @author: bo
  * @createDate: 2018-07-09 13:16.
  * @description: 手写LinkedList
  */

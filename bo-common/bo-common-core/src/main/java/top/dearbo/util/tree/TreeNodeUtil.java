@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Created by Dan on 2017/10/9.
+ * Created by bo on 2017/10/9.
  */
 public class TreeNodeUtil {
 
@@ -37,7 +37,7 @@ public class TreeNodeUtil {
 	 * @param allList  所有节点
 	 * @param parentId 父节点id
 	 * @date 2017-9-26
-	 * @author Dan
+	 * @author: bo
 	 */
 	public static <R, T extends TreeNodeUtil.TreeNodeImpl<R, T>> List<T> listBuildChildTreeNode(List<T> allList, R parentId) {
 		List<T> listParentNode = new ArrayList<>();

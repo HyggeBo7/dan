@@ -8,7 +8,7 @@ import java.util.UUID;
 
 /**
  * @fileName: RandomUtil
- * @author: Dan
+ * @author: bo
  * @createDate: 2018-12-27 9:49.
  * @description: 随机数
  */

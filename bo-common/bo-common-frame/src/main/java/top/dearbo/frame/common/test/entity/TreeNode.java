@@ -5,7 +5,7 @@ import top.dearbo.util.tree.TreeNodeUtil;
 import java.util.Date;
 
 /**
- * @author Dan
+ * @author: bo
  * @date 2017/10/9
  */
 public class TreeNode extends TreeNodeUtil.AbstractTreeNode<Integer, TreeNode> {

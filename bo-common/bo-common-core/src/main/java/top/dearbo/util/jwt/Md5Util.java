@@ -9,7 +9,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 /**
- * @author dan
+ * @author: bo
  * @date 创建时间：2018年5月14日 上午11:11:51
  */
 public class Md5Util {
@@ -20,7 +20,7 @@ public class Md5Util {
      * MD5加密
      *
      * @param password
-     * @author dan
+     * @author: bo
      * @date 创建时间：2018年3月5日 下午7:26:17
      */
     public static String md5Encrypt(String password) {

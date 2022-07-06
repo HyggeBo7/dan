@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 
 /**
  * @fileName: HideDataUtil
- * @author: Dan
+ * @author: bo
  * @createDate: 2018-12-27 17:09.
  * @description: 隐秘数据工具类
  */

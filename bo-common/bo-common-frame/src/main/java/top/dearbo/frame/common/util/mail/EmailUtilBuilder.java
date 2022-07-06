@@ -16,7 +16,7 @@ import java.util.*;
 
 /**
  * @fileName: EmailUtilBuilder
- * @author: Dan
+ * @author: bo
  * @createDate: 2018-05-10 15:11.
  * @updateDate: 2019-11-15 09:15.
  * @description: 建造者模式-邮件

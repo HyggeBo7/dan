@@ -172,7 +172,7 @@ public class FileUtil {
      * @param name          名称
      * @param split         分割符
      * @param punctuateFlag 是否加分隔符
-     * @author 々Dan
+     * @author: bo
      * @created 2017年6月5日
      */
     public static String getFileSuffixName(String name, String split, boolean punctuateFlag) {
@@ -189,7 +189,7 @@ public class FileUtil {
      *
      * @param name  名称
      * @param split 分割符
-     * @author 々Dan
+     * @author: bo
      * @created 2017年6月5日
      */
     public static String getFileSuffixFileName(String name, String split) {

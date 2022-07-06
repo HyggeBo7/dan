@@ -8,7 +8,7 @@ import java.io.Serializable;
 
 /**
  * @fileName: BaseSerializable
- * @author: Dan
+ * @author: bo
  * @createDate: 2019-01-24 13:06.
  * @description: 序列化
  * ps:自定义方法不要加is、get等前缀
@@ -18,11 +18,11 @@ public interface BaseResult extends Serializable {
     /**
      * 成功code
      */
-    int SUCCESS_CODE = CommonStatusEnum.SUCCESS.getValue();
+    Integer SUCCESS_CODE = CommonStatusEnum.SUCCESS.getKey();
     /**
      * 失败code
      */
-    int FAIL_CODE = CommonStatusEnum.FAIL.getValue();
+    Integer FAIL_CODE = CommonStatusEnum.FAIL.getKey();
 
     /**
      * 是否序列化null字段

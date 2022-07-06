@@ -4,7 +4,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Created by Dan on 2019/1/17 14:55
+ * Created by bo on 2019/1/17 14:55
  */
 public class HttpStatusCode {
 

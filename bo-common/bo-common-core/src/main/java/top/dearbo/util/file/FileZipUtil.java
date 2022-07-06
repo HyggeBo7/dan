@@ -10,7 +10,7 @@ import java.util.zip.ZipOutputStream;
 
 /**
  * @fileName: FileZipUtil
- * @author: Dan
+ * @author: bo
  * @createDate: 2018-01-10 12:02.
  * @description:
  */
