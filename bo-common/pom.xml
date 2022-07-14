@@ -12,9 +12,9 @@
     <artifactId>bo-common</artifactId>
     <description>bo 公共聚合模块</description>
     <modules>
-        <module>bo-common-base</module>
-        <module>bo-common-core</module>
-        <module>bo-common-frame</module>
+        <module>common-base</module>
+        <module>common-core</module>
+        <module>common-frame</module>
     </modules>
 
 </project>

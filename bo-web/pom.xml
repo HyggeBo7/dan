@@ -11,9 +11,9 @@
     <packaging>pom</packaging>
     <artifactId>bo-web</artifactId>
     <modules>
-        <module>bo-web-common-core</module>
-        <module>bo-web-common-log</module>
-        <module>bo-web-common-spring</module>
+        <module>web-common-core</module>
+        <module>web-common-log</module>
+        <module>web-common-spring</module>
     </modules>
     <properties>
         <spring.boot.version>2.3.0.RELEASE</spring.boot.version>
