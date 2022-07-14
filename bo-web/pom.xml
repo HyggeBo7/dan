@@ -19,7 +19,7 @@
         <spring.boot.version>2.3.0.RELEASE</spring.boot.version>
         <hystrix.core.version>1.5.18</hystrix.core.version>
         <servlet.version>4.0.1</servlet.version>
-        <aop-aspectj.version>1.9.6</aop-aspectj.version>
+        <aop-aspectj.version>1.9.9.1</aop-aspectj.version>
         <!--<spring.version>5.2.7.RELEASE</spring.version>-->
     </properties>
     <dependencies>

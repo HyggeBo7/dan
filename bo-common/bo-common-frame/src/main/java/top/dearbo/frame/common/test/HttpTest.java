@@ -16,16 +16,35 @@ import top.dearbo.util.xt.Pagination;
 
 import java.net.InetSocketAddress;
 import java.net.Proxy;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author wb
  * @date 2021-06-09 20:43.
  */
 public class HttpTest {
+
+	@Test
+	public void testHttp123() {
+		Map<String, String> headerParam = new HashMap<String, String>();
+		headerParam.put("Authorization", "Bearer X4eTEiMr-n2WL9U1PByTPHxSoIBU9sQ-APVZ3hH1Z7G3YJgC36ktE2z5HViagUzLtnmcqzf0w");
+		Map<Object, Object> paramVO = new HashMap<Object, Object>();
+		paramVO.put("option", "None");
+		paramVO.put("empStatus", Arrays.asList(2, 3));
+		paramVO.put("employType", null);
+		paramVO.put("serviceType", Arrays.asList(0, 1, 4, 5));
+		paramVO.put("approvalStatus", Arrays.asList(4));
+		paramVO.put("oIds", Arrays.asList(604051848));
+		paramVO.put("columns", Arrays.asList("UserID", "JobNumber"));
+		paramVO.put("isWithDeleted", false);
+		paramVO.put("enableTranslate", false);
+		String url = "https://openapi.italent.cn/TenantBaseExternal/api/v5/Employee/GetServiceInfoByIds";
+		HttpClientPoolUtil.ResultResponse resultResponse1 = HttpClientPoolUtil.createRequest().doPostJson(url, JsonUtil.toJson(paramVO), headerParam);
+		HttpUtils.ResultResponse resultResponse = HttpUtils.createRequest().doPostJson(url, JsonUtil.toJson(paramVO), headerParam);
+		System.out.println(resultResponse1.toString());
+		System.out.println(resultResponse.toString());
+	}
+
 
 	@Test
 	public void testHttpImg302() {
