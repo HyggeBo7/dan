@@ -494,6 +494,27 @@ public class ExcelWriteUtils {
         this.debugNumFlag = debugNumFlag;
     }
 
+    /**
+     * excel 读取日期格式(double 转 date)
+     *
+     * @param date
+     * @param tz
+     * @return
+     */
+    public static Date getJavaDate(double date, TimeZone tz) {
+        return org.apache.poi.ss.usermodel.DateUtil.getJavaDate(date, false, tz);
+    }
+
+    /**
+     * excel 读取日期格式(double 转 date)
+     *
+     * @param date
+     * @return
+     */
+    public static Date getJavaDate(double date) {
+        return org.apache.poi.ss.usermodel.DateUtil.getJavaDate(date, (TimeZone) null);
+    }
+
     public static ExcelWriteUtils importExcel(String filePath, int startSheet, int endSheet) throws IOException {
         return importExcelByFile(new File(filePath), startSheet, endSheet);
     }

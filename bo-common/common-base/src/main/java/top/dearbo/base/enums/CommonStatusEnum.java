@@ -30,7 +30,11 @@ public enum CommonStatusEnum implements BaseKeyValueEnum {
 	/**
 	 * 参数错误
 	 */
-	PARAM_FAIL(-10, "参数错误"),
+	PARAM_FAIL(-9, "参数错误"),
+	/**
+	 * 参数校验失败
+	 */
+	VALIDATE_PARAM_FAIL(-10, "参数校验失败"),
 	/**
 	 * 非预期异常
 	 */
