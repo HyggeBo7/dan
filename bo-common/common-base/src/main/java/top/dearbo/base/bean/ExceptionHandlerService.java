@@ -1,6 +1,6 @@
 package top.dearbo.base.bean;
 
-import top.dearbo.base.enums.CommonStatusEnum;
+import top.dearbo.base.enums.ResultCodeEnum;
 
 /**
  * @version 1.0
@@ -11,13 +11,17 @@ import top.dearbo.base.enums.CommonStatusEnum;
  */
 public interface ExceptionHandlerService {
 
-    /**
-     * 异常code
-     */
-    Integer DEFAULT_SERVER_ERROR = CommonStatusEnum.SERVER_ERROR.getKey();
+	/**
+	 * 异常code
+	 */
+	Integer DEFAULT_SERVER_ERROR = ResultCodeEnum.SERVER_ERROR.getKey();
 
-    Throwable getThrowable();
+	Throwable getThrowable();
 
-    Integer getCode();
+	Integer getCode();
+
+	default String getErrorMsg(Throwable ex) {
+		return ex.getLocalizedMessage() != null ? ex.getLocalizedMessage() : ex.getMessage();
+	}
 
 }

@@ -1,6 +1,6 @@
 package top.dearbo.util.constant;
 
-import top.dearbo.base.enums.CommonStatusEnum;
+import top.dearbo.base.enums.ResultCodeEnum;
 
 /**
  * @version 1.0
@@ -16,9 +16,9 @@ public class AjaxResult extends AbstractResult<Object> {
 	/**
 	 * 操作失败
 	 */
-	private static final int NORMAL_ERROR = CommonStatusEnum.NORMAL_ERROR.getKey();
+	private static final int NORMAL_ERROR = ResultCodeEnum.NORMAL_ERROR.getKey();
 
-	private AjaxResult() {
+	public AjaxResult() {
 		//json反序列化时会执行当前构造函数,避免反序列化时会设置默认值
 	}
 
@@ -120,12 +120,12 @@ public class AjaxResult extends AbstractResult<Object> {
 
 	//===========自定义操作===========
 
-	public static AjaxResult restResult(CommonStatusEnum commonStatusEnum) {
-		return restResult(commonStatusEnum.getKey(), commonStatusEnum.getValue(), null, false);
+	public static AjaxResult restResult(ResultCodeEnum resultCodeEnum) {
+		return restResult(resultCodeEnum.getKey(), resultCodeEnum.getValue(), null, false);
 	}
 
-	public static AjaxResult restResult(CommonStatusEnum commonStatusEnum, Object data) {
-		return restResult(commonStatusEnum.getKey(), commonStatusEnum.getValue(), data, true);
+	public static AjaxResult restResult(ResultCodeEnum resultCodeEnum, Object data) {
+		return restResult(resultCodeEnum.getKey(), resultCodeEnum.getValue(), data, true);
 	}
 
 	public static AjaxResult restResult(int code, String msg) {

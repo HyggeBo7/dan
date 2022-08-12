@@ -1,6 +1,6 @@
 package top.dearbo.util.constant;
 
-import top.dearbo.base.enums.CommonStatusEnum;
+import top.dearbo.base.enums.ResultCodeEnum;
 
 /**
  * @version 1.0
@@ -16,9 +16,9 @@ public class ResponseResult<T> extends AbstractResult<T> {
 	/**
 	 * 操作失败
 	 */
-	private static final Integer NORMAL_ERROR = CommonStatusEnum.NORMAL_ERROR.getKey();
+	private static final Integer NORMAL_ERROR = ResultCodeEnum.NORMAL_ERROR.getKey();
 
-	private ResponseResult() {
+	public ResponseResult() {
 		//json反序列化时会执行当前构造函数,避免反序列化时会设置默认值
 	}
 
@@ -120,12 +120,12 @@ public class ResponseResult<T> extends AbstractResult<T> {
 
 	//===========自定义操作===========
 
-	public static ResponseResult<Void> restResult(CommonStatusEnum commonStatusEnum) {
-		return restResult(commonStatusEnum.getKey(), commonStatusEnum.getValue(), null, false);
+	public static ResponseResult<Void> restResult(ResultCodeEnum resultCodeEnum) {
+		return restResult(resultCodeEnum.getKey(), resultCodeEnum.getValue(), null, false);
 	}
 
-	public static <T> ResponseResult<T> restResult(CommonStatusEnum commonStatusEnum, T data) {
-		return restResult(commonStatusEnum.getKey(), commonStatusEnum.getValue(), data, true);
+	public static <T> ResponseResult<T> restResult(ResultCodeEnum resultCodeEnum, T data) {
+		return restResult(resultCodeEnum.getKey(), resultCodeEnum.getValue(), data, true);
 	}
 
 	public static ResponseResult<Void> restResult(int code, String msg) {

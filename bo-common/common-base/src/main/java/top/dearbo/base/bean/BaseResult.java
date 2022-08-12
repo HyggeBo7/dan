@@ -1,7 +1,7 @@
 package top.dearbo.base.bean;
 
 
-import top.dearbo.base.enums.CommonStatusEnum;
+import top.dearbo.base.enums.ResultCodeEnum;
 
 import java.beans.Transient;
 import java.io.Serializable;
@@ -18,11 +18,11 @@ public interface BaseResult extends Serializable {
     /**
      * 成功code
      */
-    Integer SUCCESS_CODE = CommonStatusEnum.SUCCESS.getKey();
+    Integer SUCCESS_CODE = ResultCodeEnum.SUCCESS.getKey();
     /**
      * 失败code
      */
-    Integer FAIL_CODE = CommonStatusEnum.FAIL.getKey();
+    Integer FAIL_CODE = ResultCodeEnum.FAIL.getKey();
 
     /**
      * 是否序列化null字段

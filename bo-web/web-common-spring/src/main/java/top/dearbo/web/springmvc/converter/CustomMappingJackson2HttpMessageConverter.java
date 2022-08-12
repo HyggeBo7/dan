@@ -1,8 +1,9 @@
-package top.dearbo.web.springmvc;
+package top.dearbo.web.springmvc.converter;
 
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.util.StreamUtils;
 import top.dearbo.base.bean.BaseResult;
 import top.dearbo.util.data.JacksonUtils;
 
@@ -36,9 +37,10 @@ public class CustomMappingJackson2HttpMessageConverter extends MappingJackson2Ht
 				String result = getSerializationData(object, (BaseResult) object);
 				if (result != null) {
 					byte[] bytes = result.getBytes(StandardCharsets.UTF_8);
-					OutputStream out = outputMessage.getBody();
+					OutputStream out = StreamUtils.nonClosing(outputMessage.getBody());
 					out.write(bytes);
 					out.flush();
+					out.close();
 					return;
 				}
 			} catch (Exception ignored) {
@@ -51,7 +53,7 @@ public class CustomMappingJackson2HttpMessageConverter extends MappingJackson2Ht
 	 * null 走默认序列化
 	 *
 	 * @param baseResult
-	 * @return String
+	 * @return
 	 */
 	public String getSerializationData(Object original, BaseResult baseResult) {
 		if (!baseResult.resultSerializeNullField()) {

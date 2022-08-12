@@ -12,7 +12,7 @@ public class ResultGeneric<T> extends AbstractResult<T> {
 	private String msg;
 	private T data;
 
-	private ResultGeneric() {
+	public ResultGeneric() {
 
 	}
 

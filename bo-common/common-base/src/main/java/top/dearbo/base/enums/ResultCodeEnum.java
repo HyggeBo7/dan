@@ -6,7 +6,7 @@ import top.dearbo.base.bean.BaseKeyValueEnum;
  * @author Bo
  * @date 2020/5/28
  */
-public enum CommonStatusEnum implements BaseKeyValueEnum {
+public enum ResultCodeEnum implements BaseKeyValueEnum {
 	/**
 	 * 成功
 	 */
@@ -48,13 +48,17 @@ public enum CommonStatusEnum implements BaseKeyValueEnum {
 	 */
 	REQUEST_PROHIBIT(-13, "禁止访问"),
 	/**
+	 * 未知异常
+	 */
+	UNKNOWN(-99, "未知异常"),
+	/**
 	 * 服务器内部错误
 	 */
-	SERVER_ERROR(-500, "服务器错误"),
+	SERVER_ERROR(-500, "系统异常,请稍后再试"),
 	/**
 	 * 无权限
 	 */
-	NO_PERMISSION(-400, "无权限"),
+	NO_PERMISSION(-400, "访问的资源未授权"),
 	/**
 	 * 登录过期
 	 */
@@ -64,7 +68,7 @@ public enum CommonStatusEnum implements BaseKeyValueEnum {
 	 */
 	LOGIN_FAIL(-402, "认证失败");
 
-	CommonStatusEnum(Integer code, String value) {
+	ResultCodeEnum(Integer code, String value) {
 		this.code = code;
 		this.value = value;
 	}
@@ -72,8 +76,8 @@ public enum CommonStatusEnum implements BaseKeyValueEnum {
 	private final Integer code;
 	private final String value;
 
-	public String getCode() {
-		return value;
+	public Integer getCode() {
+		return code;
 	}
 
 	@Override

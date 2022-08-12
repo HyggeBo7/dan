@@ -40,7 +40,7 @@ import top.dearbo.log.config.SysLogConfig;
 import top.dearbo.log.entity.SysLogEntity;
 import top.dearbo.log.event.SysLogEvent;
 import top.dearbo.util.data.JsonUtil;
-import top.dearbo.web.core.util.ServletUtils;
+import top.dearbo.web.core.util.WebServletUtils;
 import top.dearbo.web.core.util.SpringContextHolder;
 
 import javax.servlet.ServletRequest;
@@ -122,7 +122,7 @@ public class SysLogAspect {
             if (contentType != null && contentType.contains(MediaType.APPLICATION_JSON_VALUE)) {
                 sysLogEntity.setParams(getArgBody(point, true));
             } else {
-                sysLogEntity.setParams(ServletUtils.toRequestParams(request, sysLogConfig.excludeParamKey()));
+                sysLogEntity.setParams(WebServletUtils.toRequestParams(request, sysLogConfig.excludeParamKey()));
             }
         }
         return sysLogEntity;
