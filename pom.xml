@@ -12,9 +12,9 @@
     <description>Demo project for Util</description>
 
     <modules>
-        <module>bo-common</module>
-        <module>bo-web</module>
-        <!--<module>bo-plugin</module>-->
+        <module>common</module>
+        <module>web-common</module>
+        <module>plugin-common</module>
         <!--<module>test-dome</module>-->
     </modules>
 
