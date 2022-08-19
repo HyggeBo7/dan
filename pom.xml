@@ -14,7 +14,7 @@
     <modules>
         <module>common</module>
         <module>web-common</module>
-        <!--<module>plugin-common</module>-->
+        <module>plugin-common</module>
         <!--<module>test-dome</module>-->
     </modules>
 
@@ -25,10 +25,8 @@
         <file.encoding>UTF-8</file.encoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
-
         <xtp.version>2.2.0</xtp.version>
-        <junit.version>4.13.1</junit.version>
-        <logback.version>1.2.9</logback.version>
+        <junit.version>4.13.2</junit.version>
         <slf4j.version>1.7.30</slf4j.version>
 
         <hutool.version>5.8.4</hutool.version>
@@ -100,7 +98,7 @@
             <dependency>
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-core</artifactId>
-                <version>${logback.version}</version>
+                <version>1.2.9</version>
             </dependency>
             <dependency>
                 <groupId>ch.qos.logback</groupId>
@@ -233,11 +231,11 @@
                 <version>${cglib.version}</version>
             </dependency>
             <!--bean 工具类-->
-            <dependency>
+            <!--<dependency>
                 <groupId>commons-beanutils</groupId>
                 <artifactId>commons-beanutils</artifactId>
                 <version>${commons-beanutils.version}</version>
-            </dependency>
+            </dependency>-->
             <!--文字->转拼音-->
             <dependency>
                 <groupId>com.belerweb</groupId>

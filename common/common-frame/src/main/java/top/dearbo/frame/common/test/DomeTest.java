@@ -351,6 +351,9 @@ public class DomeTest {
 		System.out.println("objectMap:" + JsonUtil.toJson(objectMap));
 		UserInfo userInfo1 = MapperUtil.mapToBean(objectMap, UserInfo.class);
 		System.out.println("userInfo1:" + userInfo1.toString());
+		UserInfo newUserInfo = new UserInfo();
+		MapperUtil.copyProperties(userInfo,newUserInfo);
+		System.out.println("newUserInfo:"+JsonUtil.toJson(newUserInfo));
 	}
 
 	@Test

@@ -24,7 +24,7 @@
     <dependencies>
         <dependency>
             <groupId>top.dearbo</groupId>
-            <artifactId>bo-common</artifactId>
+            <artifactId>common-frame</artifactId>
         </dependency>
         <dependency>
             <groupId>top.dearbo</groupId>
