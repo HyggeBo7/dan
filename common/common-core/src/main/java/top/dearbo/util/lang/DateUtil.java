@@ -77,13 +77,11 @@ public class DateUtil {
 	public static String FORMAT_MM = "MM";
 
 	public static Date getDate() {
-		return getDate(System.currentTimeMillis());
+		return new Date();
 	}
 
 	public static Date getDate(long millis) {
-		SimpleDateFormat format = new SimpleDateFormat(FORMAT_LONG);
-		String format1 = format.format(millis);
-		return parseToDate(format1, FORMAT_LONG);
+		return new Date(millis);
 	}
 
 	public static long getTime() {
