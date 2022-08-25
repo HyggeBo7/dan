@@ -38,8 +38,8 @@ public class JsonUtil {
 	public static final Gson GSON_MAP;
 
 	static {
+		//取消自动转义("=" === "\u003d") .disableHtmlEscaping()
 		GSON = new GsonBuilder()
-				//取消自动转义("=" === "\u003d")
 				.disableHtmlEscaping()
 				.setDateFormat("yyyy-MM-dd HH:mm:ss")
 				.create();
@@ -48,11 +48,11 @@ public class JsonUtil {
 				.disableHtmlEscaping()
 				.setDateFormat("yyyy-MM-dd HH:mm:ss")
 				.create();
+		//这里注册的类型需要和序列化类型一致 .registerTypeAdapter(new TypeToken<LinkedHashMap<String, Object>>()
 		GSON_MAP = new GsonBuilder()
 				.disableHtmlEscaping()
 				.enableComplexMapKeySerialization()
 				.setDateFormat("yyyy-MM-dd HH:mm:ss")
-				//这里注册的类型需要和序列化类型一致
 				.registerTypeAdapter(new TypeToken<LinkedHashMap<String, Object>>() {
 				}.getType(), new MapTypeAdapter()).create();
 	}
