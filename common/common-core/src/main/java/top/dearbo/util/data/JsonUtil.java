@@ -1,4 +1,4 @@
-﻿package top.dearbo.util.data;
+package top.dearbo.util.data;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
