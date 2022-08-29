@@ -21,7 +21,7 @@ public class ResultGeneric<T> extends AbstractResult<T> {
 	}
 
 	public ResultGeneric(T data, boolean serializeNull) {
-		this(SUCCESS_CODE, null, data, serializeNull);
+		this(SUCCESS_ENUM.getKey(), SUCCESS_ENUM.getValue(), data, serializeNull);
 	}
 
 	public ResultGeneric(int code, String msg) {
@@ -60,8 +60,9 @@ public class ResultGeneric<T> extends AbstractResult<T> {
 		return data;
 	}
 
-	public void setData(T data) {
+	public ResultGeneric<T> setData(T data) {
 		this.data = data;
+		return this;
 	}
 
 	@Override

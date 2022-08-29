@@ -16,7 +16,7 @@ public class AjaxResult extends AbstractResult<Object> {
 	/**
 	 * 操作失败
 	 */
-	private static final int NORMAL_ERROR = ResultCodeEnum.NORMAL_ERROR.getKey();
+	private static final ResultCodeEnum NORMAL_ERROR_ENUM = ResultCodeEnum.NORMAL_ERROR;
 
 	public AjaxResult() {
 		//json反序列化时会执行当前构造函数,避免反序列化时会设置默认值
@@ -26,8 +26,9 @@ public class AjaxResult extends AbstractResult<Object> {
 		this(data, true);
 	}
 
-	public AjaxResult(Object data, boolean serializeNull) {
-		this(SUCCESS_CODE, null, data, serializeNull);
+	public AjaxResult(Object data, Boolean serializeNull) {
+		this(SUCCESS_ENUM.getKey(), SUCCESS_ENUM.getValue(), data);
+		this.serializeNull = serializeNull;
 	}
 
 	public AjaxResult(int code, String msg) {
@@ -45,44 +46,41 @@ public class AjaxResult extends AbstractResult<Object> {
 		this.serializeNull = serializeNull;
 	}
 
+	public AjaxResult serializeNotNull() {
+		return serializeNulls(false);
+	}
+
+	public AjaxResult serializeNulls(boolean serializeNull) {
+		this.serializeNull = serializeNull;
+		return this;
+	}
+
 	//=========成功=========
 
 	public static AjaxResult ok() {
-		return ok(null, true);
+		return ok(null);
 	}
 
 	public static AjaxResult ok(Object data) {
-		return ok(data, true);
-	}
-
-	public static AjaxResult ok(Object data, boolean serializeNull) {
-		return ok(data, "成功", serializeNull);
+		return ok(data, SUCCESS_ENUM.getValue());
 	}
 
 	public static AjaxResult ok(Object data, String msg) {
-		return ok(data, msg, true);
-	}
-
-	public static AjaxResult ok(Object data, String msg, boolean serializeNull) {
-		return new AjaxResult(SUCCESS_CODE, msg, data, serializeNull);
+		return new AjaxResult(SUCCESS_ENUM.getKey(), msg, data);
 	}
 
 	//=========失败=========
 
 	public static AjaxResult failed() {
-		return failed("失败");
+		return failed(FAIL_ENUM.getValue());
 	}
 
 	public static AjaxResult failed(String msg) {
-		return failed(msg, null, false);
+		return failed(msg, null).serializeNulls(false);
 	}
 
 	public static AjaxResult failed(String msg, Object data) {
-		return failed(msg, data, true);
-	}
-
-	public static AjaxResult failed(String msg, Object data, boolean serializeNull) {
-		return new AjaxResult(FAIL_CODE, msg, data, serializeNull);
+		return new AjaxResult(FAIL_ENUM.getKey(), msg, data, data != null);
 	}
 
 	//=========操作=========
@@ -94,28 +92,35 @@ public class AjaxResult extends AbstractResult<Object> {
 	 * @return code:大于0返回：1,否则0
 	 */
 	public static AjaxResult operate(int row) {
-		return operate(row, null);
+		return operate(row > 0);
 	}
 
-	public static AjaxResult operate(int row, Object data) {
-		return operate(row, data, true);
-	}
-
-	public static AjaxResult operate(int row, Object data, Boolean serializeNull) {
-		return operate(row, data, "操作成功!", "操作失败!", serializeNull);
-	}
-
-	public static AjaxResult operate(int row, Object data, String successMsg, String errorMsg) {
-		return operate(row, data, successMsg, errorMsg, true);
+	public static AjaxResult operate(int row, String errorMsg) {
+		return operate(row > 0, errorMsg);
 	}
 
 	public static AjaxResult operate(int row, String successMsg, String errorMsg) {
-		return operate(row, null, successMsg, errorMsg, false);
+		return operate(row > 0, successMsg, errorMsg);
 	}
 
-	public static AjaxResult operate(int row, Object data, String successMsg, String errorMsg, Boolean serializeNull) {
-		boolean success = row > 0;
-		return new AjaxResult(success ? SUCCESS_CODE : NORMAL_ERROR, success ? successMsg : errorMsg, data, serializeNull);
+	public static AjaxResult operate(int row, String successMsg, String errorMsg, Object data) {
+		return operate(row > 0, successMsg, errorMsg, data);
+	}
+
+	public static AjaxResult operate(boolean successFlag) {
+		return operate(successFlag, "操作失败");
+	}
+
+	public static AjaxResult operate(boolean successFlag, String errorMsg) {
+		return operate(successFlag, "操作成功", errorMsg);
+	}
+
+	public static AjaxResult operate(boolean successFlag, String successMsg, String errorMsg) {
+		return operate(successFlag, successMsg, errorMsg, null);
+	}
+
+	public static AjaxResult operate(boolean successFlag, String successMsg, String errorMsg, Object data) {
+		return new AjaxResult(successFlag ? SUCCESS_ENUM.getKey() : NORMAL_ERROR_ENUM.getKey(), successFlag ? successMsg : errorMsg, successFlag ? data : null).serializeNulls(successFlag && data != null);
 	}
 
 	//===========自定义操作===========
@@ -125,7 +130,7 @@ public class AjaxResult extends AbstractResult<Object> {
 	}
 
 	public static AjaxResult restResult(ResultCodeEnum resultCodeEnum, Object data) {
-		return restResult(resultCodeEnum.getKey(), resultCodeEnum.getValue(), data, true);
+		return restResult(resultCodeEnum.getKey(), resultCodeEnum.getValue(), data, data != null);
 	}
 
 	public static AjaxResult restResult(int code, String msg) {
@@ -133,7 +138,7 @@ public class AjaxResult extends AbstractResult<Object> {
 	}
 
 	public static AjaxResult restResult(int code, String msg, Object data) {
-		return restResult(code, msg, data, true);
+		return restResult(code, msg, data, data != null);
 	}
 
 	public static AjaxResult restResult(int code, String msg, Object data, Boolean serializeNull) {
@@ -161,8 +166,9 @@ public class AjaxResult extends AbstractResult<Object> {
 		return data;
 	}
 
-	public void setData(Object data) {
+	public AjaxResult setData(Object data) {
 		this.data = data;
+		return this;
 	}
 
 	@Override

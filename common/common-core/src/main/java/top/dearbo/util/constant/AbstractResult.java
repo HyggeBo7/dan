@@ -3,22 +3,14 @@ package top.dearbo.util.constant;
 import top.dearbo.base.bean.BaseResult;
 import top.dearbo.util.data.JsonUtil;
 
-import java.beans.Transient;
-
 /**
- * @version 1.0
- * @author: Bo
- * @fileName: Result
- * @createDate: 2020-04-03 09:44.
- * @description: 通用的处理返回结果
+ * 通用的处理返回结果
+ *
+ * @author wb
+ * @date 2020-04-03
  */
 public abstract class AbstractResult<T> implements BaseResult {
 	protected transient Boolean serializeNull;
-
-	@Transient
-	public Boolean getSerializeNull() {
-		return serializeNull;
-	}
 
 	public void setSerializeNull(Boolean serializeNull) {
 		this.serializeNull = serializeNull;
@@ -41,7 +33,7 @@ public abstract class AbstractResult<T> implements BaseResult {
 	 * @return Integer
 	 */
 	public Integer defaultSuccessCode() {
-		return SUCCESS_CODE;
+		return SUCCESS_ENUM.getKey();
 	}
 
 	public boolean isSuccess() {

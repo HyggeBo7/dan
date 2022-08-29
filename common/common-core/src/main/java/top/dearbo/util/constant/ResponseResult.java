@@ -16,7 +16,7 @@ public class ResponseResult<T> extends AbstractResult<T> {
 	/**
 	 * 操作失败
 	 */
-	private static final Integer NORMAL_ERROR = ResultCodeEnum.NORMAL_ERROR.getKey();
+	private static final ResultCodeEnum NORMAL_ERROR_ENUM = ResultCodeEnum.NORMAL_ERROR;
 
 	public ResponseResult() {
 		//json反序列化时会执行当前构造函数,避免反序列化时会设置默认值
@@ -26,8 +26,9 @@ public class ResponseResult<T> extends AbstractResult<T> {
 		this(data, true);
 	}
 
-	public ResponseResult(T data, boolean serializeNull) {
-		this(SUCCESS_CODE, null, data, serializeNull);
+	public ResponseResult(T data, Boolean serializeNull) {
+		this(SUCCESS_ENUM.getKey(), SUCCESS_ENUM.getValue(), data);
+		this.serializeNull = serializeNull;
 	}
 
 	public ResponseResult(int code, String msg) {
@@ -45,44 +46,43 @@ public class ResponseResult<T> extends AbstractResult<T> {
 		this.serializeNull = serializeNull;
 	}
 
+	public ResponseResult<T> serializeNotNull() {
+		return serializeNulls(false);
+	}
+
+	public ResponseResult<T> serializeNulls(boolean serializeNull) {
+		this.serializeNull = serializeNull;
+		return this;
+	}
+
 	//=========成功=========
 
 	public static ResponseResult<Void> ok() {
-		return ok(null, true);
+		return ok(null);
 	}
 
 	public static <T> ResponseResult<T> ok(T data) {
-		return ok(data, true);
-	}
-
-	public static <T> ResponseResult<T> ok(T data, boolean serializeNull) {
-		return ok(data, "成功", serializeNull);
+		return ok(data, SUCCESS_ENUM.getValue());
 	}
 
 	public static <T> ResponseResult<T> ok(T data, String msg) {
-		return ok(data, msg, true);
-	}
-
-	public static <T> ResponseResult<T> ok(T data, String msg, boolean serializeNull) {
-		return new ResponseResult<>(SUCCESS_CODE, msg, data, serializeNull);
+		return new ResponseResult<>(SUCCESS_ENUM.getKey(), msg, data);
 	}
 
 	//=========失败=========
 
 	public static ResponseResult<Void> failed() {
-		return failed("失败");
+		return failed(FAIL_ENUM.getValue());
 	}
 
 	public static ResponseResult<Void> failed(String msg) {
-		return failed(msg, null, false);
+		ResponseResult<Void> failed = failed(msg, null);
+		failed.setSerializeNull(false);
+		return failed;
 	}
 
 	public static <T> ResponseResult<T> failed(String msg, T data) {
-		return failed(msg, data, true);
-	}
-
-	public static <T> ResponseResult<T> failed(String msg, T data, boolean serializeNull) {
-		return new ResponseResult<>(FAIL_CODE, msg, data, serializeNull);
+		return new ResponseResult<>(FAIL_ENUM.getKey(), msg, data, data != null);
 	}
 
 	//=========操作=========
@@ -94,28 +94,35 @@ public class ResponseResult<T> extends AbstractResult<T> {
 	 * @return code:大于0返回：1,否则0
 	 */
 	public static ResponseResult<Void> operate(int row) {
-		return operate(row, null);
+		return operate(row > 0);
 	}
 
-	public static <T> ResponseResult<T> operate(int row, T data) {
-		return operate(row, data, true);
-	}
-
-	public static <T> ResponseResult<T> operate(int row, T data, Boolean serializeNull) {
-		return operate(row, data, "操作成功!", "操作失败!", serializeNull);
-	}
-
-	public static <T> ResponseResult<T> operate(int row, T data, String successMsg, String errorMsg) {
-		return operate(row, data, successMsg, errorMsg, true);
+	public static ResponseResult<Void> operate(int row, String errorMsg) {
+		return operate(row > 0, errorMsg);
 	}
 
 	public static ResponseResult<Void> operate(int row, String successMsg, String errorMsg) {
-		return operate(row, null, successMsg, errorMsg, false);
+		return operate(row > 0, successMsg, errorMsg);
 	}
 
-	public static <T> ResponseResult<T> operate(int row, T data, String successMsg, String errorMsg, Boolean serializeNull) {
-		boolean success = row > 0;
-		return new ResponseResult<>(success ? SUCCESS_CODE : NORMAL_ERROR, success ? successMsg : errorMsg, data, serializeNull);
+	public static <T> ResponseResult<T> operate(int row, String successMsg, String errorMsg, T data) {
+		return operate(row > 0, successMsg, errorMsg, data);
+	}
+
+	public static ResponseResult<Void> operate(boolean successFlag) {
+		return operate(successFlag, "操作失败");
+	}
+
+	public static ResponseResult<Void> operate(boolean successFlag, String errorMsg) {
+		return operate(successFlag, "操作成功", errorMsg);
+	}
+
+	public static ResponseResult<Void> operate(boolean successFlag, String successMsg, String errorMsg) {
+		return operate(successFlag, successMsg, errorMsg, null);
+	}
+
+	public static <T> ResponseResult<T> operate(boolean successFlag, String successMsg, String errorMsg, T data) {
+		return new ResponseResult<>(successFlag ? SUCCESS_ENUM.getKey() : NORMAL_ERROR_ENUM.getKey(), successFlag ? successMsg : errorMsg, successFlag ? data : null).serializeNulls(successFlag && data != null);
 	}
 
 	//===========自定义操作===========
@@ -161,8 +168,10 @@ public class ResponseResult<T> extends AbstractResult<T> {
 		return data;
 	}
 
-	public void setData(T data) {
+
+	public ResponseResult<T> setData(T data) {
 		this.data = data;
+		return this;
 	}
 
 	@Override
