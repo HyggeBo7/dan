@@ -25,39 +25,37 @@ import java.util.stream.Collectors;
 @ControllerAdvice
 public class GlobalWebExceptionHandler {
 
-	private static final Logger logger = LoggerFactory.getLogger(GlobalWebExceptionHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(GlobalWebExceptionHandler.class);
 
-	/**
-	 * 接口不存在
-	 *
-	 * @param e
-	 * @return
-	 */
-	@ExceptionHandler({NoHandlerFoundException.class})
-	@ResponseStatus(HttpStatus.NOT_FOUND)
-	@ResponseBody
-	public AjaxResult noHandlerMapping(NoHandlerFoundException e) {
-		logger.error("【GlobalWebExceptionHandler】noHandlerMapping===>uri={} trace={}", e.getRequestURL(), ExceptionUtils.getStackTrace(e));
-		return AjaxResult.restResult(ResultCodeEnum.REQUEST_ILLEGAL, "请求的接口 " + e.getRequestURL() + " 未找到");
-	}
+    /**
+     * 接口不存在
+     *
+     * @param e
+     * @return
+     */
+    @ExceptionHandler({NoHandlerFoundException.class})
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseBody
+    public AjaxResult noHandlerMapping(NoHandlerFoundException e) {
+        logger.error("【GlobalWebExceptionHandler】noHandlerMapping===>uri={} trace={}", e.getRequestURL(), ExceptionUtils.getStackTrace(e));
+        return AjaxResult.restResult(ResultCodeEnum.REQUEST_ILLEGAL, "请求的接口 " + e.getRequestURL() + " 未找到");
+    }
 
-	/**
-	 * 参数异常处理
-	 **/
-	@ExceptionHandler({MethodArgumentNotValidException.class})
-	@ResponseBody
-	public AjaxResult handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-		HttpServletRequest httpServletRequest = WebServletUtils.getHttpServletRequest();
-		logger.error("【GlobalWebExceptionHandler】handleMethodArgumentNotValidException===>uri={} trace={}", httpServletRequest == null ? "" : httpServletRequest.getRequestURI(), ExceptionUtils.getStackTrace(e));
-		AjaxResult result = new AjaxResult();
-		result.setCode(ResultCodeEnum.VALIDATE_PARAM_FAIL.getCode());
-		result.setMsg(ResultCodeEnum.VALIDATE_PARAM_FAIL.getValue());
-		if (e.getBindingResult().hasErrors() && !CollectionUtils.isEmpty(e.getBindingResult().getFieldErrors())) {
-			result.setMsg(e.getBindingResult().getFieldErrors()
-					.stream()
-					.map(FieldError::getDefaultMessage)
-					.collect(Collectors.joining(",")));
-		}
-		return result;
-	}
+    /**
+     * 参数异常处理
+     **/
+    @ExceptionHandler({MethodArgumentNotValidException.class})
+    @ResponseBody
+    public AjaxResult handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+        HttpServletRequest httpServletRequest = WebServletUtils.getHttpServletRequest();
+        logger.error("【GlobalWebExceptionHandler】handleMethodArgumentNotValidException===>uri={} trace={}", httpServletRequest == null ? "" : httpServletRequest.getRequestURI(), ExceptionUtils.getStackTrace(e));
+        AjaxResult result = AjaxResult.restResult(ResultCodeEnum.VALIDATE_PARAM_FAIL);
+        if (e.getBindingResult().hasErrors() && !CollectionUtils.isEmpty(e.getBindingResult().getFieldErrors())) {
+            result.setMsg(e.getBindingResult().getFieldErrors()
+                    .stream()
+                    .map(FieldError::getDefaultMessage)
+                    .collect(Collectors.joining(",")));
+        }
+        return result;
+    }
 }
