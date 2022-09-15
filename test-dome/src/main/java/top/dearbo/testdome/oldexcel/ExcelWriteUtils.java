@@ -1,13 +1,10 @@
-package top.dearbo.frame.common.util.excel;
+package top.dearbo.testdome.oldexcel;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.hssf.usermodel.HSSFCellStyle;
-import org.apache.poi.hssf.usermodel.HSSFDataFormat;
-import org.apache.poi.hssf.usermodel.HSSFPalette;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hssf.usermodel.*;
+import org.apache.poi.hssf.util.CellReference;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
-import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
@@ -655,16 +652,16 @@ public class ExcelWriteUtils {
                             for (Cell c : row) {
                                 // 判断是否具有合并单元格
                                 boolean isMerge = isMergedRegion(sheet, rowNum, c.getColumnIndex());
-                                String key;
+                                String key = null;
                                 if (titleFlag) {
-                                    key = String.valueOf(sheet.getRow(Math.max(titleNum, 0)).getCell(c.getColumnIndex()));
+                                    key = String.valueOf(sheet.getRow(titleNum < 0 ? 0 : titleNum).getCell(c.getColumnIndex()));
                                 } else {
                                     key = String.valueOf(CellReference.convertNumToColString(c.getColumnIndex()));
                                 }
                                 if (StringUtils.isBlank(key)) {
                                     continue;
                                 }
-                                String value;
+                                String value = null;
                                 if (isMerge) {
                                     value = getMergedRegionValue(sheet, row.getRowNum(), c.getColumnIndex(), scienceFlag);
                                 } else {
@@ -1156,7 +1153,7 @@ public class ExcelWriteUtils {
         if (cellStyleTitleWrit == null) {
             cellStyleTitleWrit = setFontAndBorder(getCellStyleNew(), titleFontType, titleFontSize, true, false);
             //居中显示
-            cellStyleTitleWrit.setAlignment(HorizontalAlignment.CENTER);
+            cellStyleTitleWrit.setAlignment(HSSFCellStyle.ALIGN_CENTER);
         }
         cell.setCellStyle(cellStyleTitleWrit);
     }
@@ -1173,7 +1170,7 @@ public class ExcelWriteUtils {
         HSSFCellStyle titleStyle = getCellStyleNew();
         titleStyle = (HSSFCellStyle) setFontAndBorder(titleStyle, titleFontType, titleFontSize);
         //居中显示
-        titleStyle.setAlignment(HorizontalAlignment.CENTER);
+        titleStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);
         if (StringUtils.isNotBlank(titleBackColor)) {
             titleStyle = (HSSFCellStyle) setColor(titleStyle, titleBackColor, (short) 10);
         }
@@ -1280,41 +1277,39 @@ public class ExcelWriteUtils {
      */
     public String getCellValue(Cell cell, boolean scienceFlag) {
         if (null == cell) {
-            return null;
+            return "";
         }
-        CellType cellType = cell.getCellType();
-        if (cellType == CellType.STRING) {
+        if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
             return cell.getStringCellValue();
-        } else if (cellType == CellType.BOOLEAN) {
+        } else if (cell.getCellType() == Cell.CELL_TYPE_BOOLEAN) {
             return String.valueOf(cell.getBooleanCellValue());
-        } else if (cellType == CellType.FORMULA) {
-            CellValue evaluate;
+        } else if (cell.getCellType() == Cell.CELL_TYPE_FORMULA) {
+            CellValue evaluate = null;
             try {
                 //evaluate = readWorkBook.getCreationHelper().createFormulaEvaluator().evaluate(cell);
                 evaluate = createFormulaEvaluator().evaluate(cell);
             } catch (Exception e) {
                 // todo FormulaParseException | NotImplementedException | ArrayPtg 解析不了公式异常
-                //String rawValue = ((XSSFCell) cell).getRawValue();
+                String rawValue = ((XSSFCell) cell).getRawValue();
                 //logger.error("((XSSFCell) cell).getRawValue():【{}】,readWorkBook.getCreationHelper().createFormulaEvaluator().evaluate(cell):", rawValue, e);
-                return cell instanceof XSSFCell ? ((XSSFCell) cell).getRawValue() : cell.toString();
+                return rawValue;
             }
-            if (evaluate.getCellType() == CellType.NUMERIC) {
+            if (evaluate.getCellType() == Cell.CELL_TYPE_NUMERIC) {
                 return dealFormulaWithNum(evaluate.getNumberValue(), scienceFlag);
-            } else if (evaluate.getCellType() == CellType.STRING) {
+            } else if (evaluate.getCellType() == Cell.CELL_TYPE_STRING) {
                 return String.valueOf(evaluate.getStringValue());
             }
             return cell.getCellFormula();
-        } else if (cell.getCellType() == CellType.NUMERIC) {
+        } else if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
             // 判断是否是日期格式
-            if (org.apache.poi.ss.usermodel.DateUtil.isCellDateFormatted(cell)) {
+            if (HSSFDateUtil.isCellDateFormatted(cell)) {
                 return dealFormulaDate(cell);
             } else {
                 return dealFormulaWithNum(cell.getNumericCellValue(), scienceFlag);
             }
-        } else if (cell.getCellType() == CellType.ERROR) {
+        } else if (cell.getCellType() == Cell.CELL_TYPE_ERROR) {
             //错误格式 cell.toString()
-            logger.error("错误格式...cell:{}", cell);
-            return cell instanceof XSSFCell ? ((XSSFCell) cell).getRawValue() : cell.toString();
+            return ((XSSFCell) cell).getRawValue();
         }
         return cell.toString();
     }
@@ -1417,13 +1412,16 @@ public class ExcelWriteUtils {
      */
     private String getMergedRegionValue(Sheet sheet, int row, int column, boolean scienceFlag) {
         int sheetMergeCount = sheet.getNumMergedRegions();
+
         for (int i = 0; i < sheetMergeCount; i++) {
             CellRangeAddress ca = sheet.getMergedRegion(i);
             int firstColumn = ca.getFirstColumn();
             int lastColumn = ca.getLastColumn();
             int firstRow = ca.getFirstRow();
             int lastRow = ca.getLastRow();
+
             if (row >= firstRow && row <= lastRow) {
+
                 if (column >= firstColumn && column <= lastColumn) {
                     Row fRow = sheet.getRow(firstRow);
                     Cell fCell = fRow.getCell(firstColumn);
@@ -1431,6 +1429,7 @@ public class ExcelWriteUtils {
                 }
             }
         }
+
         return null;
     }
 
@@ -1477,18 +1476,18 @@ public class ExcelWriteUtils {
         font.setFontHeightInPoints(size);
         font.setFontName(fontName);
         if (boldFlag) {
-            font.setBold(true);
+            font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
         }
         style.setFont(font);
         if (borderFlag) {
             //下边框
-            style.setBorderBottom(BorderStyle.THIN);
+            style.setBorderBottom(CellStyle.BORDER_THIN);
             //左边框
-            style.setBorderLeft(BorderStyle.THIN);
+            style.setBorderLeft(CellStyle.BORDER_THIN);
             //上边框
-            style.setBorderTop(BorderStyle.THIN);
+            style.setBorderTop(CellStyle.BORDER_THIN);
             //右边框
-            style.setBorderRight(BorderStyle.THIN);
+            style.setBorderRight(CellStyle.BORDER_THIN);
         }
         return style;
     }
@@ -1524,7 +1523,7 @@ public class ExcelWriteUtils {
             palette.setColorAtIndex((short) index, (byte) r, (byte) g, (byte) b);
 
             // 填充方式
-            style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            style.setFillPattern(CellStyle.SOLID_FOREGROUND);
             //颜色样式
             style.setFillForegroundColor(index);
         }

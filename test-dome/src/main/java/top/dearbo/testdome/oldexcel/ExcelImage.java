@@ -1,6 +1,5 @@
-package top.dearbo.frame.common.util.excel;
+package top.dearbo.testdome.oldexcel;
 
-import org.apache.poi.ss.usermodel.ClientAnchor;
 import org.apache.poi.ss.usermodel.Workbook;
 
 /**
@@ -19,10 +18,10 @@ public class ExcelImage {
     }
 
     public ExcelImage(byte[] imageByte, short height, int format, int rowNum, int colNum) {
-        this(imageByte, height, format, rowNum, colNum, ClientAnchor.AnchorType.MOVE_AND_RESIZE, true);
+        this(imageByte, height, format, rowNum, colNum, 0, true);
     }
 
-    public ExcelImage(byte[] imageByte, short height, int format, int rowNum, int colNum, ClientAnchor.AnchorType anchorType, boolean mergedRegionFlag) {
+    public ExcelImage(byte[] imageByte, short height, int format, int rowNum, int colNum, int anchorType, boolean mergedRegionFlag) {
         if (height > 0) {
             this.height = (short) (height * colHeight);
         }
@@ -72,7 +71,7 @@ public class ExcelImage {
      * 0 =随单元移动并调整大小，2 =移动但不随单元调整大小，3 =不随单元移动或调整大小。
      * 默认:0
      */
-    private ClientAnchor.AnchorType anchorType;
+    private int anchorType;
 
     /**
      * 是否合并单元格
@@ -119,11 +118,11 @@ public class ExcelImage {
         this.format = format;
     }
 
-    public ClientAnchor.AnchorType getAnchorType() {
+    public int getAnchorType() {
         return anchorType;
     }
 
-    public void setAnchorType(ClientAnchor.AnchorType anchorType) {
+    public void setAnchorType(int anchorType) {
         this.anchorType = anchorType;
     }
 
