@@ -20,6 +20,19 @@ import java.util.stream.Collectors;
 public class ExcelDomeTest {
 
 	@Test
+	public void testAllSheet() throws IOException {
+		ExcelWriteUtils excelWriteUtils = ExcelWriteUtils.importExcelAllSheet("P:/8月加油数据（磐石系统）.xlsx");
+		//显示读取行号
+		excelWriteUtils.setDebugNumFlag(false);
+		List<List<Map<String, String>>> listList = excelWriteUtils.readExcelWithoutTitle(true, 1, false);
+		for (List<Map<String, String>> listMap : listList) {
+			for (Map<String, String> map : listMap) {
+				System.out.println(JsonUtil.toJson(map) + "\n");
+			}
+		}
+	}
+
+	@Test
 	public void test05() throws IOException {
 		//1-国家级，2-省级，3-市级，4-区县级，9-其他
 		Map<String, String> levelMap = new HashMap<>();

@@ -659,7 +659,7 @@ public class ExcelWriteUtils {
                                 if (titleFlag) {
                                     key = String.valueOf(sheet.getRow(Math.max(titleNum, 0)).getCell(c.getColumnIndex()));
                                 } else {
-                                    key = String.valueOf(CellReference.convertNumToColString(c.getColumnIndex()));
+                                    key = CellReference.convertNumToColString(c.getColumnIndex());
                                 }
                                 if (StringUtils.isBlank(key)) {
                                     continue;
@@ -1017,7 +1017,7 @@ public class ExcelWriteUtils {
         for (int i = 0; i < thisColumnSize; i++) {
             if (thisTitleSize == null) {
                 //如果当前宽度小于了，最小单元格宽度,设置默认最小值宽度
-                int thisWidth = columnIndexWidth[i] < rowMinStandardWidth ? rowMinStandardWidth : columnIndexWidth[i];
+                int thisWidth = Math.max(columnIndexWidth[i], rowMinStandardWidth);
                 if (thisWidth > 0) {
                     // * 2 * 256 中文适用
                     int maxWidth = thisWidth * ROW_STANDARD_WIDTH;
@@ -1025,7 +1025,7 @@ public class ExcelWriteUtils {
                         //默认字体大小是10,乘上当前字体大小
                         maxWidth = maxWidth / 10 * contentFontSize;
                     }
-                    maxWidth = maxWidth > ROW_WIDTH_MAX ? ROW_WIDTH_MAX : maxWidth;
+                    maxWidth = Math.min(maxWidth, ROW_WIDTH_MAX);
                     sheet.setColumnWidth(i, maxWidth);
                 }
             } else {
@@ -1373,7 +1373,6 @@ public class ExcelWriteUtils {
      * @param scienceFlag 是否保留科学计数法 false:不保留
      */
     private String dealFormulaWithNum(double doubleValue, boolean scienceFlag) {
-        DecimalFormat df = new DecimalFormat("0");
         String value = String.valueOf(doubleValue);
         if (value.contains("E") || value.contains("e") || value.contains("+")) {
             if (scienceFlag) {
@@ -1386,6 +1385,9 @@ public class ExcelWriteUtils {
                 decimalFormat.setMinimumFractionDigits(0);
                 return decimalFormat.format(doubleValue);
             }
+        }
+        if (value.endsWith(".0")) {
+            value = value.substring(0, value.length() - 2);
         }
         return value;
     }
