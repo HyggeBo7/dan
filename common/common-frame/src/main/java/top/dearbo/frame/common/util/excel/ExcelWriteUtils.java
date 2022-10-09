@@ -621,18 +621,18 @@ public class ExcelWriteUtils {
         List<List<Map<String, String>>> result = new ArrayList<>();
         try {
             titleNum = titleNum < -1 ? -1 : titleNum - 1;
-            List<Map<String, String>> sheetList = null;
-            Map<String, String> rowMap = null;
+            List<Map<String, String>> sheetList;
+            Map<String, String> rowMap;
             //当前读取行
             int thisNum = 0;
             // 遍历sheet页
             for (int i = startSheet - 1; i <= endSheet - 1; i++) {
                 Sheet sheet = readWorkBook.getSheetAt(i);
-                //对应sheet页
-                sheetList = new ArrayList<>();
                 if (StringUtils.isNotBlank(sheetName) && !sheet.getSheetName().equals(sheetName)) {
                     continue;
                 }
+                //对应sheet页
+                sheetList = new ArrayList<>();
                 for (Row row : sheet) {
                     int rowNum = row.getRowNum();
                     //判断是否超出最大读取行数
