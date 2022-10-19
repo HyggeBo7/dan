@@ -42,7 +42,7 @@
         <!--阿里json-->
         <fastjson.version>2.0.9</fastjson.version>
         <!--jackson json-->
-        <jackson.version>2.13.3</jackson.version>
+        <jackson.version>2.13.4.1</jackson.version>
         <!--<jjwt.version>0.9.1</jjwt.version>-->
         <jwt.version>0.11.5</jwt.version>
 
