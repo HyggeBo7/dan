@@ -41,7 +41,46 @@ public class HttpCommonUtil {
     public static final String CONTENT_TYPE = "Content-Type";
     public static final String CONTENT_TYPE_1 = "content-type";
     public static final String CONTENT_TYPE_JSON = "application/json";
-    //private static final String DEFAULT_CONTENT_TYPE = "application/x-www-form-urlencoded";
+
+    private static final String FORM_DATA_CONTENT_TYPE = "application/x-www-form-urlencoded";
+
+    /**
+     * 对url参数进行获取，然后对值进行UTF-8编码返回
+     *
+     * @param url url
+     * @return
+     */
+    public static String genUrlParamValue(String url) {
+        return genUrlParamValue(url, DEFAULT_ENCODING);
+    }
+
+    /**
+     * 对url参数进行获取，然后对值进行指定编码返回
+     * <pre>
+     *     http://xxx.xxx.xxx?name=名称&code=name&age=18   ==> http://xxx.xxx.xxx?name=%E5%90%8D%E7%A7%B0&code=name&age=18
+     * </pre>
+     *
+     * @param url            url
+     * @param encoderCharset 编码字符
+     * @return String
+     */
+    public static String genUrlParamValue(String url, String encoderCharset) {
+        if (StringUtils.isNotBlank(url)) {
+            String[] splitUrl = url.split("[?]");
+            if (splitUrl.length > 1) {
+                String[] splitParam = splitUrl[1].split("&");
+                StringBuilder stringBuffer = new StringBuilder("?");
+                for (String strParam : splitParam) {
+                    String[] splitParamData = strParam.split("=");
+                    if (splitParamData.length > 1) {
+                        stringBuffer.append(splitParamData[0]).append('=').append(urlEncoder(splitParamData[1], encoderCharset)).append('&');
+                    }
+                }
+                return splitUrl[0] + stringBuffer.substring(0, stringBuffer.length() - 1);
+            }
+        }
+        return url;
+    }
 
     /**
      * url参数编码-默认对值进行UTF-8编码
@@ -74,7 +113,7 @@ public class HttpCommonUtil {
      * @return String
      */
     public static String genUrlParam(Map<String, Object> paramMap, String encoderCharset, boolean keyEncoder, boolean valueEncoder) {
-        if (paramMap == null || paramMap.size() == 0) {
+        if (paramMap == null || paramMap.isEmpty()) {
             return "";
         }
         StringBuilder sb = new StringBuilder();
@@ -120,31 +159,33 @@ public class HttpCommonUtil {
      * @return LinkedHashMap
      */
     public static Map<String, Object> getUrlParam(String url, boolean emptyValueFlag, Object emptyValue) {
-        String strParamUrl = null;
-        if (url.startsWith("?")) {
-            strParamUrl = url.substring(1);
-        }
-        if (StringUtils.isBlank(strParamUrl) && url.contains("?")) {
-            String[] splitUrl = url.split("[?]");
-            if (splitUrl.length > 1) {
-                strParamUrl = splitUrl[1];
+        if (StringUtils.isNotBlank(url)) {
+            String strParamUrl = null;
+            if (url.startsWith("?")) {
+                strParamUrl = url.substring(1);
             }
-        }
-        if (StringUtils.isBlank(strParamUrl) && url.contains("&")) {
-            strParamUrl = url;
-        }
-        if (StringUtils.isNotBlank(strParamUrl)) {
-            String[] splitParam = strParamUrl.split("&");
-            Map<String, Object> paramMap = new LinkedHashMap<>(splitParam.length);
-            for (String strParam : splitParam) {
-                String[] splitParamData = strParam.split("=");
-                if (splitParamData.length > 1) {
-                    paramMap.put(splitParamData[0], splitParamData[1]);
-                } else if (emptyValueFlag) {
-                    paramMap.put(splitParamData[0], emptyValue);
+            if (StringUtils.isBlank(strParamUrl) && url.contains("?")) {
+                String[] splitUrl = url.split("[?]");
+                if (splitUrl.length > 1) {
+                    strParamUrl = splitUrl[1];
                 }
             }
-            return paramMap;
+            if (StringUtils.isBlank(strParamUrl) && url.contains("&")) {
+                strParamUrl = url;
+            }
+            if (StringUtils.isNotBlank(strParamUrl)) {
+                String[] splitParam = strParamUrl.split("&");
+                Map<String, Object> paramMap = new LinkedHashMap<>(splitParam.length);
+                for (String strParam : splitParam) {
+                    String[] splitParamData = strParam.split("=");
+                    if (splitParamData.length > 1) {
+                        paramMap.put(splitParamData[0], splitParamData[1]);
+                    } else if (emptyValueFlag) {
+                        paramMap.put(splitParamData[0], emptyValue);
+                    }
+                }
+                return paramMap;
+            }
         }
         return new LinkedHashMap<>();
     }
