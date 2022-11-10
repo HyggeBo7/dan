@@ -1,8 +1,6 @@
 package top.dearbo.base.bean;
 
 
-import top.dearbo.base.enums.ResultCodeEnum;
-
 import java.beans.Transient;
 import java.io.Serializable;
 
@@ -14,15 +12,6 @@ import java.io.Serializable;
  * ps:自定义方法不要加is、get等前缀
  */
 public interface BaseResult extends Serializable {
-
-	/**
-	 * 成功code
-	 */
-	ResultCodeEnum SUCCESS_ENUM = ResultCodeEnum.SUCCESS;
-	/**
-	 * 失败code
-	 */
-	ResultCodeEnum FAIL_ENUM = ResultCodeEnum.FAIL;
 
 	/**
 	 * 是否序列化null字段

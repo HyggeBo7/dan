@@ -13,10 +13,6 @@ public class AjaxResult extends AbstractResult<Object> {
     private Integer code;
     private String msg;
     private Object data;
-    /**
-     * 操作失败
-     */
-    private static final ResultCodeEnum NORMAL_ERROR_ENUM = ResultCodeEnum.NORMAL_ERROR;
 
     public AjaxResult() {
         //json反序列化时会执行当前构造函数,避免反序列化时会设置默认值
@@ -27,7 +23,7 @@ public class AjaxResult extends AbstractResult<Object> {
     }
 
     public AjaxResult(Object data, Boolean serializeNull) {
-        this(SUCCESS_ENUM.getKey(), SUCCESS_ENUM.getValue(), data);
+        this(SUCCESS_CODE, SUCCESS_MSG, data);
         this.serializeNull = serializeNull;
     }
 
@@ -57,22 +53,22 @@ public class AjaxResult extends AbstractResult<Object> {
 
     //=========成功=========
 
-    public static AjaxResult ok() {
-        return ok(null);
+    public static AjaxResult success() {
+        return success(null);
     }
 
-    public static AjaxResult ok(Object data) {
-        return ok(data, SUCCESS_ENUM.getValue());
+    public static AjaxResult success(Object data) {
+        return success(data, SUCCESS_MSG);
     }
 
-    public static AjaxResult ok(Object data, String msg) {
-        return new AjaxResult(SUCCESS_ENUM.getKey(), msg, data);
+    public static AjaxResult success(Object data, String msg) {
+        return new AjaxResult(SUCCESS_CODE, msg, data);
     }
 
     //=========失败=========
 
     public static AjaxResult failed() {
-        return failed(FAIL_ENUM.getValue());
+        return failed(FAIL_MSG);
     }
 
     public static AjaxResult failed(String msg) {
@@ -80,7 +76,7 @@ public class AjaxResult extends AbstractResult<Object> {
     }
 
     public static AjaxResult failed(String msg, Object data) {
-        return new AjaxResult(FAIL_ENUM.getKey(), msg, data, data != null);
+        return new AjaxResult(FAIL_CODE, msg, data, data != null);
     }
 
     //=========操作=========
@@ -120,7 +116,7 @@ public class AjaxResult extends AbstractResult<Object> {
     }
 
     public static AjaxResult operate(boolean successFlag, String successMsg, String errorMsg, Object data) {
-        return new AjaxResult(successFlag ? SUCCESS_ENUM.getKey() : NORMAL_ERROR_ENUM.getKey(), successFlag ? successMsg : errorMsg, successFlag ? data : null).serializeNulls(successFlag && data != null);
+        return new AjaxResult(successFlag ? SUCCESS_CODE : FAIL_CODE, successFlag ? successMsg : errorMsg, successFlag ? data : null).serializeNulls(successFlag && data != null);
     }
 
     //===========自定义操作===========

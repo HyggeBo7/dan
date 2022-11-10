@@ -11,14 +11,15 @@ public enum ResultCodeEnum implements BaseKeyValueEnum {
 	 * 成功
 	 */
 	SUCCESS(1, "成功"),
-	/**
-	 * 操作失败
-	 */
-	NORMAL_ERROR(0, "操作失败"),
+	SUCCESS_200(200, "成功"),
 	/**
 	 * 逻辑错误
 	 */
-	FAIL(-1, "逻辑错误"),
+	NORMAL_ERROR(0, "逻辑错误"),
+	/**
+	 * 操作失败
+	 */
+	FAIL(-1, "操作失败"),
 	/**
 	 * 记录已存在
 	 */

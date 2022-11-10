@@ -1,7 +1,9 @@
 package top.dearbo.frame.common.test;
 
 import org.junit.Test;
+import top.dearbo.base.enums.ResultCodeEnum;
 import top.dearbo.frame.common.test.entity.UserInfo;
+import top.dearbo.util.constant.AjaxResult;
 import top.dearbo.util.data.JacksonUtils;
 import top.dearbo.util.data.JsonUtil;
 
@@ -54,6 +56,12 @@ public class JsonTest {
 		List<Map<String, Object>> mapList = JsonUtil.toMapList(jsonArray);
 		System.out.println(JsonUtil.GSON_MAP.toJson(objectMap));
 		System.out.println(JsonUtil.GSON_MAP.toJson(mapList));
+
+		System.out.println(JsonUtil.toJson(AjaxResult.success()));
+		System.out.println(JsonUtil.toJson(AjaxResult.failed()));
+		AjaxResult.resetSuccess(ResultCodeEnum.SUCCESS_200.getCode(), ResultCodeEnum.SUCCESS_200.getValue());
+		System.out.println(JsonUtil.toJson(AjaxResult.success()));
+		System.out.println(JsonUtil.toJson(AjaxResult.failed()));
 	}
 
 
