@@ -97,6 +97,7 @@ public class WebExceptionHandlerResolver extends SimpleMappingExceptionResolver 
 			} else {
 				ResultCodeEnum resultCodeEnum = ERROR_RESULT_CODE_MAP.get(viewName);
 				if (resultCodeEnum != null) {
+					stackTrace = viewName + "：\n" + stackTrace;
 					ajaxResult = AjaxResult.restResult(resultCodeEnum);
 				} else {
 					ajaxResult = new AjaxResult(ResultCodeEnum.SERVER_ERROR.getKey(), getErrorMsg(ex));
