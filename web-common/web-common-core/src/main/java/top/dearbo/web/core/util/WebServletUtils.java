@@ -40,8 +40,7 @@ public class WebServletUtils extends org.springframework.web.util.WebUtils {
 	}
 
 	public static boolean isAjax(HttpServletRequest request, HandlerMethod handlerMethod) {
-		boolean isAjax = request.getHeader("accept").contains("application/json") || request.getHeader("X-Requested-With") != null && request.getHeader("X-Requested-With").contains("XMLHttpRequest");
-		if (isAjax) {
+		if (isAjax(request)) {
 			return true;
 		} else if (handlerMethod == null) {
 			return false;
@@ -52,7 +51,7 @@ public class WebServletUtils extends org.springframework.web.util.WebUtils {
 	}
 
 	public static boolean isAjax(HttpServletRequest request) {
-		return request.getHeader("accept") != null && request.getHeader("accept").contains("application/json") || request.getHeader("X-Requested-With") != null && request.getHeader("X-Requested-With").contains("XMLHttpRequest");
+		return request.getHeader("Content-Type") != null && request.getHeader("Content-Type").contains("application/json") || request.getHeader("accept") != null && request.getHeader("accept").contains("application/json") || request.getHeader("X-Requested-With") != null && request.getHeader("X-Requested-With").contains("XMLHttpRequest");
 	}
 
 	public static String getCookieValue(HttpServletRequest request, String name) {
