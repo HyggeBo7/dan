@@ -36,6 +36,10 @@ public class SpringContextHolder implements ApplicationContextAware, DisposableB
         SpringContextHolder.APPLICATION_CONTEXT = applicationContext;
     }
 
+	public static void setAppContext(ApplicationContext applicationContext) {
+		SpringContextHolder.APPLICATION_CONTEXT = applicationContext;
+	}
+
     /**
      * 从静态变量applicationContext中取得Bean, 自动转型为所赋值对象的类型.
      */
