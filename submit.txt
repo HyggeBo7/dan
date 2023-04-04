@@ -7,10 +7,10 @@
 	symlinks = false
 	ignorecase = true
 [remote "origin"]
-	url = https://github.com/DearBo7/dan.git
+	url = https://github.com/HyggeBo7/dan.git
 	fetch = +refs/heads/*:refs/remotes/origin/*
 [remote "second"]
-	url = https://gitee.com/DearBo7/dan.git
+	url = https://gitee.com/HyggeBo7/dan.git
 	fetch = +refs/heads/*:refs/remotes/second/*
 [branch "master"]
 	remote = origin
