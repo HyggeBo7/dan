@@ -28,21 +28,21 @@
         <xtp.version>2.2.0</xtp.version>
         <junit.version>4.13.2</junit.version>
 
-        <hutool.version>5.8.4</hutool.version>
-        <joda-time.version>2.10.14</joda-time.version>
-        <commons-beanutils.version>1.9.4</commons-beanutils.version>
+        <hutool.version>5.8.11</hutool.version>
+        <joda-time.version>2.12.5</joda-time.version>
+        <!--<commons-beanutils.version>1.9.4</commons-beanutils.version>-->
         <cglib.version>3.3.0</cglib.version>
-        <org.apache.httpcomponents.version>4.5.13</org.apache.httpcomponents.version>
+        <org.apache.httpcomponents.version>4.5.14</org.apache.httpcomponents.version>
 
         <!--apache工具类-->
         <apache-lang.version>3.12.0</apache-lang.version>
         <commons-codec.version>1.15</commons-codec.version>
         <!--谷歌json-->
-        <gson.version>2.9.0</gson.version>
+        <gson.version>2.10.1</gson.version>
         <!--阿里json-->
-        <fastjson.version>2.0.9</fastjson.version>
+        <fastjson.version>2.0.26</fastjson.version>
         <!--jackson json-->
-        <jackson.version>2.14.0</jackson.version>
+        <jackson.version>2.14.2</jackson.version>
         <!--<jjwt.version>0.9.1</jjwt.version>-->
         <jwt.version>0.11.5</jwt.version>
 
@@ -157,7 +157,7 @@
             <!--<dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-compress</artifactId>
-                <version>1.20</version>
+                <version>1.23.0</version>
             </dependency>-->
             <!--org.apache.commons:commons-io 此工件已移至：下面的commons-io -->
             <!--<dependency>
@@ -180,7 +180,7 @@
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-text</artifactId>
-                <version>1.9</version>
+                <version>1.10.0</version>
             </dependency>
             <!--网络请求-->
             <dependency>
@@ -221,7 +221,7 @@
             <dependency>
                 <groupId>com.fasterxml.jackson.datatype</groupId>
                 <artifactId>jackson-datatype-jsr310</artifactId>
-                <version>2.14.0</version>
+                <version>2.14.2</version>
             </dependency>
             <!--复制对象所用-->
             <dependency>
@@ -272,11 +272,11 @@
             </dependency>
 
             <!--第三方-工具类包-->
-            <dependency>
+            <!--<dependency>
                 <groupId>cn.hutool</groupId>
                 <artifactId>hutool-all</artifactId>
                 <version>${hutool.version}</version>
-            </dependency>
+            </dependency>-->
         </dependencies>
     </dependencyManagement>
 
@@ -509,7 +509,7 @@
         </plugins>
     </build>
 
-    <distributionManagement>
+    <!--<distributionManagement>
         <repository>
             <id>maven-releases</id>
             <name>Nexus Release Repository</name>
@@ -520,6 +520,6 @@
             <name>Nexus Snapshot Repository</name>
             <url>http://119.37.194.4:8081/repository/maven-snapshots/</url>
         </snapshotRepository>
-    </distributionManagement>
+    </distributionManagement>-->
 
 </project>

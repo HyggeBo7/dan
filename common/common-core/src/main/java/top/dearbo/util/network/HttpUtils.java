@@ -158,14 +158,8 @@ public class HttpUtils {
             AppException.throwEx("请求地址不能为空!requestUrl:" + requestUrl);
         }
         requestMethod = StringUtils.isBlank(requestMethod) ? HttpCommonUtil.METHOD_POST : requestMethod;
-        boolean methodPostFlag = true;
-        if (requestMethod.equalsIgnoreCase(HttpCommonUtil.METHOD_GET)) {
-            methodPostFlag = false;
-        }
-        boolean httpsFlag = false;
-        if (requestUrl.startsWith(HttpCommonUtil.HTTPS)) {
-            httpsFlag = true;
-        }
+        boolean methodPostFlag = !requestMethod.equalsIgnoreCase(HttpCommonUtil.METHOD_GET);
+        boolean httpsFlag = requestUrl.startsWith(HttpCommonUtil.HTTPS);
         //当前是否有开启全局代理
         if (proxy == null && globalProxyFlag) {
             proxy = HttpGlobalConfig.getInstance().getProxy();
