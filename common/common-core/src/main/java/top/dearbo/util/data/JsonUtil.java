@@ -1,22 +1,13 @@
 package top.dearbo.util.data;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.TypeAdapter;
-import com.google.gson.internal.bind.ObjectTypeAdapter;
+import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonToken;
-import com.google.gson.stream.JsonWriter;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,13 +39,14 @@ public class JsonUtil {
 				.disableHtmlEscaping()
 				.setDateFormat("yyyy-MM-dd HH:mm:ss")
 				.create();
-		//这里注册的类型需要和序列化类型一致 .registerTypeAdapter(new TypeToken<LinkedHashMap<String, Object>>()
+		//这里注册的类型需要和序列化类型一致 .registerTypeAdapter(new TypeToken<LinkedHashMap<String, Object>>() {}.getType(), new MapTypeAdapter())
 		GSON_MAP = new GsonBuilder()
 				.disableHtmlEscaping()
 				.enableComplexMapKeySerialization()
-				.setDateFormat("yyyy-MM-dd HH:mm:ss")
 				.registerTypeAdapter(new TypeToken<LinkedHashMap<String, Object>>() {
-				}.getType(), new MapTypeAdapter()).create();
+				}.getType(), new CustomMapDeserializer())
+				.setDateFormat("yyyy-MM-dd HH:mm:ss")
+				.create();
 	}
 
 	/**
@@ -127,10 +119,10 @@ public class JsonUtil {
 
 	/**
 	 * 将json转为Map List
-	 * 解决整数为浮点数
+	 * 解决整数为浮点数(Value不能使用泛型)
 	 *
 	 * @param json json
-	 * @return List<T>
+	 * @return List<Map < String, Object>>
 	 */
 	public static List<Map<String, Object>> toMapList(String json) {
 		if (StringUtils.isBlank(json)) {
@@ -179,7 +171,40 @@ public class JsonUtil {
 		};
 	}
 
-	public static class MapTypeAdapter extends TypeAdapter<Object> {
+	public static class CustomMapDeserializer implements JsonDeserializer<Map<String, Object>> {
+
+		@Override
+		public Map<String, Object> deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+			JsonObject jsonObject = json.getAsJsonObject();
+			Map<String, Object> map = new LinkedHashMap<>();
+			for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
+				String key = entry.getKey();
+				JsonElement value = entry.getValue();
+				if (value.isJsonPrimitive()) {
+					JsonPrimitive primitive = value.getAsJsonPrimitive();
+					if (primitive.isNumber()) {
+						Number number = primitive.getAsNumber();
+						if (number.intValue() == number.doubleValue()) {
+							map.put(key, number.intValue());
+						} else {
+							map.put(key, number);
+						}
+					} else {
+						map.put(key, primitive.getAsString());
+					}
+				} else if (value.isJsonObject()) {
+					map.put(key, context.deserialize(value, Map.class));
+				} else if (value.isJsonArray()) {
+					map.put(key, context.deserialize(value, List.class));
+				} else if (value.isJsonNull()) {
+					map.put(key, null);
+				}
+			}
+			return map;
+		}
+	}
+
+	/*public static class MapTypeAdapter extends TypeAdapter<Object> {
 
 		@Override
 		public Object read(JsonReader in) throws IOException {
@@ -214,9 +239,9 @@ public class JsonUtil {
 					}
 					if (numberStr.contains(".")) {
 						BigDecimal bigDecimal = new BigDecimal(numberStr);
-						/*if (numberStr.endsWith(".0")) {
+						*//*if (numberStr.endsWith(".0")) {
 							return bigDecimal.longValue();
-						}*/
+						}*//*
 						return bigDecimal.doubleValue();
 					}
 					return Long.parseLong(numberStr);
@@ -246,7 +271,7 @@ public class JsonUtil {
 			typeAdapter.write(out, value);
 		}
 
-	}
+	}*/
 
 }
 
