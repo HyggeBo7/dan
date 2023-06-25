@@ -48,7 +48,7 @@ public class GlobalWebExceptionHandler {
     @ResponseBody
     public AjaxResult handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         HttpServletRequest httpServletRequest = WebServletUtils.getHttpServletRequest();
-        logger.error("【GlobalWebExceptionHandler】handleMethodArgumentNotValidException===>uri={} trace={}", httpServletRequest == null ? "" : httpServletRequest.getRequestURI(), ExceptionUtils.getStackTrace(e));
+        logger.error("【GlobalWebExceptionHandler】handleMethodArgumentNotValidException===>uri={} trace={}", httpServletRequest.getRequestURI(), ExceptionUtils.getStackTrace(e));
         AjaxResult result = AjaxResult.restResult(ResultCodeEnum.VALIDATE_PARAM_FAIL);
         if (e.getBindingResult().hasErrors() && !CollectionUtils.isEmpty(e.getBindingResult().getFieldErrors())) {
             result.setMsg(e.getBindingResult().getFieldErrors()

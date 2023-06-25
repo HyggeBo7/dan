@@ -16,6 +16,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * web工具类
@@ -26,17 +27,11 @@ import java.util.List;
 public class WebServletUtils extends org.springframework.web.util.WebUtils {
 
 	public static HttpServletRequest getHttpServletRequest() {
-		RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
-		if (requestAttributes == null) {
-			return null;
-		}
-		try {
-			ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) requestAttributes;
-			return servletRequestAttributes.getRequest();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
+		return ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
+	}
+
+	public static HttpServletResponse getHttpServletResponse() {
+		return ((ServletRequestAttributes)Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getResponse();
 	}
 
 	public static boolean isAjax(HttpServletRequest request, HandlerMethod handlerMethod) {
