@@ -58,8 +58,9 @@ public enum ResultCodeEnum implements BaseKeyValueEnum {
 	SERVER_ERROR(-500, "系统异常,请稍后再试"),
 	LOGIN_OTHER(-400, "用户已在其他地方登录"),
 	TOKEN_INVALID(-401, "未授权的访问"),
-	NO_PERMISSION(-402, "访问的资源未授权"),
-	LOGIN_FAIL(-403, "认证失败");
+	TOKEN_EXPIRED(-402, "登录状态已过期，请重新登录"),
+	NO_PERMISSION(-403, "无对应资源访问权限，请联系管理员"),
+	LOGIN_FAIL(-404, "认证失败");
 
 	ResultCodeEnum(Integer code, String value) {
 		this.code = code;
