@@ -13,6 +13,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Objects;
@@ -90,15 +91,14 @@ public class WebServletUtils extends org.springframework.web.util.WebUtils {
 				ip = ip.substring(0, index);
 			}
 		}
-		if (checkIpEmptyOrUnknown(ip)) {
-			if ("127.0.0.1".equals(ip) || "0:0:0:0:0:0:0:1".equals(ip)) {
-				try {
-					//根据网卡取本机配置的IP
-					InetAddress inetAddress = InetAddress.getLocalHost();
-					return inetAddress.getHostAddress();
-				} catch (UnknownHostException e) {
-					e.printStackTrace();
-				}
+		List<String> localList = Arrays.asList("0:0:0:0:0:0:0:1", "127.0.0.1");
+		if (checkIpEmptyOrUnknown(ip) || localList.contains(ip)) {
+			try {
+				//根据网卡取本机配置的IP
+				InetAddress inetAddress = InetAddress.getLocalHost();
+				return inetAddress.getHostAddress();
+			} catch (UnknownHostException e) {
+				e.printStackTrace();
 			}
 		}
 		return ip;
