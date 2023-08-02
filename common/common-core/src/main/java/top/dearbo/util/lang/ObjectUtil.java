@@ -35,13 +35,13 @@ public class ObjectUtil {
         if (obj instanceof CharSequence) {
             return ((CharSequence) obj).length() > 0;
         } else if (obj instanceof List) {
-            return ((List) obj).size() > 0;
+            return ((List<?>) obj).size() > 0;
         } else if (obj instanceof Map) {
-            return ((Map) obj).size() > 0;
+            return ((Map<?, ?>) obj).size() > 0;
         } else if (obj instanceof Set) {
-            return ((Set) obj).size() > 0;
+            return ((Set<?>) obj).size() > 0;
         } else if (obj instanceof Collection) {
-            return ((Collection) obj).size() > 0;
+            return ((Collection<?>) obj).size() > 0;
         } else if (obj.getClass().isArray()) {
             return Array.getLength(obj) > 0;
         }
