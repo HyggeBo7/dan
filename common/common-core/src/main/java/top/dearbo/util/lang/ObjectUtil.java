@@ -128,14 +128,12 @@ public class ObjectUtil {
         List<T> objectList = new ArrayList<>();
         if (str != null && !"".equals(str.trim())) {
             String[] splitArr = str.split(separator);
-            if (splitArr.length > 0) {
-                for (String s : splitArr) {
-                    T value = typeConversion.getValue(s);
-                    if (value == null && typeConversion.excludeEmpty()) {
-                        continue;
-                    }
-                    objectList.add(value);
+            for (String s : splitArr) {
+                T value = typeConversion.getValue(s);
+                if (value == null && typeConversion.excludeEmpty()) {
+                    continue;
                 }
+                objectList.add(value);
             }
         }
         return objectList;
