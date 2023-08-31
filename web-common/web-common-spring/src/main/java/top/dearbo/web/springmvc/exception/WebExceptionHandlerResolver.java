@@ -48,6 +48,8 @@ public class WebExceptionHandlerResolver extends SimpleMappingExceptionResolver 
 		ERROR_RESULT_CODE_MAP.put("方法的参数异常", ResultCodeEnum.PARAM_FAIL);
 		ERROR_RESULT_CODE_MAP.put("数据库异常", ResultCodeEnum.SERVER_ERROR);
 		ERROR_RESULT_CODE_MAP.put("Redis连接异常", ResultCodeEnum.SERVER_ERROR);
+		ERROR_RESULT_CODE_MAP.put("资源访问异常", ResultCodeEnum.SERVER_ERROR);
+		ERROR_RESULT_CODE_MAP.put("连接超时", ResultCodeEnum.SERVER_ERROR);
 
 		ERROR_MESSAGE_PROPS.put("NullPointerException", "空指针异常");
 		ERROR_MESSAGE_PROPS.put("FileNotFoundException", "访问的文件不存在");
@@ -79,6 +81,9 @@ public class WebExceptionHandlerResolver extends SimpleMappingExceptionResolver 
 		ERROR_MESSAGE_PROPS.put("AuthorizationException", "访问的资源未授权");
 		ERROR_MESSAGE_PROPS.put("HostUnauthorizedException", "访问的资源未授权");
 		ERROR_MESSAGE_PROPS.put("AuthenticationException", "认证异常");
+		ERROR_MESSAGE_PROPS.put("ResourceAccessException", "资源访问异常");
+		ERROR_MESSAGE_PROPS.put("ConnectException", "连接超时");
+		ERROR_MESSAGE_PROPS.put("RuntimeException", "运行时异常");
 	}
 
 	public WebExceptionHandlerResolver() {
