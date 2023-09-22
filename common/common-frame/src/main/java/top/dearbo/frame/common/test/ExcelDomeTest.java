@@ -333,13 +333,13 @@ public class ExcelDomeTest {
 		if (value.endsWith("年")) {
 			value = value + "12月31日";
 			Date date = DateUtil.parseToDate(value, "yyyy年MM月dd日");
-			return DateUtil.parseToString(date, "yyyy-MM-dd");
+			return DateUtil.formatDate(date, "yyyy-MM-dd");
 		} else if (value.endsWith(".0")) {
 			Date javaDate = ExcelWriteUtils.getJavaDate(Double.parseDouble(value));
-			return DateUtil.parseToString(javaDate, "yyyy-MM-dd");
+			return DateUtil.formatDate(javaDate, "yyyy-MM-dd");
 		} else if (value.contains("年") && value.contains("月") && value.contains("日")) {
 			Date date = DateUtil.parseToDate(value, "yyyy年MM月dd日");
-			return DateUtil.parseToString(date, "yyyy-MM-dd");
+			return DateUtil.formatDate(date, "yyyy-MM-dd");
 		} else {
 			System.out.println("未知结果：" + value);
 		}

@@ -54,7 +54,7 @@ public class CronUtils {
         CronTrigger trigger = TriggerBuilder.newTrigger().withIdentity("Caclulate Date").withSchedule(CronScheduleBuilder.cronSchedule(cron)).build();
         Date nextDate = trigger.getFireTimeAfter(startDate);
         if (nextDate != null) {
-            return DateUtil.parseToString(nextDate, pattern);
+            return DateUtil.formatDate(nextDate, pattern);
         }
         return null;
     }

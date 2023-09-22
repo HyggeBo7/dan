@@ -28,12 +28,12 @@ public class MyThread implements Runnable {
 
     @Override
     public void run() {
-        System.out.println("开始执行===>【" + DateUtil.parseToString(new Date()) + "】===>:name:" + name + ",当前线程完成数量:【" + getOnlineCount() + "】");
+        System.out.println("开始执行===>【" + DateUtil.formatDate(new Date()) + "】===>:name:" + name + ",当前线程完成数量:【" + getOnlineCount() + "】");
         try {
             Thread.sleep(RandomUtil.getRandomInt(3000, 8000));
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        System.out.println("执行结束===>【" + DateUtil.parseToString(new Date()) + "】===>:name:" + name + ",当前线程完成数量:【" + onlineCount.incrementAndGet() + "】");
+        System.out.println("执行结束===>【" + DateUtil.formatDate(new Date()) + "】===>:name:" + name + ",当前线程完成数量:【" + onlineCount.incrementAndGet() + "】");
     }
 }

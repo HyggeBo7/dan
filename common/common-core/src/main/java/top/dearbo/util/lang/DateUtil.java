@@ -1,10 +1,14 @@
 package top.dearbo.util.lang;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.*;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.*;
 
 /**
@@ -12,6 +16,8 @@ import java.util.*;
  * @date 2017/7/21
  */
 public class DateUtil {
+
+	private static final Logger log = LoggerFactory.getLogger(DateUtil.class);
 
 	/**
 	 * 英文 如：2010-12-01
@@ -137,9 +143,64 @@ public class DateUtil {
 	 * @return Date
 	 */
 	public static Date formatShort(Date date) {
-		SimpleDateFormat df = new SimpleDateFormat(FORMAT_SHORT);
-		String format = df.format(date) + " 00:00:00";
-		return parseToDate(format, FORMAT_LONG);
+		return getStartOfDay(date);
+	}
+
+	/**
+	 * 使用预设格式将字符串转为Date yyyy-MM-dd
+	 *
+	 * @param strDate 时间字符串
+	 */
+	public static Date parseDate(String strDate) {
+		return parseToDate(strDate, FORMAT_SHORT);
+	}
+
+	/**
+	 * 使用预设格式将字符串转为Date yyyy-MM-dd HH:mm:ss
+	 *
+	 * @param strDate 时间字符串
+	 * @return Date
+	 */
+	public static Date parseDateTime(String strDate) {
+		return parseToDate(strDate, FORMAT_LONG);
+	}
+
+	/**
+	 * 使用参数Format将字符串转为Date
+	 *
+	 * @param strDate String时间字符串
+	 * @param pattern 格式
+	 * @return Date
+	 */
+	public static Date parseToDate(String strDate, String pattern) {
+		try {
+			return StringUtils.isBlank(strDate) ? null : new SimpleDateFormat(pattern).parse(strDate);
+		} catch (ParseException e) {
+			log.error("{}转换Date失败...格式:{}", strDate, pattern);
+			return null;
+		}
+	}
+
+	/**
+	 * Date转为字符串String
+	 *
+	 * @param date yyyy-MM-dd HH:mm:ss
+	 * @return 字符串
+	 */
+	public static String formatDate(Date date) {
+		return date == null ? "" : formatDate(date, FORMAT_LONG);
+	}
+
+	/**
+	 * 使用参数Date转为字符串String，指定时间格式
+	 *
+	 * @return 字符串
+	 */
+	public static String formatDate(Date date, String pattern) {
+		if (date == null || StringUtils.isBlank(pattern)) {
+			return "";
+		}
+		return new SimpleDateFormat(pattern).format(date);
 	}
 
 	/**
@@ -240,66 +301,6 @@ public class DateUtil {
 	}
 
 	/**
-	 * 使用预设格式将字符串转为Date yyyy-MM-dd
-	 *
-	 * @param strDate 时间字符串
-	 */
-	public static Date parseToDate(String strDate) {
-
-		return StringUtils.isBlank(strDate) ? null : parseToDate(strDate, FORMAT_SHORT);
-	}
-
-	/**
-	 * 使用预设格式将字符串转为Date yyyy-MM-dd HH:mm:ss
-	 *
-	 * @param strDate 时间字符串
-	 * @return Date
-	 */
-	public static Date parseDateHMS(String strDate) {
-		return StringUtils.isBlank(strDate) ? null : parseToDate(strDate, FORMAT_LONG);
-	}
-
-	/**
-	 * 使用参数Format将字符串转为Date
-	 *
-	 * @param strDate String时间字符串
-	 * @param pattern 格式
-	 * @return Date
-	 */
-	public static Date parseToDate(String strDate, String pattern) {
-		try {
-			return StringUtils.isBlank(strDate) ? null : new SimpleDateFormat(pattern).parse(strDate);
-		} catch (ParseException e) {
-			System.out.println(strDate + "转换Date失败...格式:" + pattern);
-			e.printStackTrace();
-			return null;
-		}
-	}
-
-	/**
-	 * Date转为字符串String
-	 *
-	 * @param date yyyy-MM-dd HH:mm:ss
-	 * @return 字符串
-	 */
-	public static String parseToString(Date date) {
-
-		return date == null ? "" : parseToString(date, FORMAT_LONG);
-	}
-
-	/**
-	 * 使用参数Date转为字符串String，指定时间格式
-	 *
-	 * @return 字符串
-	 */
-	public static String parseToString(Date date, String pattern) {
-		if (StringUtils.isBlank(pattern)) {
-			return "";
-		}
-		return new SimpleDateFormat(pattern).format(date);
-	}
-
-	/**
 	 * 在日期上增/减 数天 默认格式 yyyy-MM-dd HH:mm:ss
 	 *
 	 * @param strDate 时间字符串
@@ -397,7 +398,6 @@ public class DateUtil {
 	 * @return 毫秒数
 	 */
 	public static Long getMistiming(String strStartDate, String strEndDate, String pattern) {
-
 		return getMistiming(Objects.requireNonNull(parseToDate(strStartDate, pattern)), Objects.requireNonNull(parseToDate(strEndDate, pattern)));
 	}
 
@@ -555,31 +555,61 @@ public class DateUtil {
 	}
 
 	/**
-	 * 获取当月第一天
+	 * 获取指定日期周第一天(周一为第一天)
 	 *
-	 * @param currentDate 日期
-	 * @return 第一天
+	 * @param date 日期
+	 * @return 周
 	 */
-	public static Date getDateFirstDay(Date currentDate) {
-		if (currentDate == null) {
-			return null;
-		}
-		return getTimeFirstDay(getYear(currentDate), getMonth(currentDate));
+	public static Date getWeekFirstDate(Date date) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		// 将周一设定为一周的第一天
+		cal.setFirstDayOfWeek(Calendar.MONDAY);
+		cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+		setDayStartTime(cal);
+		return cal.getTime();
+	}
+
+	/**
+	 * 获取指定日期周最后一天(周一为第一天)
+	 *
+	 * @param date 日期
+	 * @return 周
+	 */
+	public static Date getWeekLastDate(Date date) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		cal.setFirstDayOfWeek(Calendar.MONDAY);
+		cal.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+		setDayEndTime(cal);
+		return cal.getTime();
 	}
 
 	/**
 	 * 获取当月第一天
 	 *
-	 * @param currentYear  年
-	 * @param currentMonth 月
+	 * @param date 日期
+	 * @return 第一天
+	 */
+	public static Date getMonthFirstDate(Date date) {
+		if (date == null) {
+			return null;
+		}
+		return getMonthFirstDate(getYear(date), getMonth(date));
+	}
+
+	/**
+	 * 获取当月第一天
+	 *
+	 * @param year  年
+	 * @param month 月
 	 * @return Date
 	 */
-	public static Date getTimeFirstDay(Integer currentYear, Integer currentMonth) {
+	public static Date getMonthFirstDate(Integer year, Integer month) {
 		Calendar cal = Calendar.getInstance();
-		cal.set(currentYear, currentMonth, 1, 0, 0, 0);
+		cal.set(year, month, 1, 0, 0, 0);
 		cal.add(Calendar.MONTH, -1);
 		cal.set(Calendar.DAY_OF_MONTH, 1);
-		//毫秒
 		cal.set(Calendar.MILLISECOND, 0);
 		return cal.getTime();
 	}
@@ -587,81 +617,32 @@ public class DateUtil {
 	/**
 	 * 获取当月最后一天
 	 *
-	 * @param currentDate 日期
+	 * @param date 日期
 	 * @return 最后一天
 	 */
-	public static Date getDateLastDay(Date currentDate) {
-		if (currentDate == null) {
+	public static Date getMonthLastDate(Date date) {
+		if (date == null) {
 			return null;
 		}
-		return getTimeLastDay(getYear(currentDate), getMonth(currentDate));
+		return getMonthLastDate(getYear(date), getMonth(date));
 	}
 
 	/**
 	 * 获取当月最后一天
 	 *
-	 * @param currentYear  年
-	 * @param currentMonth 月
+	 * @param year  年
+	 * @param month 月
 	 * @return Date
 	 */
-	public static Date getTimeLastDay(Integer currentYear, Integer currentMonth) {
+	public static Date getMonthLastDate(Integer year, Integer month) {
 		Calendar cal = Calendar.getInstance();
-		cal.set(currentYear, currentMonth, 1, 23, 59, 59);
+		cal.set(year, month, 1, 23, 59, 59);
 		cal.add(Calendar.MONTH, -1);
 		cal.set(Calendar.DAY_OF_MONTH, cal.getActualMaximum(Calendar.DAY_OF_MONTH));
-		cal.set(Calendar.MILLISECOND, 999);
+		cal.set(Calendar.MILLISECOND, 0);
 		return cal.getTime();
 	}
 
-	/**
-	 * 获取当年的第一天
-	 *
-	 * @return Date
-	 */
-	public static Date getCurrYearFirst() {
-		return getYearFirst(Calendar.getInstance().get(Calendar.YEAR));
-	}
-
-	/**
-	 * 获取当年的最后一天
-	 *
-	 * @return Date
-	 */
-	public static Date getCurrYearLast() {
-		return getYearLast(Calendar.getInstance().get(Calendar.YEAR));
-	}
-
-	/**
-	 * 获取某年第一天日期 [2021-01-01 00:00:00.0]
-	 *
-	 * @param year 年份
-	 * @return Date
-	 */
-	public static Date getYearFirst(int year) {
-		Calendar calendar = Calendar.getInstance();
-		calendar.clear();
-		calendar.set(Calendar.YEAR, year);
-		return calendar.getTime();
-	}
-
-	/**
-	 * 获取某年最后一天日期 [2021-12-31 23:59:59.999]
-	 *
-	 * @param year 年份
-	 * @return Date
-	 */
-	public static Date getYearLast(int year) {
-		Calendar calendar = Calendar.getInstance();
-		calendar.clear();
-		calendar.set(Calendar.YEAR, year);
-		calendar.roll(Calendar.DAY_OF_YEAR, -1);
-		//HOUR_OF_DAY是24小时制,HOUR是12小时制
-		calendar.set(Calendar.HOUR_OF_DAY, 23);
-		calendar.set(Calendar.MINUTE, 59);
-		calendar.set(Calendar.SECOND, 59);
-		calendar.set(Calendar.MILLISECOND, 999);
-		return calendar.getTime();
-	}
 
 	/**
 	 * 增加减少 N月,获取第一天
@@ -698,6 +679,88 @@ public class DateUtil {
 	}
 
 	/**
+	 * 获取指定日期年的第一天
+	 *
+	 * @return Date
+	 */
+	public static Date getYearFirstDate(Date date) {
+		return getYearFirstDate(getYear(date));
+	}
+
+	/**
+	 * 获取指定日期的最后一天
+	 *
+	 * @return Date
+	 */
+	public static Date getYearLastDate(Date date) {
+		return getYearLastDate(getYear(date));
+	}
+
+	/**
+	 * 获取某年第一天日期 [2021-01-01 00:00:00.0]
+	 *
+	 * @param year 年份
+	 * @return Date
+	 */
+	public static Date getYearFirstDate(int year) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.clear();
+		calendar.set(Calendar.YEAR, year);
+		return calendar.getTime();
+	}
+
+	/**
+	 * 获取某年最后一天日期 [2021-12-31 23:59:59.0]
+	 *
+	 * @param year 年份
+	 * @return Date
+	 */
+	public static Date getYearLastDate(int year) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.clear();
+		calendar.set(Calendar.YEAR, year);
+		calendar.roll(Calendar.DAY_OF_YEAR, -1);
+		setDayEndTime(calendar);
+		return calendar.getTime();
+	}
+
+	/**
+	 * 获取当年的第一天
+	 *
+	 * @return Date
+	 */
+	public static Date getCurrYearFirst() {
+		return getYearFirstDate(Calendar.getInstance().get(Calendar.YEAR));
+	}
+
+	/**
+	 * 获取当年的最后一天
+	 *
+	 * @return Date
+	 */
+	public static Date getCurrYearLast() {
+		return getYearLastDate(Calendar.getInstance().get(Calendar.YEAR));
+	}
+
+	/**
+	 * 获得当前最小时间 00:00:00.000
+	 *
+	 * @param date 日期
+	 * @return 最小时间
+	 */
+	public static Date getStartOfDay(Date date) {
+		if (date == null) {
+			return null;
+		}
+		/*LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(date.getTime()), ZoneId.systemDefault());
+		LocalDateTime startOfDay = localDateTime.with(LocalTime.MIN);
+		return Date.from(startOfDay.atZone(ZoneId.systemDefault()).toInstant());*/
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		return setDayStartTime(cal).getTime();
+	}
+
+	/**
 	 * 获得当前最大时间 23:59:59.000
 	 *
 	 * @param date 日期
@@ -717,9 +780,9 @@ public class DateUtil {
 	 */
 	public static Date getEndOfDay(Date date, boolean withZeroNano) {
 		if (date == null) {
-			return date;
+			return null;
 		}
-		LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(date.getTime()), ZoneId.systemDefault());
+		/*LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(date.getTime()), ZoneId.systemDefault());
 		LocalTime localTime;
 		if (withZeroNano) {
 			localTime = LocalTime.of(23, 59, 59);
@@ -727,24 +790,52 @@ public class DateUtil {
 			localTime = LocalTime.MAX;
 		}
 		LocalDateTime endOfDay = localDateTime.with(localTime);
-		return Date.from(endOfDay.atZone(ZoneId.systemDefault()).toInstant());
+		return Date.from(endOfDay.atZone(ZoneId.systemDefault()).toInstant());*/
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		return setDayEndTime(cal, withZeroNano).getTime();
 	}
 
 	/**
-	 * 获得当前最小时间 00:00:00.000
+	 * 设置一天的开始时间：[00:00:00]
 	 *
-	 * @param date 日期
-	 * @return 最小时间
+	 * @param cal 日历对象
 	 */
-	public static Date getStartOfDay(Date date) {
-		if (date == null) {
-			return date;
-		}
-		LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(date.getTime()), ZoneId.systemDefault());
-		LocalDateTime startOfDay = localDateTime.with(LocalTime.MIN);
-		return Date.from(startOfDay.atZone(ZoneId.systemDefault()).toInstant());
+	private static Calendar setDayStartTime(Calendar cal) {
+		cal.set(Calendar.HOUR_OF_DAY, 0);
+		cal.set(Calendar.MINUTE, 0);
+		cal.set(Calendar.SECOND, 0);
+		cal.set(Calendar.MILLISECOND, 0);
+		return cal;
 	}
 
+	/**
+	 * 设置一天的结束时间：[23:59:59.000]
+	 *
+	 * @param cal 日历对象
+	 */
+	private static Calendar setDayEndTime(Calendar cal) {
+		return setDayEndTime(cal, true);
+	}
+
+	/**
+	 * 设置一天的结束时间：[23:59:59]
+	 *
+	 * @param cal          日历对象
+	 * @param withZeroNano true:23:59:59.000,false:23:59:59.999
+	 */
+	private static Calendar setDayEndTime(Calendar cal, boolean withZeroNano) {
+		//HOUR_OF_DAY是24小时制,HOUR是12小时制
+		cal.set(Calendar.HOUR_OF_DAY, 23);
+		cal.set(Calendar.MINUTE, 59);
+		cal.set(Calendar.SECOND, 59);
+		if (withZeroNano) {
+			cal.set(Calendar.MILLISECOND, 0);
+		} else {
+			cal.set(Calendar.MILLISECOND, 999);
+		}
+		return cal;
+	}
 
 	/**
 	 * 判断两个日期是否相同
@@ -753,7 +844,7 @@ public class DateUtil {
 		if (StringUtils.isBlank(strStartDate) || StringUtils.isBlank(strEndDate)) {
 			return false;
 		}
-		return equalsDate(DateUtil.parseToDate(strStartDate), DateUtil.parseToDate(strEndDate));
+		return equalsDate(DateUtil.parseDate(strStartDate), DateUtil.parseDate(strEndDate));
 	}
 
 	/**
@@ -834,7 +925,7 @@ public class DateUtil {
 	 */
 	public static String parseDateToCron(Date date) {
 		String dateFormat = "ss mm HH dd MM ? yyyy";
-		return parseToString(date, dateFormat);
+		return formatDate(date, dateFormat);
 	}
 
 	/**
@@ -845,7 +936,6 @@ public class DateUtil {
 	 */
 	public static Date parsetCronToDate(String cron) {
 		String dateFormat = "ss mm HH dd MM ? yyyy";
-
 		return parseToDate(cron, dateFormat);
 	}
 

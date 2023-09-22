@@ -48,14 +48,14 @@ public class ProjectTest {
 	public void testDateOneOrLastDay() {
 		Date date = new Date();
 		String strDate = "2019-11-15 10:00:10";
-		//date = DateUtil.parseDateHMS(strDate);
-		//Date dateFirstDay = DateUtil.getDateFirstDay(date);
-		Date dateLastDay = DateUtil.getDateLastDay(date);
+		//date = DateUtil.parseDateTime(strDate);
+		//Date dateFirstDay = DateUtil.getMonthFirstDate(date);
+		Date dateLastDay = DateUtil.getMonthLastDate(date);
 		//System.out.println("dateFirstDay:" + DateUtil.parseToString(dateFirstDay));
-		System.out.println("dateLastDay:" + DateUtil.parseToString(dateLastDay));
+		System.out.println("dateLastDay:" + DateUtil.formatDate(dateLastDay));
 		List<Date> dateList = DateUtil.getDatesByDay(DateUtil.getStartOfDay(date), dateLastDay);
 		for (Date date1 : dateList) {
-			System.out.println("date1:" + DateUtil.parseToString(date1));
+			System.out.println("date1:" + DateUtil.formatDate(date1));
 		}
 	}
 
@@ -89,7 +89,7 @@ public class ProjectTest {
 	public void testDate() {
 		String strDate = "2019/10/20";
 		Date parseToDate = DateUtil.parseToDate(strDate, "yyyy/MM/dd");
-		String parseToString = DateUtil.parseToString(parseToDate);
+		String parseToString = DateUtil.formatDate(parseToDate);
 		System.out.println("parseToString:" + parseToString);
 	}
 
