@@ -1,5 +1,6 @@
 package top.dearbo.util.network.exception;
 
+import org.apache.http.conn.ConnectTimeoutException;
 import top.dearbo.util.constant.ResultGeneric;
 import top.dearbo.util.network.HttpClientPoolUtil;
 import top.dearbo.util.network.HttpUtils;
@@ -21,7 +22,7 @@ public class HttpException {
 	public static ResultGeneric<String> handleException(Throwable e) {
 		if (e instanceof ConnectException) {
 			return new ResultGeneric<>(HttpError.NETWORK_ERROR, "连接失败!", e.getMessage());
-		} else if (e instanceof SocketTimeoutException) {
+		} else if (e instanceof SocketTimeoutException || e instanceof ConnectTimeoutException) {
 			return new ResultGeneric<>(HttpError.TIMEOUT_ERROR, "连接超时!", e.getMessage());
 		} else if (e instanceof UnknownHostException) {
 			return new ResultGeneric<>(HttpError.UNKNOWNHOST_ERROR, "无法解析该域名!", e.getMessage());
