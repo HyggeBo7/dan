@@ -14,6 +14,7 @@ import top.dearbo.util.network.HttpClientPoolUtil;
 import top.dearbo.util.network.HttpUtils;
 import top.dearbo.util.xt.PageResult;
 
+import java.io.File;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.util.*;
@@ -23,6 +24,17 @@ import java.util.*;
  * @date 2021-06-09 20:43.
  */
 public class HttpTest {
+
+	@Test
+	public void testHttpFileUpload() {
+		String url = "http://47.96.5.131:8600/file-center/file/upload";
+		Map<String, String> headerMap = new HashMap<>();
+		headerMap.put("Authorization", "Bearer__b5d683343c607a4439acb84b00453f3a");
+		Map<String, File> fileMap = new HashMap<>();
+		fileMap.put("file", new File("F:/DownVideo/1.jpg"));
+		HttpClientPoolUtil.ResultResponse resultResponse = HttpClientPoolUtil.createRequest().doPostFileOne(url, null, headerMap, fileMap);
+		System.out.println(resultResponse);
+	}
 
 	@Test
 	public void testHttp123() {
