@@ -1,9 +1,9 @@
 package top.dearbo.web.core.util.result;
 
 import com.github.pagehelper.ISelect;
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import lombok.Data;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import top.dearbo.base.bean.BaseQuery;
@@ -21,20 +21,54 @@ import java.util.stream.Collectors;
  * @author 结果返回
  * @version 1.0.0
  */
-@Data
 public class PageResult<T> implements Serializable {
 	private Long total;
-	private List<T> list;
+	/**
+	 * 兼容旧项目-total
+	 */
+	private Long count;
+	private List<T> data;
 	private Map<String, Object> extraParams;
 
 	public PageResult(Long total) {
 		this.total = total;
-		this.list = new ArrayList<>();
+		this.count = total;
+		this.data = new ArrayList<>();
 	}
 
-	public PageResult(Long total, List<T> list) {
+	public PageResult(Long total, List<T> data) {
 		this.total = total;
-		this.list = list;
+		this.count = total;
+		this.data = data;
+	}
+
+	public Long getTotal() {
+		return total;
+	}
+
+	public Long getCount() {
+		return count;
+	}
+
+	public List<T> getData() {
+		return data;
+	}
+
+	public void setTotal(Long total) {
+		this.total = total;
+		this.count = total;
+	}
+
+	public void setData(List<T> data) {
+		this.data = data;
+	}
+
+	public Map<String, Object> getExtraParams() {
+		return extraParams;
+	}
+
+	public void setExtraParams(Map<String, Object> extraParams) {
+		this.extraParams = extraParams;
 	}
 
 	public static void startPage(BaseQuery paramQuery) {
@@ -46,11 +80,25 @@ public class PageResult<T> implements Serializable {
 	}
 
 	public static <E, T extends BaseQuery> PageInfo<E> getPageInfo(T query, ISelect select) {
-		String orderBy = getOrderBy(query);
-		if (StringUtils.isEmpty(orderBy)) {
-			return PageHelper.startPage(query.getPageIndex(), query.getPageSize()).doSelectPageInfo(select);
+		Integer pageIndex = query.getPageIndex();
+		Integer pageSize = query.getPageSize();
+		boolean count = true;
+		if (pageSize.equals(Integer.MAX_VALUE) || pageSize.equals(Integer.MAX_VALUE - 1)) {
+			//关闭分页：pageIndex:1,pageSize = Integer.MAX_VALUE
+			pageIndex = 1;
+			pageSize = Integer.MAX_VALUE;
+			count = false;
 		}
-		return PageHelper.startPage(query.getPageIndex(), query.getPageSize(), orderBy).doSelectPageInfo(select);
+		String orderBy = getOrderBy(query);
+		Page<E> startPage = PageHelper.startPage(pageIndex, pageSize, count);
+		if (StringUtils.isNotBlank(orderBy)) {
+			startPage.setOrderBy(orderBy);
+		}
+		PageInfo<E> pageInfo = startPage.doSelectPageInfo(select);
+		if (!count) {
+			pageInfo.setTotal(pageInfo.getList().size());
+		}
+		return pageInfo;
 	}
 
 	public static <E, T extends BaseQuery> PageResult<E> getPageResult(T query, ISelect select) {

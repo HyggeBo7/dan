@@ -1,13 +1,15 @@
 package top.dearbo.base.bean;
 
 
+import java.io.Serializable;
+
 /**
  * 基类查询参数
  *
  * @author wb
  * @date 2022/08/18 15:18:52.
  */
-public class BaseQuery {
+public class BaseQuery implements Serializable {
 
 	public static final Integer DEFAULT_PAGE_SIZE = 20;
 	public static final Integer DEFAULT_FIRST_PAGE = 1;
