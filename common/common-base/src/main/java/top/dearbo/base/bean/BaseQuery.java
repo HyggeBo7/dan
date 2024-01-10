@@ -31,6 +31,20 @@ public class BaseQuery {
 	 */
 	private String[] desc;
 
+	/**
+	 * 总条数(兼容)
+	 */
+	@Deprecated
+	private Integer count;
+
+	public Integer getCount() {
+		return count;
+	}
+
+	public void setCount(Integer count) {
+		this.count = count;
+	}
+
 	public String[] getAsc() {
 		return asc;
 	}
