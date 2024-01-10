@@ -28,6 +28,7 @@ public class HttpTest {
 	@Test
 	public void testHttpFileUploadAndParam() {
 		String url = "http://localhost:8010/test/testUploadAndParam";
+		//String url = "https://xfyl.dearbo.top/bo-api-xfylw/test/testUploadAndParam";
 		Map<String, File> fileMap = new HashMap<>();
 		fileMap.put("file", new File("F:/DownVideo/1.jpg"));
 		Map<String, Object> paramMap = new HashMap<>();
