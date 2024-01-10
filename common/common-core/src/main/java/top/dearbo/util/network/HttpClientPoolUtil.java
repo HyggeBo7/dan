@@ -21,6 +21,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.client.StandardHttpRequestRetryHandler;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.dearbo.util.exception.AppException;
@@ -103,14 +104,14 @@ public class HttpClientPoolUtil {
 	 */
 	private boolean usePropertyFlag = true;
 
-	private volatile static CloseableHttpClient defaultHttpClient;
+	private static final CloseableHttpClient DEFAULT_HTTP_CLIENT;
 
 	static {
 		PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
 		// 总连接池数量
-		connectionManager.setMaxTotal(300);
+		connectionManager.setMaxTotal(50);
 		// 可为每个域名设置单独的连接池数量
-		connectionManager.setDefaultMaxPerRoute(100);
+		connectionManager.setDefaultMaxPerRoute(5);
 		// setConnectTimeout：设置建立连接的超时时间
 		// setConnectionRequestTimeout：从连接池中拿连接的等待超时时间
 		// setSocketTimeout：发出请求后等待对端应答的超时时间
@@ -121,7 +122,7 @@ public class HttpClientPoolUtil {
 				.build();
 		// 重试处理器，StandardHttpRequestRetryHandler
 		HttpRequestRetryHandler retryHandler = new StandardHttpRequestRetryHandler();
-		defaultHttpClient = HttpClients.custom().setConnectionManager(connectionManager).setDefaultRequestConfig(requestConfig)
+		DEFAULT_HTTP_CLIENT = HttpClients.custom().setConnectionManager(connectionManager).setDefaultRequestConfig(requestConfig)
 				.setRetryHandler(retryHandler).build();
 	}
 
@@ -192,27 +193,27 @@ public class HttpClientPoolUtil {
 		return wrapRequest(requestUrl, null, headerMap, HttpCommonUtil.METHOD_POST, paramJson);
 	}
 
-	public ResultResponse doPostFileOne(String requestUrl, Map<String, Object> paramMap, Map<String, String> headerMap, Map<String, File> fileMap) {
+	public ResultResponse doPostFile(String requestUrl, Map<String, Object> paramMap, Map<String, String> headerMap, Map<String, File> fileMap) {
 		Map<String, List<File>> filesMap = new HashMap<>();
 		for (Map.Entry<String, File> item : fileMap.entrySet()) {
 			filesMap.put(item.getKey(), Collections.singletonList(item.getValue()));
 		}
-		return doPostFile(requestUrl, paramMap, headerMap, filesMap);
+		return doPostFiles(requestUrl, paramMap, headerMap, filesMap);
 	}
 
-	public ResultResponse doPostFile(String requestUrl, Map<String, Object> paramMap, Map<String, String> headerMap, Map<String, List<File>> fileMap) {
+	public ResultResponse doPostFiles(String requestUrl, Map<String, Object> paramMap, Map<String, String> headerMap, Map<String, List<File>> fileMap) {
 		return wrapRequest(requestUrl, paramMap, headerMap, HttpCommonUtil.METHOD_POST, null, fileMap, null);
 	}
 
-	public ResultResponse doPostFileByteOne(String requestUrl, Map<String, Object> paramMap, Map<String, String> headerMap, Map<String, byte[]> fileByteMap) {
+	public ResultResponse doPostFileByte(String requestUrl, Map<String, Object> paramMap, Map<String, String> headerMap, Map<String, byte[]> fileByteMap) {
 		Map<String, List<byte[]>> fileBytesMap = new HashMap<>();
 		for (Map.Entry<String, byte[]> item : fileByteMap.entrySet()) {
 			fileBytesMap.put(item.getKey(), Collections.singletonList(item.getValue()));
 		}
-		return doPostFileByte(requestUrl, paramMap, headerMap, fileBytesMap);
+		return doPostFileBytes(requestUrl, paramMap, headerMap, fileBytesMap);
 	}
 
-	public ResultResponse doPostFileByte(String requestUrl, Map<String, Object> paramMap, Map<String, String> headerMap, Map<String, List<byte[]>> fileByteMap) {
+	public ResultResponse doPostFileBytes(String requestUrl, Map<String, Object> paramMap, Map<String, String> headerMap, Map<String, List<byte[]>> fileByteMap) {
 		return wrapRequest(requestUrl, paramMap, headerMap, HttpCommonUtil.METHOD_POST, null, null, fileByteMap);
 	}
 
@@ -295,8 +296,7 @@ public class HttpClientPoolUtil {
 							}
 						}
 					}
-					HttpEntity entity = builder.build();
-					httpPost.setEntity(entity);
+					httpPost.setEntity(builder.build());
 				}
 				if (null != paramList && !paramList.isEmpty()) {
 					HttpEntity httpEntity = new UrlEncodedFormEntity(paramList, paramCharset);
@@ -341,13 +341,13 @@ public class HttpClientPoolUtil {
 				if (httpClient != null) {
 					response = httpClient.execute(proxy, httpRequest);
 				} else {
-					response = defaultHttpClient.execute(proxy, httpRequest);
+					response = DEFAULT_HTTP_CLIENT.execute(proxy, httpRequest);
 				}
 			} else {
 				if (httpClient != null) {
 					response = httpClient.execute(httpRequest);
 				} else {
-					response = defaultHttpClient.execute(httpRequest);
+					response = DEFAULT_HTTP_CLIENT.execute(httpRequest);
 				}
 			}
 			StatusLine statusLine = response.getStatusLine();
@@ -372,8 +372,7 @@ public class HttpClientPoolUtil {
 			if (disconnectFlag && response != null) {
 				try {
 					response.close();
-				} catch (IOException e) {
-					e.printStackTrace();
+				} catch (IOException ignored) {
 				}
 			}
 		}
@@ -686,9 +685,13 @@ public class HttpClientPoolUtil {
 		public void close() {
 			if (resultResponse != null) {
 				try {
+					//确认流被关闭
+					EntityUtils.consume(resultResponse.getEntity());
+				} catch (IOException ignored) {
+				}
+				try {
 					resultResponse.close();
-				} catch (IOException e) {
-					e.printStackTrace();
+				} catch (IOException ignored) {
 				}
 			}
 		}

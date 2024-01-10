@@ -52,10 +52,10 @@ public class ProjectTest {
 		//Date dateFirstDay = DateUtil.getMonthFirstDate(date);
 		Date dateLastDay = DateUtil.getMonthLastDate(date);
 		//System.out.println("dateFirstDay:" + DateUtil.parseToString(dateFirstDay));
-		System.out.println("dateLastDay:" + DateUtil.formatDate(dateLastDay));
-		List<Date> dateList = DateUtil.getDatesByDay(DateUtil.getStartOfDay(date), dateLastDay);
+		System.out.println("dateLastDay:" + DateUtil.formatDateTime(dateLastDay));
+		List<Date> dateList = DateUtil.getDatesByDay(DateUtil.getStartDate(date), dateLastDay);
 		for (Date date1 : dateList) {
-			System.out.println("date1:" + DateUtil.formatDate(date1));
+			System.out.println("date1:" + DateUtil.formatDateTime(date1));
 		}
 	}
 
@@ -89,7 +89,7 @@ public class ProjectTest {
 	public void testDate() {
 		String strDate = "2019/10/20";
 		Date parseToDate = DateUtil.parseToDate(strDate, "yyyy/MM/dd");
-		String parseToString = DateUtil.formatDate(parseToDate);
+		String parseToString = DateUtil.formatDateTime(parseToDate);
 		System.out.println("parseToString:" + parseToString);
 	}
 

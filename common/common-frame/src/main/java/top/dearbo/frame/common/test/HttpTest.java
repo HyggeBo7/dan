@@ -26,13 +26,26 @@ import java.util.*;
 public class HttpTest {
 
 	@Test
+	public void testHttpFileUploadAndParam() {
+		String url = "http://localhost:8010/test/testUploadAndParam";
+		Map<String, File> fileMap = new HashMap<>();
+		fileMap.put("file", new File("F:/DownVideo/1.jpg"));
+		Map<String, Object> paramMap = new HashMap<>();
+		paramMap.put("stringValue", "789张三zhan san");
+		paramMap.put("booleanValue", true);
+		paramMap.put("intValue", 888);
+		HttpClientPoolUtil.ResultResponse resultResponse = HttpClientPoolUtil.createRequest().doPostFile(url, paramMap, null, fileMap);
+		System.out.println(resultResponse);
+	}
+
+	@Test
 	public void testHttpFileUpload() {
 		String url = "http://47.96.5.131:8600/file-center/file/upload";
 		Map<String, String> headerMap = new HashMap<>();
 		headerMap.put("Authorization", "Bearer__b5d683343c607a4439acb84b00453f3a");
 		Map<String, File> fileMap = new HashMap<>();
 		fileMap.put("file", new File("F:/DownVideo/1.jpg"));
-		HttpClientPoolUtil.ResultResponse resultResponse = HttpClientPoolUtil.createRequest().doPostFileOne(url, null, headerMap, fileMap);
+		HttpClientPoolUtil.ResultResponse resultResponse = HttpClientPoolUtil.createRequest().doPostFile(url, null, headerMap, fileMap);
 		System.out.println(resultResponse);
 	}
 

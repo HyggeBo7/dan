@@ -23,11 +23,9 @@
             <artifactId>quartz</artifactId>
             <version>2.3.2</version>
         </dependency>
-        <!--集合工具类,int转List集合等-->
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>31.1-jre</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

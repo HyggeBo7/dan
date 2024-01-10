@@ -142,8 +142,8 @@ public class DateUtil {
 	 * @param date 时间
 	 * @return Date
 	 */
-	public static Date formatShort(Date date) {
-		return getStartOfDay(date);
+	public static Date parseDateShort(Date date) {
+		return getStartDate(date);
 	}
 
 	/**
@@ -184,11 +184,21 @@ public class DateUtil {
 	/**
 	 * Date转为字符串String
 	 *
+	 * @param date yyyy-MM-dd
+	 * @return 字符串
+	 */
+	public static String formatDateShort(Date date) {
+		return date == null ? null : formatDate(date, FORMAT_SHORT);
+	}
+
+	/**
+	 * Date转为字符串String
+	 *
 	 * @param date yyyy-MM-dd HH:mm:ss
 	 * @return 字符串
 	 */
-	public static String formatDate(Date date) {
-		return date == null ? "" : formatDate(date, FORMAT_LONG);
+	public static String formatDateTime(Date date) {
+		return date == null ? null : formatDate(date, FORMAT_LONG);
 	}
 
 	/**
@@ -198,7 +208,7 @@ public class DateUtil {
 	 */
 	public static String formatDate(Date date, String pattern) {
 		if (date == null || StringUtils.isBlank(pattern)) {
-			return "";
+			return null;
 		}
 		return new SimpleDateFormat(pattern).format(date);
 	}
@@ -748,7 +758,7 @@ public class DateUtil {
 	 * @param date 日期
 	 * @return 最小时间
 	 */
-	public static Date getStartOfDay(Date date) {
+	public static Date getStartDate(Date date) {
 		if (date == null) {
 			return null;
 		}
@@ -766,8 +776,8 @@ public class DateUtil {
 	 * @param date 日期
 	 * @return 最大日期
 	 */
-	public static Date getEndOfDay(Date date) {
-		return getEndOfDay(date, true);
+	public static Date getEndDate(Date date) {
+		return getEndDate(date, true);
 	}
 
 	/**
@@ -778,7 +788,7 @@ public class DateUtil {
 	 * @param withZeroNano true:23:59:59.000,false:23:59:59.999
 	 * @return 最大时间
 	 */
-	public static Date getEndOfDay(Date date, boolean withZeroNano) {
+	public static Date getEndDate(Date date, boolean withZeroNano) {
 		if (date == null) {
 			return null;
 		}

@@ -11,169 +11,170 @@ import java.util.Map;
 /**
  * Created by bo on 2017/8/21.
  */
+@Deprecated
 public class PageResult<T> {
-    /**
-     * 当前页，从1开始
-     */
-    private int currentPage = 1;
+	/**
+	 * 当前页，从1开始
+	 */
+	private int currentPage = 1;
 
-    /**
-     * 每页大小
-     */
-    private int pageSize = 10;
+	/**
+	 * 每页大小
+	 */
+	private int pageSize = 10;
 
-    /**
-     * results
-     */
-    private List<T> data;
+	/**
+	 * results
+	 */
+	private List<T> data;
 
-    private String result;
+	private String result;
 
-    private int count;
-
-
-    private boolean hasNext;
-
-    /**
-     * 是否有下一页
-     *
-     * @return
-     */
-    public void setHasNext(boolean hasNext) {
-        this.hasNext = hasNext;
-    }
+	private int count;
 
 
-    private boolean isEmpty;
+	private boolean hasNext;
 
-    public void setEmpty(boolean empty) {
-        isEmpty = empty;
-    }
-
-    private Map<String, Object> map;
-
-    public Map<String, Object> getMap() {
-        return map;
-    }
-
-    public void setMap(Map<String, Object> map) {
-        this.map = map;
-    }
-
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    private final static PageResult EMPTY = new PageResult(0, 0, Collections.emptyList());
-
-    @SuppressWarnings("unchecked")
-    public static <T> PageResult<T> emptyPaginator() {
-        return EMPTY;
-    }
-
-    public final static int TOTAL_COUNT_NOT_SUPPORTED = -1;
-
-    public PageResult(List<T> data) {
-        this.setPageSize(-1);
-        this.setCurrentPage(-1);
-        this.setData(data);
-        this.setCount(TOTAL_COUNT_NOT_SUPPORTED);
-    }
-
-    public PageResult(int pageSize, int currentPage, List<T> data) {
-        this.setPageSize(pageSize);
-        this.setCurrentPage(currentPage);
-        this.setData(data);
-        this.setCount(TOTAL_COUNT_NOT_SUPPORTED);
-    }
-
-    public PageResult(BaseQuery baseQuery, Integer totalCount) {
-        this(baseQuery.getPageSize(), baseQuery.getPageIndex(), null, totalCount);
-    }
+	/**
+	 * 是否有下一页
+	 *
+	 * @return
+	 */
+	public void setHasNext(boolean hasNext) {
+		this.hasNext = hasNext;
+	}
 
 
-    public PageResult(BaseQuery baseQuery, List<T> data, Integer totalCount) {
-        this(baseQuery.getPageSize(), baseQuery.getPageIndex(), data, totalCount);
-    }
+	private boolean isEmpty;
 
-    public PageResult(int pageSize, int currentPage, List<T> data, Integer totalCount) {
-        this.setPageSize(pageSize);
-        this.setCurrentPage(currentPage);
-        this.setData(data);
-        if (totalCount == null) {
-            totalCount = 0;
-        }
-        this.setCount(totalCount);
-        this.setHasNext(count / pageSize > currentPage);
-        this.setEmpty(CollectionUtils.isEmpty(data));
+	public void setEmpty(boolean empty) {
+		isEmpty = empty;
+	}
 
-    }
+	private Map<String, Object> map;
 
-    public void setCurrentPage(int currentPage) {
-        this.currentPage = currentPage;
-    }
+	public Map<String, Object> getMap() {
+		return map;
+	}
+
+	public void setMap(Map<String, Object> map) {
+		this.map = map;
+	}
+
+	@SuppressWarnings({"rawtypes", "unchecked"})
+	private final static PageResult EMPTY = new PageResult(0, 0, Collections.emptyList());
+
+	@SuppressWarnings("unchecked")
+	public static <T> PageResult<T> emptyPaginator() {
+		return EMPTY;
+	}
+
+	public final static int TOTAL_COUNT_NOT_SUPPORTED = -1;
+
+	public PageResult(List<T> data) {
+		this.setPageSize(-1);
+		this.setCurrentPage(-1);
+		this.setData(data);
+		this.setCount(TOTAL_COUNT_NOT_SUPPORTED);
+	}
+
+	public PageResult(int pageSize, int currentPage, List<T> data) {
+		this.setPageSize(pageSize);
+		this.setCurrentPage(currentPage);
+		this.setData(data);
+		this.setCount(TOTAL_COUNT_NOT_SUPPORTED);
+	}
+
+	public PageResult(BaseQuery baseQuery, Integer totalCount) {
+		this(baseQuery.getPageSize(), baseQuery.getPageIndex(), null, totalCount);
+	}
 
 
-    public int getCurrentPage() {
-        return currentPage;
-    }
+	public PageResult(BaseQuery baseQuery, List<T> data, Integer totalCount) {
+		this(baseQuery.getPageSize(), baseQuery.getPageIndex(), data, totalCount);
+	}
 
-    /**
-     * @return the pageSize
-     */
-    public int getPageSize() {
-        return pageSize;
-    }
+	public PageResult(int pageSize, int currentPage, List<T> data, Integer totalCount) {
+		this.setPageSize(pageSize);
+		this.setCurrentPage(currentPage);
+		this.setData(data);
+		if (totalCount == null) {
+			totalCount = 0;
+		}
+		this.setCount(totalCount);
+		this.setHasNext(count / pageSize > currentPage);
+		this.setEmpty(CollectionUtils.isEmpty(data));
 
-    /**
-     * @param pageSize the pageSize to set
-     */
-    public void setPageSize(int pageSize) {
-        this.pageSize = pageSize;
-    }
+	}
 
-    public void setData(List<T> data) {
-        this.data = data;
-    }
+	public void setCurrentPage(int currentPage) {
+		this.currentPage = currentPage;
+	}
 
-    public List<T> getData() {
-        return data;
-    }
 
-    public void setCount(int totalCount) {
-        this.count = totalCount;
-    }
+	public int getCurrentPage() {
+		return currentPage;
+	}
 
-    public int getCount() {
-        return count;
-    }
+	/**
+	 * @return the pageSize
+	 */
+	public int getPageSize() {
+		return pageSize;
+	}
 
-    /**
-     * 总共多少页
-     *
-     * @return
-     */
-    public int getTotalPage() {
-        int totalCount = this.getCount();
-        if (totalCount != TOTAL_COUNT_NOT_SUPPORTED) {
-            int page = totalCount / this.getPageSize();
-            page += totalCount - this.getPageSize() * page > 0 ? 1 : 0;
-            return page;
-        } else {
-            return TOTAL_COUNT_NOT_SUPPORTED;
-        }
+	/**
+	 * @param pageSize the pageSize to set
+	 */
+	public void setPageSize(int pageSize) {
+		this.pageSize = pageSize;
+	}
 
-    }
+	public void setData(List<T> data) {
+		this.data = data;
+	}
 
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this);
-    }
+	public List<T> getData() {
+		return data;
+	}
 
-    public String getResult() {
-        return result;
-    }
+	public void setCount(int totalCount) {
+		this.count = totalCount;
+	}
 
-    public void setResult(String result) {
-        this.result = result;
-    }
+	public int getCount() {
+		return count;
+	}
+
+	/**
+	 * 总共多少页
+	 *
+	 * @return
+	 */
+	public int getTotalPage() {
+		int totalCount = this.getCount();
+		if (totalCount != TOTAL_COUNT_NOT_SUPPORTED) {
+			int page = totalCount / this.getPageSize();
+			page += totalCount - this.getPageSize() * page > 0 ? 1 : 0;
+			return page;
+		} else {
+			return TOTAL_COUNT_NOT_SUPPORTED;
+		}
+
+	}
+
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this);
+	}
+
+	public String getResult() {
+		return result;
+	}
+
+	public void setResult(String result) {
+		this.result = result;
+	}
 
 }
 

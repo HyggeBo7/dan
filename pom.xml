@@ -45,6 +45,8 @@
         <jackson.version>2.14.2</jackson.version>
         <!--<jjwt.version>0.9.1</jjwt.version>-->
         <jwt.version>0.11.5</jwt.version>
+        <!--pagehelper 分页-->
+        <pagehelper.version>5.3.2</pagehelper.version>
 
         <!-- Maven plugins -->
         <apache-rat-plugin.version>0.13</apache-rat-plugin.version>
@@ -282,6 +284,27 @@
                 <artifactId>hutool-all</artifactId>
                 <version>${hutool.version}</version>
             </dependency>-->
+
+            <!--集合工具类,int转List集合等-->
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>32.0.0-android</version>
+            </dependency>
+
+            <!--分页-->
+            <dependency>
+                <groupId>com.github.pagehelper</groupId>
+                <artifactId>pagehelper</artifactId>
+                <version>${pagehelper.version}</version>
+            </dependency>
+
+            <!--lombok-->
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>1.18.28</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

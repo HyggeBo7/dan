@@ -815,15 +815,15 @@ public class DomeTest {
 		String cron = "0 0 11 * * ? ";
 		Date startDate = new Date();
 		Date cronScheduledDate = CronUtils.getCronScheduledNextDate(cron);
-		System.out.println(DateUtil.formatDate(cronScheduledDate));
+		System.out.println(DateUtil.formatDateTime(cronScheduledDate));
 	}
 
 
 	@Test
 	public void testDate() {
 		Date date = new Date();
-		System.out.println(DateUtil.formatDate(DateUtil.getStartOfDay(date), DateUtil.FORMAT_FULL_CN));
-		System.out.println(DateUtil.formatDate(DateUtil.getEndOfDay(date, false), DateUtil.FORMAT_FULL_CN));
+		System.out.println(DateUtil.formatDate(DateUtil.getStartDate(date), DateUtil.FORMAT_FULL_CN));
+		System.out.println(DateUtil.formatDate(DateUtil.getEndDate(date, false), DateUtil.FORMAT_FULL_CN));
 	}
 
 }

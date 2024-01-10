@@ -23,18 +23,28 @@ public class BaseQuery {
 	private Integer pageSize;
 
 	/**
-	 * 排序字段
+	 * 升序排序字段
 	 */
-	private String orderBySort;
+	private String[] asc;
+	/**
+	 * 降序排序字段
+	 */
+	private String[] desc;
 
-	private Integer count;
-
-	public String getOrderBySort() {
-		return orderBySort;
+	public String[] getAsc() {
+		return asc;
 	}
 
-	public void setOrderBySort(String orderBySort) {
-		this.orderBySort = orderBySort;
+	public void setAsc(String[] asc) {
+		this.asc = asc;
+	}
+
+	public String[] getDesc() {
+		return desc;
+	}
+
+	public void setDesc(String[] desc) {
+		this.desc = desc;
 	}
 
 	/**
@@ -48,13 +58,13 @@ public class BaseQuery {
 	}
 
 	/**
-	 * @param cPage The currentPage to set.
+	 * @param pageIndex The currentPage to set.
 	 */
-	public void setPageIndex(Integer cPage) {
-		if ((cPage == null) || (cPage <= 0)) {
+	public void setPageIndex(Integer pageIndex) {
+		if ((pageIndex == null) || (pageIndex <= 0)) {
 			this.pageIndex = null;
 		} else {
-			this.pageIndex = cPage;
+			this.pageIndex = pageIndex;
 		}
 	}
 
@@ -73,13 +83,13 @@ public class BaseQuery {
 	}
 
 	/**
-	 * @param pSize The pageSize to set.
+	 * @param pageSize The pageSize to set.
 	 */
-	public void setPageSize(Integer pSize) {
-		if ((pSize == null) || (pSize <= 0)) {
+	public void setPageSize(Integer pageSize) {
+		if ((pageSize == null) || (pageSize <= 0)) {
 			this.pageSize = null;
 		} else {
-			this.pageSize = pSize;
+			this.pageSize = pageSize;
 		}
 	}
 
@@ -97,11 +107,4 @@ public class BaseQuery {
 		return this.getPageSize();
 	}
 
-	public Integer getCount() {
-		return count;
-	}
-
-	public void setCount(Integer count) {
-		this.count = count;
-	}
 }
