@@ -112,13 +112,12 @@ public class PageResult<T> implements Serializable {
 	 * 总共多少页
 	 */
 	public long getTotalPage(BaseQuery paramQuery) {
-		long totalCount = getTotal();
-		if (totalCount > 0) {
-			long page = totalCount / paramQuery.getPageSize();
-			page += totalCount - paramQuery.getPageSize() * page > 0 ? 1 : 0;
+		if (total != null && total > 0L) {
+			long page = total / paramQuery.getPageSize();
+			page += total - paramQuery.getPageSize() * page > 0 ? 1 : 0;
 			return page;
 		} else {
-			return 0;
+			return 0L;
 		}
 	}
 

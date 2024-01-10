@@ -35,11 +35,11 @@ public class ParamUtils {
 	}
 
 	public static Date getStartTime(Date date) {
-		return DateUtil.getStartOfDay(date);
+		return DateUtil.getStartDate(date);
 	}
 
 	public static Date getEndTime(Date date) {
-		return DateUtil.getEndOfDay(date);
+		return DateUtil.getEndDate(date);
 	}
 
 }
