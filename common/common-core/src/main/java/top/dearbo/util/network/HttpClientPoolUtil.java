@@ -38,6 +38,7 @@ import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -50,9 +51,14 @@ public class HttpClientPoolUtil {
 
 	private static final Logger logger = LoggerFactory.getLogger(HttpClientPoolUtil.class);
 
-	private static final int DEFAULT_CONNECT_TIMEOUT = 1000 * 10;
-	private static final int DEFAULT_READ_TIMEOUT = 1000 * 10;
-	private static final int DEFAULT_SOCKET_TIMEOUT = 1000 * 10 * 2;
+	private static final int DEFAULT_CONNECT_TIMEOUT = 1000 * 60;
+	private static final int DEFAULT_READ_TIMEOUT = 1000 * 60;
+	private static final int DEFAULT_SOCKET_TIMEOUT = 1000 * 60 * 2;
+	/**
+	 * 连接存活时长：秒
+	 */
+	private static final long CONNECTION_TIME_TO_LIVE = 600L;
+
 	/**
 	 * 结果转String类型
 	 */
@@ -111,7 +117,7 @@ public class HttpClientPoolUtil {
 		// 总连接池数量
 		connectionManager.setMaxTotal(50);
 		// 可为每个域名设置单独的连接池数量
-		connectionManager.setDefaultMaxPerRoute(5);
+		connectionManager.setDefaultMaxPerRoute(4);
 		// setConnectTimeout：设置建立连接的超时时间
 		// setConnectionRequestTimeout：从连接池中拿连接的等待超时时间
 		// setSocketTimeout：发出请求后等待对端应答的超时时间
@@ -123,7 +129,12 @@ public class HttpClientPoolUtil {
 		// 重试处理器，StandardHttpRequestRetryHandler
 		HttpRequestRetryHandler retryHandler = new StandardHttpRequestRetryHandler();
 		DEFAULT_HTTP_CLIENT = HttpClients.custom().setConnectionManager(connectionManager).setDefaultRequestConfig(requestConfig)
-				.setRetryHandler(retryHandler).build();
+				.setRetryHandler(retryHandler)
+				// 开启后台线程清除过期的连接
+				.evictExpiredConnections()
+				// 开启后台线程清除闲置的连接
+				.evictIdleConnections(CONNECTION_TIME_TO_LIVE, TimeUnit.SECONDS)
+				.build();
 	}
 
 	private HttpClientPoolUtil() {

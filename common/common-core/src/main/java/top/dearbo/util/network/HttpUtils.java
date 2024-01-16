@@ -32,8 +32,8 @@ public class HttpUtils {
 
 	private static final Logger logger = LoggerFactory.getLogger(HttpUtils.class);
 
-	private static final int DEFAULT_CONNECT_TIMEOUT = 1000 * 10;
-	private static final int DEFAULT_READ_TIMEOUT = 1000 * 10;
+	private static final int DEFAULT_CONNECT_TIMEOUT = 1000 * 60;
+	private static final int DEFAULT_READ_TIMEOUT = 1000 * 60;
 	/**
 	 * 结果转String类型
 	 */
