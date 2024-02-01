@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * @author 结果返回
+ * @author 分页结果返回
  * @version 1.0.0
  */
 public class PageResult<T> implements Serializable {
@@ -28,7 +28,7 @@ public class PageResult<T> implements Serializable {
 	 */
 	private Long count;
 	private List<T> data;
-	private Map<String, Object> extraParams;
+	private Map<String, Object> extraData;
 
 	public PageResult(Long total) {
 		this.total = total;
@@ -63,12 +63,12 @@ public class PageResult<T> implements Serializable {
 		this.data = data;
 	}
 
-	public Map<String, Object> getExtraParams() {
-		return extraParams;
+	public Map<String, Object> getExtraData() {
+		return extraData;
 	}
 
-	public void setExtraParams(Map<String, Object> extraParams) {
-		this.extraParams = extraParams;
+	public void setExtraData(Map<String, Object> extraData) {
+		this.extraData = extraData;
 	}
 
 	public static void startPage(BaseQuery paramQuery) {
