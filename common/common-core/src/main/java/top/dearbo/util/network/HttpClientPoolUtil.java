@@ -28,7 +28,7 @@ import top.dearbo.util.exception.AppException;
 import top.dearbo.util.file.StreamUtil;
 import top.dearbo.util.network.common.HttpGlobalConfig;
 import top.dearbo.util.network.common.HttpStatusCode;
-import top.dearbo.util.network.exception.HttpException;
+import top.dearbo.util.network.exception.HttpCustomException;
 
 import java.io.File;
 import java.io.IOException;
@@ -378,7 +378,7 @@ public class HttpClientPoolUtil {
 			return resultResponse;
 		} catch (IOException | URISyntaxException ce) {
 			logger.error("url:【{}】,msg:【{}】", requestUrl, ce.getMessage(), ce);
-			return HttpException.httpClientHandleException(ce);
+			return HttpCustomException.httpClientHandleException(ce);
 		} finally {
 			if (disconnectFlag && response != null) {
 				try {

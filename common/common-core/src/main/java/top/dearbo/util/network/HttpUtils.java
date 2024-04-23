@@ -7,7 +7,7 @@ import top.dearbo.util.exception.AppException;
 import top.dearbo.util.file.StreamUtil;
 import top.dearbo.util.network.common.HttpGlobalConfig;
 import top.dearbo.util.network.common.HttpStatusCode;
-import top.dearbo.util.network.exception.HttpException;
+import top.dearbo.util.network.exception.HttpCustomException;
 
 import javax.net.ssl.*;
 import java.io.*;
@@ -265,7 +265,7 @@ public class HttpUtils {
 		} catch (IOException ce) {
 			logger.error("url:【{}】,msg:【{}】", requestUrl, ce.getMessage(), ce);
 			//AppException.throwEx(ce);
-			return HttpException.httpHandleException(ce);
+			return HttpCustomException.httpHandleException(ce);
 		} finally {
 			if (out != null) {
 				out.close();

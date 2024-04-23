@@ -17,7 +17,7 @@ import java.net.UnknownHostException;
  * @createDate: 2019-08-21 13:42.
  * @description:
  */
-public class HttpException {
+public class HttpCustomException {
 
 	public static ResultGeneric<String> handleException(Throwable e) {
 		if (e instanceof ConnectException) {
