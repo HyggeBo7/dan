@@ -388,6 +388,26 @@ public class DateUtil {
 	}
 
 	/**
+	 * 指定日期加/减N分钟
+	 */
+	public static Date addMinute(Date date, int minute) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		cal.add(Calendar.MINUTE, minute);
+		return cal.getTime();
+	}
+
+	/**
+	 * 指定日期加/减N秒
+	 */
+	public static Date addSecond(Date date, int second) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		cal.add(Calendar.SECOND, second);
+		return cal.getTime();
+	}
+
+	/**
 	 * 获取时间差 毫秒  默认格式 yyyy-MM-dd HH:mm:ss
 	 *
 	 * @param strStartDate 开始时间
