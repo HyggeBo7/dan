@@ -157,7 +157,7 @@ public class WebExceptionHandlerResolver extends SimpleMappingExceptionResolver 
 		Map<String, Object> map = new HashMap<>(4);
 		map.put("code", ajaxResult.getCode());
 		map.put("msg", ajaxResult.getMsg());
-		map.put("success", ajaxResult.isSuccess());
+		map.put("success", ajaxResult.resultSuccess());
 		if (ajaxResult.getData() != null) {
 			map.put("errorDetail", ajaxResult.getData());
 		}

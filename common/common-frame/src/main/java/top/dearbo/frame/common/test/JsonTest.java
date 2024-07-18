@@ -72,7 +72,7 @@ public class JsonTest {
 
 		System.out.println(JsonUtil.toJson(AjaxResult.success()));
 		System.out.println(JsonUtil.toJson(AjaxResult.failed()));
-		AjaxResult.resetSuccess(ResultCodeEnum.SUCCESS_200.getCode(), ResultCodeEnum.SUCCESS_200.getValue());
+		AjaxResult.restResult(ResultCodeEnum.SUCCESS_200.getCode(), ResultCodeEnum.SUCCESS_200.getValue());
 		System.out.println(JsonUtil.toJson(AjaxResult.success()));
 		System.out.println(JsonUtil.toJson(AjaxResult.failed()));
 	}
