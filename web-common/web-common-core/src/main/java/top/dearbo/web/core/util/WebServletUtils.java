@@ -1,6 +1,8 @@
 package top.dearbo.web.core.util;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -25,6 +27,8 @@ import java.util.Objects;
  * @date 2022/08/11 11:24:31.
  */
 public class WebServletUtils extends org.springframework.web.util.WebUtils {
+
+	private static final Logger log = LoggerFactory.getLogger(WebServletUtils.class);
 
 	public static HttpServletRequest getHttpServletRequest() {
 		return ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
@@ -152,7 +156,7 @@ public class WebServletUtils extends org.springframework.web.util.WebUtils {
 				try {
 					reader.close();
 				} catch (IOException e) {
-					e.printStackTrace();
+					log.error("读取失败：", e);
 				}
 			}
 			return requestBuilder.toString();
