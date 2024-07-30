@@ -61,16 +61,16 @@ public class JwtUtil {
 		}
 		if (StringUtils.isNotBlank(subject)) {
 			// 主题
-			jwtBuilder.subject(id);
+			jwtBuilder.subject(subject);
 		}
 		if (ttlMillis > 0) {
 			// 过期日期
 			jwtBuilder.expiration(new Date(nowMillis + ttlMillis));
 		}
 		// 签发时间
-		jwtBuilder.issuedAt(new Date())
-				// 签发者
-				.issuer("SnailClimb")
+		jwtBuilder.issuedAt(new Date(nowMillis));
+		// 签发者
+		jwtBuilder.issuer("SnailClimb")
 				// 签名
 				.signWith(generalKey, Jwts.SIG.HS256);
 		return jwtBuilder.compact();

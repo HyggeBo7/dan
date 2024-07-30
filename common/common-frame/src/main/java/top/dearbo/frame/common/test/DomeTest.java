@@ -110,12 +110,18 @@ public class DomeTest {
 	@Test
 	public void testJwtAndAes() throws Exception {
 		String authToken = "{\"userId\":2,\"userName\":\"DearBo\",\"appToken\":\"CJzdWIiOiJ7XCJ1c2VySDkwMTUeyJhbGciOiJI\",\"superFlag\":true,\"loginIp\":\"172.18.248.40\"}";
-		//7天有效期
-		String token = JwtUtil.createToken("10", authToken, 24 * 60 * 60 * 1000 * 7);
+		//7天有效期 24 * 60 * 60 * 1000 * 7
+		String token = JwtUtil.createToken("10", authToken, 0);
+
+		/*Map<String, Object> claimMap = new HashMap<>();
+		claimMap.put("token-key", authToken);
+		String token= JwtUtil.createToken("10", claimMap);*/
+
 		System.out.println("===========token:" + token);
 		String encryptToken = AESUtil.encryptAES(token);
 		System.out.println("encryptToken:" + encryptToken);
 		String decryptToken = AESUtil.decryptAES(encryptToken);
+		Thread.sleep(1000);
 		Claims claims = JwtUtil.parseToken(decryptToken);
 		Date expirationDate = claims.getExpiration();
 		System.out.println("claims.getSubject():" + claims.getSubject());
@@ -352,8 +358,8 @@ public class DomeTest {
 		UserInfo userInfo1 = MapperUtil.mapToBean(objectMap, UserInfo.class);
 		System.out.println("userInfo1:" + userInfo1.toString());
 		UserInfo newUserInfo = new UserInfo();
-		MapperUtil.copyProperties(userInfo,newUserInfo);
-		System.out.println("newUserInfo:"+JsonUtil.toJson(newUserInfo));
+		MapperUtil.copyProperties(userInfo, newUserInfo);
+		System.out.println("newUserInfo:" + JsonUtil.toJson(newUserInfo));
 	}
 
 	@Test
