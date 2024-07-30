@@ -6,9 +6,12 @@ import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
+import java.util.Map;
 
 /**
  * @version 1.0
@@ -21,38 +24,55 @@ public class JwtUtil {
 
 	private static final String DEFAULT_KEY = "JwtDearBo+d06ed21a41cd6ff5+85609984d06ed21a41cd6ff5bb1edf94";
 
-	public static String createToken(String id, String subject, long ttlMillis) throws Exception {
-		return createToken(id, subject, ttlMillis, DEFAULT_KEY);
+	public static String createToken(String id, Map<String, ?> claimMap) {
+		return createToken(id, claimMap, null);
 	}
 
-	public static String createToken(String id, String subject, long ttlMillis, String generalKey) throws Exception {
-		return createToken(id, subject, ttlMillis, generalKey(generalKey));
+	public static String createToken(String id, Map<String, ?> claimMap, String generalKey) {
+		return createToken(id, claimMap, 0L, generalKey);
 	}
 
-	public static String createToken(String id, String subject, long ttlMillis, SecretKey generalKey) throws Exception {
+	public static String createToken(String id, String subject, long ttlMillis) {
+		return createToken(id, subject, null, ttlMillis, generalKey(DEFAULT_KEY));
+	}
+
+	public static String createToken(String id, Map<String, ?> claimMap, long ttlMillis, String generalKey) {
+		if (StringUtils.isBlank(generalKey)) {
+			generalKey = DEFAULT_KEY;
+		}
+		return createToken(id, null, claimMap, ttlMillis, generalKey(generalKey));
+	}
+
+	public static String createToken(String id, String subject, Map<String, ?> claimMap, long ttlMillis, SecretKey generalKey) {
 		long nowMillis = System.currentTimeMillis();
 		JwtBuilder jwtBuilder = Jwts.builder()
 				// 设置头部信息header
 				.header()
 				.add("typ", "JWT")
 				.add("alg", "HS256")
-				.and()
-				// 设置自定义负载信息payload
-				//.claim("username", username)
-				// 令牌ID
-				.id(id)
-				// 签发时间
-				.issuedAt(new Date())
-				// 主题
-				.subject(subject)
-				// 签发者
-				.issuer("SnailClimb")
-				// 签名
-				.signWith(generalKey, Jwts.SIG.HS256);
+				.and();
+		if (MapUtils.isNotEmpty(claimMap)) {
+			// 设置自定义负载信息payload
+			jwtBuilder.claims(claimMap);
+		}
+		if (StringUtils.isNotBlank(id)) {
+			// 令牌ID
+			jwtBuilder.id(id);
+		}
+		if (StringUtils.isNotBlank(subject)) {
+			// 主题
+			jwtBuilder.subject(id);
+		}
 		if (ttlMillis >= 0) {
 			// 过期日期
 			jwtBuilder.expiration(new Date(nowMillis + ttlMillis));
 		}
+		// 签发时间
+		jwtBuilder.issuedAt(new Date())
+				// 签发者
+				.issuer("SnailClimb")
+				// 签名
+				.signWith(generalKey, Jwts.SIG.HS256);
 		return jwtBuilder.compact();
 	}
 
