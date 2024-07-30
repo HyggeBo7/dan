@@ -63,7 +63,7 @@ public class JwtUtil {
 			// 主题
 			jwtBuilder.subject(id);
 		}
-		if (ttlMillis >= 0) {
+		if (ttlMillis > 0) {
 			// 过期日期
 			jwtBuilder.expiration(new Date(nowMillis + ttlMillis));
 		}
