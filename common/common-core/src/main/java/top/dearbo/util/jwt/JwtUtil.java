@@ -1,9 +1,9 @@
 package top.dearbo.util.jwt;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 
@@ -19,55 +19,75 @@ import java.util.Date;
  */
 public class JwtUtil {
 
-    private static final String DEFAULT_KEY = "JwtDearBo+d06ed21a41cd6ff5+85609984d06ed21a41cd6ff5bb1edf94";
+	private static final String DEFAULT_KEY = "JwtDearBo+d06ed21a41cd6ff5+85609984d06ed21a41cd6ff5bb1edf94";
 
-    public static String createToken(String id, String subject, long ttlMillis) throws Exception {
-        return createToken(id, subject, ttlMillis, DEFAULT_KEY);
-    }
+	public static String createToken(String id, String subject, long ttlMillis) throws Exception {
+		return createToken(id, subject, ttlMillis, DEFAULT_KEY);
+	}
 
-    public static String createToken(String id, String subject, long ttlMillis, String generalKey) throws Exception {
-        return createToken(id, subject, ttlMillis, generalKey(generalKey));
-    }
+	public static String createToken(String id, String subject, long ttlMillis, String generalKey) throws Exception {
+		return createToken(id, subject, ttlMillis, generalKey(generalKey));
+	}
 
-    public static String createToken(String id, String subject, long ttlMillis, SecretKey generalKey) throws Exception {
-        long nowMillis = System.currentTimeMillis();
-        JwtBuilder jwtBuilder = Jwts.builder()
-                .setId(id)
-                .signWith(generalKey, SignatureAlgorithm.HS256)
-                .setIssuer("SnailClimb")
-                .setIssuedAt(new Date(nowMillis))
-                .setSubject(subject);
-        if (ttlMillis >= 0) {
-            jwtBuilder.setExpiration(new Date(nowMillis + ttlMillis));
-        }
-        return jwtBuilder.compact();
-    }
+	public static String createToken(String id, String subject, long ttlMillis, SecretKey generalKey) throws Exception {
+		long nowMillis = System.currentTimeMillis();
+		JwtBuilder jwtBuilder = Jwts.builder()
+				// 设置头部信息header
+				.header()
+				.add("typ", "JWT")
+				.add("alg", "HS256")
+				.and()
+				// 设置自定义负载信息payload
+				//.claim("username", username)
+				// 令牌ID
+				.id(id)
+				// 签发时间
+				.issuedAt(new Date())
+				// 主题
+				.subject(subject)
+				// 签发者
+				.issuer("SnailClimb")
+				// 签名
+				.signWith(generalKey, Jwts.SIG.HS256);
+		if (ttlMillis >= 0) {
+			// 过期日期
+			jwtBuilder.expiration(new Date(nowMillis + ttlMillis));
+		}
+		return jwtBuilder.compact();
+	}
 
-    public static Claims parseToken(String token) throws Exception {
-        return parseToken(token, DEFAULT_KEY);
-    }
+	public static Claims parseToken(String token) {
+		return parseToken(token, DEFAULT_KEY);
+	}
 
-    public static Claims parseToken(String token, String generalKey) throws Exception {
-        return parseToken(token, generalKey(generalKey));
-    }
+	public static Claims parseToken(String token, String generalKey) {
+		return parseToken(token, generalKey(generalKey));
+	}
 
-    public static Claims parseToken(String token, SecretKey generalKey) throws Exception {
-        /*return Jwts.parser()
-                .setSigningKey(generalKey)
-                .parseClaimsJws(token)
-                .getBody();*/
-        return Jwts.parserBuilder().setSigningKey(generalKey).build().parseClaimsJws(token).getBody();
-    }
+	public static Claims parseToken(String token, SecretKey generalKey) {
+		return parseClaim(token, generalKey).getPayload();
+	}
 
-    /**
-     * 由字符串生成加密key
-     *
-     * @return SecretKey
-     */
-    public static SecretKey generalKey(String stringKey) {
-        byte[] encodedKey = Decoders.BASE64.decode(stringKey);
-        return Keys.hmacShaKeyFor(encodedKey);
-    }
+	public static Jws<Claims> parseClaim(String token) {
+		return parseClaim(token, generalKey(DEFAULT_KEY));
+	}
+
+	public static Jws<Claims> parseClaim(String token, SecretKey generalKey) {
+		return Jwts.parser()
+				.verifyWith(generalKey)
+				.build()
+				.parseSignedClaims(token);
+	}
+
+	/**
+	 * 由字符串生成加密key
+	 *
+	 * @return SecretKey
+	 */
+	public static SecretKey generalKey(String stringKey) {
+		byte[] encodedKey = Decoders.BASE64.decode(stringKey);
+		return Keys.hmacShaKeyFor(encodedKey);
+	}
 
     /*public static void main(String[] args) throws Exception {
         String key = DEFAULT_KEY;
