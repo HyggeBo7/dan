@@ -1,13 +1,13 @@
 package top.dearbo.base.bean;
 
 
+import java.beans.Transient;
 import java.io.Serializable;
 
 /**
  * 基类查询参数
  *
  * @author wb
- * @date 2022/08/18 15:18:52.
  */
 public class BaseQuery implements Serializable {
 
@@ -17,35 +17,21 @@ public class BaseQuery implements Serializable {
 	/**
 	 * 当前页码
 	 */
-	private Integer pageIndex;
+	private transient Integer pageIndex;
 
 	/**
 	 * 每页多少条数据
 	 */
-	private Integer pageSize;
+	private transient Integer pageSize;
 
 	/**
 	 * 升序排序字段
 	 */
-	private String[] asc;
+	private transient String[] asc;
 	/**
 	 * 降序排序字段
 	 */
-	private String[] desc;
-
-	/**
-	 * 总条数(兼容)
-	 */
-	@Deprecated
-	private Integer count;
-
-	public Integer getCount() {
-		return count;
-	}
-
-	public void setCount(Integer count) {
-		this.count = count;
-	}
+	private transient String[] desc;
 
 	public String[] getAsc() {
 		return asc;
@@ -94,6 +80,7 @@ public class BaseQuery implements Serializable {
 		return pageSize;
 	}
 
+	@Transient
 	public boolean hasPage() {
 		return pageIndex != null && pageSize != null;
 	}
@@ -112,6 +99,7 @@ public class BaseQuery implements Serializable {
 	/**
 	 * @return Returns the startRow.
 	 */
+	@Transient
 	public int getStartRow() {
 		return this.getPageSize() * (this.getPageIndex() - 1);
 	}
@@ -119,6 +107,7 @@ public class BaseQuery implements Serializable {
 	/**
 	 * @return Returns the endRow.
 	 */
+	@Transient
 	public int getEndRow() {
 		return this.getPageSize();
 	}
