@@ -6,7 +6,6 @@ import top.dearbo.base.bean.BaseKeyValueEnum;
  * 是否删除：正常：0，已删除：1
  *
  * @author wb
- * @date 2022/03/21
  */
 public enum DeleteTypeEnum implements BaseKeyValueEnum {
 

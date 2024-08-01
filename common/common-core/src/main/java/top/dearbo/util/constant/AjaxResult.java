@@ -97,6 +97,14 @@ public class AjaxResult extends LinkedHashMap<String, Object> implements BaseRes
 		return new AjaxResult(ResultCodeEnum.FAIL.getCode(), msg, data, true);
 	}
 
+	public static AjaxResult error() {
+		return restResult(ResultCodeEnum.SERVER_ERROR);
+	}
+
+	public static AjaxResult error(String msg) {
+		return new AjaxResult(ResultCodeEnum.BUSINESS_ERROR.getCode(), msg, null, false);
+	}
+
 	//=========操作=========
 
 	/**
@@ -134,7 +142,7 @@ public class AjaxResult extends LinkedHashMap<String, Object> implements BaseRes
 	}
 
 	public static AjaxResult operate(boolean successFlag, String successMsg, String errorMsg, Object data) {
-		return new AjaxResult(successFlag ? ResultCodeEnum.SUCCESS.getCode() : ResultCodeEnum.FAIL.getCode(), successFlag ? successMsg : errorMsg, successFlag ? data : null).serializeNulls(successFlag && data != null);
+		return new AjaxResult(successFlag ? ResultCodeEnum.SUCCESS.getCode() : ResultCodeEnum.OPERATE_FAIL.getCode(), successFlag ? successMsg : errorMsg, successFlag ? data : null).serializeNulls(successFlag && data != null);
 	}
 
 	//===========自定义操作===========

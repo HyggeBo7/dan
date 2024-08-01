@@ -13,54 +13,41 @@ public enum ResultCodeEnum implements BaseKeyValueEnum {
 	SUCCESS(1, "成功"),
 	SUCCESS_200(200, "成功"),
 	/**
-	 * 逻辑错误
+	 * 校验相关自定义错误
 	 */
-	NORMAL_ERROR(0, "逻辑错误"),
+	NORMAL_ERROR(-100, "逻辑错误"),
 	/**
-	 * 操作失败
+	 * 业务处理操作失败
 	 */
-	FAIL(-1, "操作失败"),
+	FAIL(-101, "操作失败"),
 	/**
-	 * 记录已存在
+	 * 数据处理操作失败
 	 */
-	RECORD_EXISTS(-2, "记录已存在"),
+	OPERATE_FAIL(-102, "操作失败"),
+	RECORD_EXISTS(-103, "记录已存在"),
+	RELATED_DATA(-104, "存在关联数据"),
+	VALIDATE_PARAM_FAIL(-105, "参数校验失败"),
+	PARAM_FAIL(-106, "参数错误"),
+	REQUEST_ILLEGAL(-107, "非法请求"),
 	/**
-	 * 存在关联数据
+	 * 系统异常以及警告
 	 */
-	RELATED_DATA(-3, "存在关联数据"),
+	SERVER_ERROR(500, "系统异常,请稍后再试"),
+	BUSINESS_ERROR(-500, "系统内部错误"),
+	WARN(-501, "警告"),
+	UNEXPECTED_FAIL(-502, "非预期异常"),
+	REQUEST_PROHIBIT(-503, "禁止访问"),
+	UNKNOWN(-504, "未知异常"),
 	/**
-	 * 参数错误
+	 * 授权相关异常
 	 */
-	PARAM_FAIL(-9, "参数错误"),
-	/**
-	 * 参数校验失败
-	 */
-	VALIDATE_PARAM_FAIL(-10, "参数校验失败"),
-	/**
-	 * 非预期异常
-	 */
-	UNEXPECTED_FAIL(-11, "非预期异常"),
-	/**
-	 * 非法请求
-	 */
-	REQUEST_ILLEGAL(-12, "非法请求"),
-	/**
-	 * 临时限制访问
-	 */
-	REQUEST_PROHIBIT(-13, "禁止访问"),
-	/**
-	 * 未知异常
-	 */
-	UNKNOWN(-99, "未知异常"),
-	/**
-	 * 服务器内部错误
-	 */
-	SERVER_ERROR(-500, "系统异常,请稍后再试"),
+	TOKEN_INVALID(401, "未授权的访问"),
+	NO_PERMISSION(403, "无对应资源访问权限，请联系管理员"),
+	NOT_FOUND(404, "资源未找到"),
 	LOGIN_OTHER(-400, "用户已在其他地方登录"),
-	TOKEN_INVALID(-401, "未授权的访问"),
-	TOKEN_EXPIRED(-402, "登录状态已过期，请重新登录"),
-	NO_PERMISSION(-403, "无对应资源访问权限，请联系管理员"),
-	LOGIN_FAIL(-404, "认证失败");
+	TOKEN_EXPIRED(-401, "登录状态已过期，请重新登录"),
+	LOGIN_FAIL(-402, "认证失败"),
+	;
 
 	ResultCodeEnum(Integer code, String value) {
 		this.code = code;

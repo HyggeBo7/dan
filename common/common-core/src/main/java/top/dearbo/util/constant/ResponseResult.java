@@ -70,6 +70,14 @@ public class ResponseResult<T> extends AbstractResult<T> {
 		return new ResponseResult<>(FAIL_CODE, msg, data, true);
 	}
 
+	public static <T> ResponseResult<T> error() {
+		return new ResponseResult<>(ResultCodeEnum.SERVER_ERROR.getCode(), ResultCodeEnum.SERVER_ERROR.getValue(), null, false);
+	}
+
+	public static <T> ResponseResult<T> error(String msg) {
+		return new ResponseResult<>(ResultCodeEnum.BUSINESS_ERROR.getCode(), msg, null, false);
+	}
+
 	//=========操作=========
 
 	/**
@@ -109,7 +117,7 @@ public class ResponseResult<T> extends AbstractResult<T> {
 	}
 
 	public static <T> ResponseResult<T> operate(boolean successFlag, String successMsg, String errorMsg, T data) {
-		return new ResponseResult<>(successFlag ? SUCCESS_CODE : FAIL_CODE, successFlag ? successMsg : errorMsg, successFlag ? data : null);
+		return new ResponseResult<>(successFlag ? SUCCESS_CODE : ResultCodeEnum.OPERATE_FAIL.getCode(), successFlag ? successMsg : errorMsg, successFlag ? data : null);
 	}
 
 	//===========自定义操作===========

@@ -18,4 +18,14 @@ public class PageQuery<T> extends BaseQuery {
 		this.condition = condition;
 	}
 
+	public T getCondition(Class<T> nullCreate) {
+		if (condition == null) {
+			try {
+				condition = nullCreate.newInstance();
+			} catch (InstantiationException | IllegalAccessException ignored) {
+			}
+		}
+		return condition;
+	}
+
 }

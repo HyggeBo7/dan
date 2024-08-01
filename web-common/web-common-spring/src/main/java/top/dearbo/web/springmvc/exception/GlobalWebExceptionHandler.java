@@ -8,17 +8,22 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingPathVariableException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import top.dearbo.base.enums.ResultCodeEnum;
 import top.dearbo.util.constant.AjaxResult;
 import top.dearbo.web.core.util.WebServletUtils;
 
+import javax.servlet.http.HttpServletRequest;
+import java.nio.file.AccessDeniedException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -31,17 +36,48 @@ public class GlobalWebExceptionHandler {
 	private static final Logger log = LoggerFactory.getLogger(GlobalWebExceptionHandler.class);
 
 	/**
+	 * 权限校验异常
+	 */
+	@ExceptionHandler(AccessDeniedException.class)
+	@ResponseBody
+	public AjaxResult handleAccessDeniedException(AccessDeniedException e, HttpServletRequest request) {
+		String requestURI = request.getRequestURI();
+		log.error("请求地址'{}',权限校验失败'{}'", requestURI, e.getMessage());
+		return AjaxResult.restResult(ResultCodeEnum.NO_PERMISSION);
+	}
+
+	/**
+	 * 请求方式不支持
+	 */
+	@ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+	@ResponseBody
+	public AjaxResult handleHttpRequestMethodNotSupported(HttpRequestMethodNotSupportedException e, HttpServletRequest request) {
+		String requestURI = request.getRequestURI();
+		log.error("请求地址'{}',不支持'{}'请求", requestURI, e.getMethod());
+		return AjaxResult.failed(e.getMessage());
+	}
+
+	/**
 	 * 接口不存在
-	 *
-	 * @param e
-	 * @return
 	 */
 	@ExceptionHandler({NoHandlerFoundException.class})
 	@ResponseStatus(HttpStatus.NOT_FOUND)
 	@ResponseBody
 	public AjaxResult noHandlerMapping(NoHandlerFoundException e) {
-		log.warn("noHandlerMapping===>uri={} trace={}", e.getRequestURL(), ExceptionUtils.getStackTrace(e));
+		log.error("请求地址不存在===>uri={} trace={}", e.getRequestURL(), ExceptionUtils.getStackTrace(e));
 		return AjaxResult.restResult(ResultCodeEnum.REQUEST_ILLEGAL, "请求的接口 " + e.getRequestURL() + " 未找到");
+	}
+
+	/**
+	 * 请求参数类型不匹配
+	 */
+	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
+	@ResponseBody
+	public AjaxResult handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e, HttpServletRequest request) {
+		String requestURI = request.getRequestURI();
+		String value = e.getValue() != null ? e.getValue().toString() : null;
+		log.error("请求参数类型不匹配'{}',发生系统异常.", requestURI, e);
+		return AjaxResult.restResult(ResultCodeEnum.PARAM_FAIL.getCode(), String.format("请求参数类型不匹配，参数[%s]要求类型为：'%s'，但输入值为：'%s'", e.getName(), e.getRequiredType() == null ? null : e.getRequiredType().getName(), value));
 	}
 
 	/**
@@ -50,10 +86,8 @@ public class GlobalWebExceptionHandler {
 	@ExceptionHandler({MissingServletRequestParameterException.class})
 	@ResponseBody
 	public AjaxResult handleMissingServletRequestParameterException(MissingServletRequestParameterException e) {
-		log.warn("handleMissingServletRequestParameterException===> trace={}", ExceptionUtils.getStackTrace(e));
-		AjaxResult result = AjaxResult.restResult(ResultCodeEnum.VALIDATE_PARAM_FAIL);
-		result.setMsg("请求参数缺少[" + e.getParameterName() + "]");
-		return result;
+		log.error("缺少参数===> trace={}", ExceptionUtils.getStackTrace(e));
+		return AjaxResult.restResult(ResultCodeEnum.PARAM_FAIL.getCode(), "请求参数缺少[" + e.getParameterName() + "]");
 	}
 
 	/**
@@ -71,17 +105,14 @@ public class GlobalWebExceptionHandler {
 	}*/
 
 	/**
-	 * 参数异常处理
-	 **/
-	@ExceptionHandler({MethodArgumentNotValidException.class})
+	 * 请求路径中缺少必需的路径变量
+	 */
+	@ExceptionHandler(MissingPathVariableException.class)
 	@ResponseBody
-	public AjaxResult handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-		log.warn("handleMethodArgumentNotValidException===>uri={} trace={}", WebServletUtils.getHttpServletRequest().getRequestURI(), ExceptionUtils.getStackTrace(e));
-		AjaxResult result = AjaxResult.restResult(ResultCodeEnum.VALIDATE_PARAM_FAIL);
-		if (e.getBindingResult().hasErrors() && !CollectionUtils.isEmpty(e.getBindingResult().getFieldErrors())) {
-			Optional.ofNullable(getBindResultMsg(e.getBindingResult())).ifPresent(result::setMsg);
-		}
-		return result;
+	public AjaxResult handleMissingPathVariableException(MissingPathVariableException e, HttpServletRequest request) {
+		String requestURI = request.getRequestURI();
+		log.error("请求路径中缺少必需的路径变量'{}',发生系统异常.", requestURI, e);
+		return AjaxResult.restResult(ResultCodeEnum.PARAM_FAIL.getCode(), String.format("请求路径中缺少必需的路径变量[%s]", e.getVariableName()));
 	}
 
 	/**
@@ -90,9 +121,23 @@ public class GlobalWebExceptionHandler {
 	@ExceptionHandler({BindException.class})
 	@ResponseBody
 	public AjaxResult handleBindExceptionHandler(BindException e) {
-		log.warn("handleBindExceptionHandler===>uri={} trace={}", WebServletUtils.getHttpServletRequest().getRequestURI(), ExceptionUtils.getStackTrace(e));
-		AjaxResult result = AjaxResult.restResult(ResultCodeEnum.VALIDATE_PARAM_FAIL);
+		log.error("handleBindExceptionHandler===>uri={} trace={}", WebServletUtils.getHttpServletRequest().getRequestURI(), ExceptionUtils.getStackTrace(e));
+		AjaxResult result = AjaxResult.restResult(ResultCodeEnum.PARAM_FAIL);
 		Optional.ofNullable(getBindResultMsg(e.getBindingResult())).ifPresent(result::setMsg);
+		return result;
+	}
+
+	/**
+	 * 参数异常处理
+	 **/
+	@ExceptionHandler({MethodArgumentNotValidException.class})
+	@ResponseBody
+	public AjaxResult handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+		log.error("参数异常===>uri={} trace={}", WebServletUtils.getHttpServletRequest().getRequestURI(), ExceptionUtils.getStackTrace(e));
+		AjaxResult result = AjaxResult.restResult(ResultCodeEnum.VALIDATE_PARAM_FAIL);
+		if (e.getBindingResult().hasErrors() && !CollectionUtils.isEmpty(e.getBindingResult().getFieldErrors())) {
+			Optional.ofNullable(getBindResultMsg(e.getBindingResult())).ifPresent(result::setMsg);
+		}
 		return result;
 	}
 

@@ -41,7 +41,7 @@ public class WebExceptionHandlerResolver extends SimpleMappingExceptionResolver 
 
 	static {
 		ERROR_RESULT_CODE_MAP.put("空指针异常", ResultCodeEnum.SERVER_ERROR);
-		ERROR_RESULT_CODE_MAP.put("业务异常", ResultCodeEnum.SERVER_ERROR);
+		ERROR_RESULT_CODE_MAP.put("业务异常", ResultCodeEnum.BUSINESS_ERROR);
 		ERROR_RESULT_CODE_MAP.put("用户未登录", ResultCodeEnum.LOGIN_FAIL);
 		ERROR_RESULT_CODE_MAP.put("访问的资源未授权", ResultCodeEnum.NO_PERMISSION);
 		ERROR_RESULT_CODE_MAP.put("认证异常", ResultCodeEnum.LOGIN_FAIL);
@@ -68,7 +68,7 @@ public class WebExceptionHandlerResolver extends SimpleMappingExceptionResolver 
 		//非法参数
 		ERROR_MESSAGE_PROPS.put("IllegalArgumentException", "方法的参数异常");
 		//方法参数类型不匹配异常
-		ERROR_MESSAGE_PROPS.put("MethodArgumentTypeMismatchException", "方法的参数异常");
+		//ERROR_MESSAGE_PROPS.put("MethodArgumentTypeMismatchException", "方法的参数异常");
 		//gson、jackson
 		ERROR_MESSAGE_PROPS.put("JsonParseException", "方法的参数异常");
 		//fastjson、fastjson2

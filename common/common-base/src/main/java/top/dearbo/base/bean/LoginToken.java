@@ -4,10 +4,8 @@ package top.dearbo.base.bean;
  * 登录
  *
  * @author wb
- * @date 2022/08/11 10:48:25.
  */
 public class LoginToken {
-
 	private int userId;
 	private String userName;
 	private String appToken;
