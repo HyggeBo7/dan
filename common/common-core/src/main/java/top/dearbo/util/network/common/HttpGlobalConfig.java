@@ -38,6 +38,14 @@ public class HttpGlobalConfig {
 		return globalHttpHost;
 	}
 
+	public void clearProxy() {
+		globalProxy = null;
+	}
+
+	public void clearHttpHost() {
+		globalHttpHost = null;
+	}
+
 	public static HttpGlobalConfig getInstance() {
 		if (httpGlobalConfig == null) {
 			synchronized (HttpGlobalConfig.class) {
