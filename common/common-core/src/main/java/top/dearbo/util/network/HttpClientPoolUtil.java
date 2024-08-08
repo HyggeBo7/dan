@@ -341,9 +341,10 @@ public class HttpClientPoolUtil {
 				}
 				headerMap.putIfAbsent(HttpCommonUtil.ACCEPT, "*/*");
 				headerMap.putIfAbsent(HttpCommonUtil.USER_AGENT, "Mozilla/5.0 (Windows NT 6.1; Win64; x64)");
+				headerMap.putIfAbsent("Connection", "keep-alive");
 			}
 			//设置头部
-			if (headerMap != null && headerMap.size() > 0) {
+			if (headerMap != null && !headerMap.isEmpty()) {
 				for (Map.Entry<String, String> headerItem : headerMap.entrySet()) {
 					httpRequest.setHeader(headerItem.getKey(), headerItem.getValue());
 				}

@@ -26,6 +26,18 @@ import java.util.*;
 public class HttpTest {
 
 	@Test
+	public void testHttp404() {
+		String url = "https://ccc3.ddn2024ddb6666.com/cdn2024/202407/20/669a56e57327970b087f6d92/f4a4ff/index.m3u8";
+		Map<String, String> headerMap = new HashMap<>(2);
+		headerMap.put("Host", "861.cdn-vod.huaweicloud.com");
+		headerMap.put("Referer", "http://www.mayikt.com/");
+		//HttpClientPoolUtil.ResultResponse resultResponse = HttpClientPoolUtil.createRequest().doGet(url, null, headerMap);
+		//System.out.println(resultResponse);
+		HttpUtils.ResultResponse resultResponse1 = HttpUtils.createRequest().doGet(url, null, headerMap);
+		System.out.println(resultResponse1);
+	}
+
+	@Test
 	public void testHttpFileUploadAndParam() {
 		String url = "http://localhost:8010/test/testUploadAndParam";
 		//String url = "https://xfyl.dearbo.top/bo-api-xfylw/test/testUploadAndParam";

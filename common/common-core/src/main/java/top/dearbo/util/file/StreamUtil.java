@@ -2,6 +2,8 @@ package top.dearbo.util.file;
 
 import org.apache.commons.lang3.StringUtils;
 import org.mozilla.universalchardet.UniversalDetector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import top.dearbo.util.exception.AppException;
 
 import java.io.*;
@@ -13,6 +15,8 @@ import java.io.*;
  * @description: 流
  */
 public class StreamUtil {
+
+	private static final Logger logger = LoggerFactory.getLogger(StreamUtil.class);
 
 	/**
 	 * 默认编码
@@ -85,17 +89,26 @@ public class StreamUtil {
 		StringBuilder resultBuffer = new StringBuilder();
 		try {
 			in = new BufferedReader(new InputStreamReader(inputStream, StringUtils.isBlank(encoding) ? DEFAULT_ENCODING : encoding));
-			String str;
+			char[] buffer = new char[1024];
+			int numCharsRead;
+			while ((numCharsRead = in.read(buffer)) != -1) {
+				resultBuffer.append(buffer, 0, numCharsRead);
+			}
+			/*String line; //末尾会多一个换行符
+			while ((line = in.readLine()) != null) {
+				resultBuffer.append(line).append(System.lineSeparator());
+			}*/
+			/*String str; //会去除换行符
 			while ((str = in.readLine()) != null) {
 				resultBuffer.append(str);
-			}
+			}*/
 			return resultBuffer.toString();
 		} finally {
 			if (closeStream && null != in) {
 				try {
 					in.close();
 				} catch (IOException e) {
-					e.printStackTrace();
+					logger.error("inputStreamToReaderString close error:", e);
 				}
 			}
 		}
@@ -112,14 +125,14 @@ public class StreamUtil {
 			AppException.throwEx("无法获取文件流，文件不可用！");
 		}
 		try {
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 			byte[] buffer = new byte[1024];
 			int len;
 			while ((len = is.read(buffer)) > -1) {
-				baos.write(buffer, 0, len);
+				outputStream.write(buffer, 0, len);
 			}
-			baos.flush();
-			return new ByteArrayInputStream(baos.toByteArray());
+			outputStream.flush();
+			return new ByteArrayInputStream(outputStream.toByteArray());
 		} catch (IOException e) {
 			throw new AppException("无法复制当前文件流！", e);
 		}
