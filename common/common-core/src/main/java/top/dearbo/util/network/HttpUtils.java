@@ -202,9 +202,9 @@ public class HttpUtils {
 			// 设置请求方式（GET/POST）
 			if (methodPostFlag) {
 				// 发送POST请求必须设置如下两行
-				//是否输入参数
+				//默认值为：false，当向远程服务器传送数据/写数据时，需要设置为true
 				connection.setDoOutput(true);
-				//是否读取参数
+				//默认值为：true，当前向远程服务读取数据时，设置为true，该参数可有可无
 				connection.setDoInput(true);
 				connection.setRequestMethod(HttpCommonUtil.METHOD_POST);
 			} else {
