@@ -321,12 +321,22 @@ public class HttpUtils {
 			// 从上述SSLContext对象中得到SSLSocketFactory对象
 			SSLSocketFactory ssf = sslContext.getSocketFactory();
 			connection.setSSLSocketFactory(ssf);
+
+			/*SSLContext sc = SSLContext.getInstance("TLS");
+			sc.init(null, tm, new java.security.SecureRandom());
+			HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());*/
+			connection.setHostnameVerifier(DO_NOT_VERIFY);
 		} catch (NoSuchAlgorithmException | KeyManagementException | NoSuchProviderException e) {
 			logger.error("https设置异常!msg:【{}】", e.getMessage(), e);
 			AppException.throwEx(e);
 		}
-
 	}
+
+	private final static HostnameVerifier DO_NOT_VERIFY = new HostnameVerifier() {
+		public boolean verify(String hostname, SSLSession session) {
+			return true;
+		}
+	};
 
 	public boolean isUsePropertyFlag() {
 		return usePropertyFlag;
