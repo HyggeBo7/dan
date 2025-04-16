@@ -11,16 +11,26 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.config.Registry;
+import org.apache.http.config.RegistryBuilder;
+import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.socket.PlainConnectionSocketFactory;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.client.StandardHttpRequestRetryHandler;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.ssl.SSLContextBuilder;
+import org.apache.http.ssl.SSLContexts;
+import org.apache.http.ssl.TrustStrategy;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +40,7 @@ import top.dearbo.util.network.common.HttpGlobalConfig;
 import top.dearbo.util.network.common.HttpStatusCode;
 import top.dearbo.util.network.exception.HttpCustomException;
 
+import javax.net.ssl.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,6 +48,9 @@ import java.io.Serializable;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.security.*;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -113,7 +127,20 @@ public class HttpClientPoolUtil {
 	private static final CloseableHttpClient DEFAULT_HTTP_CLIENT;
 
 	static {
-		PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
+		SSLContext sslContext = HttpCommonUtil.getSSLContext();
+		PoolingHttpClientConnectionManager connectionManager;
+		SSLConnectionSocketFactory connectionSocketFactory = null;
+		if (sslContext != null) {
+			connectionSocketFactory = new SSLConnectionSocketFactory(sslContext, NoopHostnameVerifier.INSTANCE);
+			// 注册 socket 工厂(解决https 忽略ssl证书验证)
+			Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory>create()
+					.register("http", PlainConnectionSocketFactory.getSocketFactory())
+					.register("https", connectionSocketFactory)
+					.build();
+			connectionManager = new PoolingHttpClientConnectionManager(socketFactoryRegistry);
+		} else {
+			connectionManager = new PoolingHttpClientConnectionManager();
+		}
 		// 总连接池数量
 		connectionManager.setMaxTotal(50);
 		// 可为每个域名设置单独的连接池数量
@@ -128,13 +155,17 @@ public class HttpClientPoolUtil {
 				.build();
 		// 重试处理器，StandardHttpRequestRetryHandler
 		HttpRequestRetryHandler retryHandler = new StandardHttpRequestRetryHandler();
-		DEFAULT_HTTP_CLIENT = HttpClients.custom().setConnectionManager(connectionManager).setDefaultRequestConfig(requestConfig)
+		HttpClientBuilder httpClientBuilder = HttpClients.custom()
+				.setConnectionManager(connectionManager).setDefaultRequestConfig(requestConfig)
 				.setRetryHandler(retryHandler)
 				// 开启后台线程清除过期的连接
 				.evictExpiredConnections()
 				// 开启后台线程清除闲置的连接
-				.evictIdleConnections(CONNECTION_TIME_TO_LIVE, TimeUnit.SECONDS)
-				.build();
+				.evictIdleConnections(CONNECTION_TIME_TO_LIVE, TimeUnit.SECONDS);
+		if (connectionSocketFactory != null) {
+			httpClientBuilder.setSSLContext(sslContext).setSSLSocketFactory(connectionSocketFactory);
+		}
+		DEFAULT_HTTP_CLIENT = httpClientBuilder.build();
 	}
 
 	private HttpClientPoolUtil() {

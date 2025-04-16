@@ -313,20 +313,13 @@ public class HttpUtils {
 	}
 
 	private void setHttps(HttpsURLConnection connection) {
-		// 创建SSLContext对象，并使用我们指定的信任管理器初始化
-		TrustManager[] tm = {new MyX509TrustManager()};
 		try {
-			SSLContext sslContext = SSLContext.getInstance("SSL", "SunJSSE");
-			sslContext.init(null, tm, new SecureRandom());
-			// 从上述SSLContext对象中得到SSLSocketFactory对象
-			SSLSocketFactory ssf = sslContext.getSocketFactory();
-			connection.setSSLSocketFactory(ssf);
-
+			connection.setSSLSocketFactory(HttpCommonUtil.getSSLContext().getSocketFactory());
 			/*SSLContext sc = SSLContext.getInstance("TLS");
 			sc.init(null, tm, new java.security.SecureRandom());
 			HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());*/
 			connection.setHostnameVerifier(DO_NOT_VERIFY);
-		} catch (NoSuchAlgorithmException | KeyManagementException | NoSuchProviderException e) {
+		} catch (Exception e) {
 			logger.error("https设置异常!msg:【{}】", e.getMessage(), e);
 			AppException.throwEx(e);
 		}
@@ -623,38 +616,6 @@ public class HttpUtils {
 			if (StringUtils.isNotBlank(headerCookieField)) {
 				this.headerCookieField = headerCookieField;
 			}
-		}
-	}
-
-	/**
-	 * 信任管理器
-	 */
-	class MyX509TrustManager implements X509TrustManager {
-
-
-		/**
-		 * 检查客户端证书
-		 */
-		@Override
-		public void checkClientTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
-
-		}
-
-		/**
-		 * 检查服务器端证书
-		 */
-		@Override
-		public void checkServerTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
-
-		}
-
-		/**
-		 * 返回受信任的X509证书数组
-		 */
-		@Override
-		public X509Certificate[] getAcceptedIssuers() {
-			//return new X509Certificate[0];
-			return null;
 		}
 	}
 
